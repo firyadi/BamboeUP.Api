@@ -1,0 +1,157 @@
+using System;
+using BamboeUp.Audit.Contracts;
+using Contracts;
+using Contracts.Approval;
+using Repository.Approval;
+
+namespace Repository
+{
+    public class RepositoryManager : IRepositoryManager
+    {
+        private readonly RepositoryContext _context;
+        private readonly IAuditService _auditService;
+        private readonly IUserContext _userContext;
+
+        // ##RepositoryManagerFields##
+        private readonly Lazy<IHospitalRepository> _hospitalRepository;
+        private readonly Lazy<IParameterscopeRepository> _parameterscopeRepository;
+        private readonly Lazy<IApprovalDelegationRepository> _approvalDelegationRepository;
+        private readonly Lazy<IApprovalHistoryRepository> _approvalHistoryRepository;
+        private readonly Lazy<IApprovalRequestRepository> _approvalRequestRepository;
+        private readonly Lazy<IApprovalStepRepository> _approvalStepRepository;
+        private readonly Lazy<IApprovalTemplateLevelRepository> _approvalTemplateLevelRepository;
+        private readonly Lazy<IApprovalTemplateLevelApproverRepository> _approvalTemplateLevelApproverRepository;
+        private readonly Lazy<IApprovalTemplateRepository> _approvalTemplateRepository;
+        private readonly Lazy<IAdministrativeAreaDisplayRepository> _administrativeAreaDisplayRepository;
+        private readonly Lazy<IAutoNumberRepository> _autoNumberRepository;
+        private readonly Lazy<IAutoNumberTemplateRepository> _autoNumberTemplateRepository;
+        private readonly Lazy<IAutoNumberCounterRepository> _autoNumberCounterRepository;
+        private readonly Lazy<IAutoNumberComponentRepository> _autoNumberComponentRepository;
+        private readonly Lazy<IAutoNumberLogRepository> _autoNumberLogRepository;
+        private readonly Lazy<IAutoNumberGenerateRepository> _autoNumberGenerateRepository;
+        private readonly Lazy<IBankRepository> _bankRepository;
+        private readonly Lazy<ICityRepository> _cityRepository;
+        private readonly Lazy<ICompanyRepository> _companyRepository;
+        private readonly Lazy<ICompanyOfficeRepository> _companyOfficeRepository;
+        private readonly Lazy<ICountryRepository> _countryRepository;
+        private readonly Lazy<IDistrictRepository> _districtRepository;
+        private readonly Lazy<IDocumentNumberRequestRepository> _documentNumberRequestRepository;
+        private readonly Lazy<IHolidayRepository> _holidayRepository;
+        private readonly Lazy<IOrganizationUnitRepository> _organizationUnitRepository;
+        private readonly Lazy<IOrganizationUnitScopeRepository> _organizationUnitScopeRepository;
+        private readonly Lazy<IParameterRepository> _parameterRepository;
+        private readonly Lazy<IPostalCodeRepository> _postalCodeRepository;
+        private readonly Lazy<IProvinceRepository> _provinceRepository;
+        private readonly Lazy<IProgramRepository> _programRepository;
+        private readonly Lazy<IStandardReferenceRepository> _standardReferenceRepository;
+        private readonly Lazy<IStandardReferenceItemRepository> _standardReferenceItemRepository;
+        private readonly Lazy<IStandardReferenceScopeRepository> _standardReferenceScopeRepository;
+        private readonly Lazy<IStandardReferenceScopeItemRepository> _standardReferenceScopeItemRepository;
+        private readonly Lazy<IStandardReferenceDisplayRepository> _standardReferenceDisplayRepository;
+        private readonly Lazy<IStandardReferenceItemDisplayRepository> _standardReferenceItemDisplayRepository;
+        private readonly Lazy<ISubDistrictRepository> _subDistrictRepository;
+        private readonly Lazy<IUserRepository> _userRepository;
+        private readonly Lazy<IUserGroupRepository> _userGroupRepository;
+        private readonly Lazy<IUserGroupScopeRepository> _userGroupScopeRepository;
+        private readonly Lazy<IUserGroupProgramRepository> _userGroupProgramRepository;
+        private readonly Lazy<IUserCompanyScopeRepository> _userCompanyScopeRepository;
+        private readonly Lazy<IVwStandardReferenceItemRepository> _vwStandardReferenceItemRepository;
+
+        public RepositoryManager(RepositoryContext context, IAuditService auditService, IUserContext userContext)
+        {
+            _context = context;
+            _auditService = auditService;
+            _userContext = userContext;
+            // ##RepositoryManagerConstructor##
+            _hospitalRepository = new Lazy<IHospitalRepository>(() => new HospitalRepository(_context));
+            _parameterscopeRepository = new Lazy<IParameterscopeRepository>(() => new ParameterscopeRepository(_context));
+            _approvalDelegationRepository = new Lazy<IApprovalDelegationRepository>(() => new ApprovalDelegationRepository(_context));
+            _approvalHistoryRepository = new Lazy<IApprovalHistoryRepository>(() => new ApprovalHistoryRepository(_context));
+            _approvalRequestRepository = new Lazy<IApprovalRequestRepository>(() => new ApprovalRequestRepository(_context, _auditService));
+            _approvalStepRepository = new Lazy<IApprovalStepRepository>(() => new ApprovalStepRepository(_context));
+            _approvalTemplateLevelRepository = new Lazy<IApprovalTemplateLevelRepository>(() => new ApprovalTemplateLevelRepository(_context));
+            _approvalTemplateLevelApproverRepository = new Lazy<IApprovalTemplateLevelApproverRepository>(() => new ApprovalTemplateLevelApproverRepository(_context));
+            _approvalTemplateRepository = new Lazy<IApprovalTemplateRepository>(() => new ApprovalTemplateRepository(_context, _auditService));
+            _administrativeAreaDisplayRepository = new Lazy<IAdministrativeAreaDisplayRepository>(() => new AdministrativeAreaDisplayRepository(_context));
+            _autoNumberRepository = new Lazy<IAutoNumberRepository>(() => new AutoNumberRepository(_context, _auditService));
+            _autoNumberTemplateRepository = new Lazy<IAutoNumberTemplateRepository>(() => new AutoNumberTemplateRepository(_context, _auditService));
+            _autoNumberCounterRepository = new Lazy<IAutoNumberCounterRepository>(() => new AutoNumberCounterRepository(_context, _auditService));
+            _autoNumberComponentRepository = new Lazy<IAutoNumberComponentRepository>(() => new AutoNumberComponentRepository(_context, _auditService));
+            _autoNumberLogRepository = new Lazy<IAutoNumberLogRepository>(() => new AutoNumberLogRepository(_context));
+            _autoNumberGenerateRepository = new Lazy<IAutoNumberGenerateRepository>(() => new AutoNumberGenerateRepository(_context));
+            _bankRepository = new Lazy<IBankRepository>(() => new BankRepository(_context));
+            _cityRepository = new Lazy<ICityRepository>(() => new CityRepository(_context, _auditService));
+            _companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(_context));
+            _companyOfficeRepository = new Lazy<ICompanyOfficeRepository>(() => new CompanyOfficeRepository(_context, _userContext));
+            _countryRepository = new Lazy<ICountryRepository>(() => new CountryRepository(_context, _auditService));
+            _districtRepository = new Lazy<IDistrictRepository>(() => new DistrictRepository(_context, _auditService));
+            _documentNumberRequestRepository = new Lazy<IDocumentNumberRequestRepository>(() => new DocumentNumberRequestRepository(_context, _auditService));
+            _holidayRepository = new Lazy<IHolidayRepository>(() => new HolidayRepository(_context, _auditService));
+            _organizationUnitRepository = new Lazy<IOrganizationUnitRepository>(() => new OrganizationUnitRepository(_context, _auditService));
+            _organizationUnitScopeRepository = new Lazy<IOrganizationUnitScopeRepository>(() => new OrganizationUnitScopeRepository(_context, _auditService));
+            _parameterRepository = new Lazy<IParameterRepository>(() => new ParameterRepository(_context));
+            _postalCodeRepository = new Lazy<IPostalCodeRepository>(() => new PostalCodeRepository(_context, _auditService));
+            _provinceRepository = new Lazy<IProvinceRepository>(() => new ProvinceRepository(_context, _auditService));
+            _programRepository = new Lazy<IProgramRepository>(() => new ProgramRepository(_context, _auditService));
+            _standardReferenceRepository = new Lazy<IStandardReferenceRepository>(() => new StandardReferenceRepository(_context, _auditService));
+            _standardReferenceItemRepository = new Lazy<IStandardReferenceItemRepository>(() => new StandardReferenceItemRepository(_context, _auditService));
+            _standardReferenceScopeRepository = new Lazy<IStandardReferenceScopeRepository>(() => new StandardReferenceScopeRepository(_context));
+            _standardReferenceScopeItemRepository = new Lazy<IStandardReferenceScopeItemRepository>(() => new StandardReferenceScopeItemRepository(_context));
+            _standardReferenceDisplayRepository = new Lazy<IStandardReferenceDisplayRepository>(() => new StandardReferenceDisplayRepository(_context));
+            _standardReferenceItemDisplayRepository = new Lazy<IStandardReferenceItemDisplayRepository>(() => new StandardReferenceItemDisplayRepository(_context));
+            _subDistrictRepository = new Lazy<ISubDistrictRepository>(() => new SubDistrictRepository(_context, _auditService));
+            _userRepository = new Lazy<IUserRepository>(() => new UserRepository(_context, _auditService));
+            _userGroupRepository = new Lazy<IUserGroupRepository>(() => new UserGroupRepository(_context, _auditService));
+            _userGroupScopeRepository = new Lazy<IUserGroupScopeRepository>(() => new UserGroupScopeRepository(_context, _auditService));
+            _userGroupProgramRepository = new Lazy<IUserGroupProgramRepository>(() => new UserGroupProgramRepository(_context, _auditService));
+            _userCompanyScopeRepository = new Lazy<IUserCompanyScopeRepository>(() => new UserCompanyScopeRepository(_context, _auditService));
+            _vwStandardReferenceItemRepository = new Lazy<IVwStandardReferenceItemRepository>(() => new VwStandardReferenceItemRepository(_context));
+        }
+
+        // ##RepositoryManagerAccessors##
+        public IHospitalRepository Hospital => _hospitalRepository.Value;
+        public IParameterscopeRepository Parameterscope => _parameterscopeRepository.Value;
+        public IApprovalDelegationRepository ApprovalDelegation => _approvalDelegationRepository.Value;
+        public IApprovalHistoryRepository ApprovalHistory => _approvalHistoryRepository.Value;
+        public IApprovalRequestRepository ApprovalRequest => _approvalRequestRepository.Value;
+        public IApprovalStepRepository ApprovalStep => _approvalStepRepository.Value;
+        public IApprovalTemplateLevelRepository ApprovalTemplateLevel => _approvalTemplateLevelRepository.Value;
+        public IApprovalTemplateLevelApproverRepository ApprovalTemplateLevelApprover => _approvalTemplateLevelApproverRepository.Value;
+        public IApprovalTemplateRepository ApprovalTemplate => _approvalTemplateRepository.Value;
+        public IAdministrativeAreaDisplayRepository AdministrativeAreaDisplay => _administrativeAreaDisplayRepository.Value;
+        public IAutoNumberRepository AutoNumber => _autoNumberRepository.Value;
+        public IAutoNumberTemplateRepository AutoNumberTemplate => _autoNumberTemplateRepository.Value;
+        public IAutoNumberCounterRepository AutoNumberCounter => _autoNumberCounterRepository.Value;
+        public IAutoNumberComponentRepository AutoNumberComponent => _autoNumberComponentRepository.Value;
+        public IAutoNumberLogRepository AutoNumberLog => _autoNumberLogRepository.Value;
+        public IAutoNumberGenerateRepository AutoNumberGenerate => _autoNumberGenerateRepository.Value;
+        public IBankRepository Bank => _bankRepository.Value;
+        public ICityRepository City => _cityRepository.Value;
+        public ICompanyRepository Company => _companyRepository.Value;
+        public ICompanyOfficeRepository CompanyOffice => _companyOfficeRepository.Value;
+        public ICountryRepository Country => _countryRepository.Value;
+        public IDistrictRepository District => _districtRepository.Value;
+        public IDocumentNumberRequestRepository DocumentNumberRequest => _documentNumberRequestRepository.Value;
+        public IHolidayRepository Holiday => _holidayRepository.Value;
+        public IOrganizationUnitRepository OrganizationUnit => _organizationUnitRepository.Value;
+        public IOrganizationUnitScopeRepository OrganizationUnitScope => _organizationUnitScopeRepository.Value;
+        public IParameterRepository Parameter => _parameterRepository.Value;
+        public IParameterscopeRepository ParameterScope => _parameterscopeRepository.Value;
+        public IPostalCodeRepository PostalCode => _postalCodeRepository.Value;
+        public IProvinceRepository Province => _provinceRepository.Value;
+        public IProgramRepository Program => _programRepository.Value;
+        public IStandardReferenceRepository StandardReference => _standardReferenceRepository.Value;
+        public IStandardReferenceItemRepository StandardReferenceItem => _standardReferenceItemRepository.Value;
+        public IStandardReferenceScopeRepository StandardReferenceScope => _standardReferenceScopeRepository.Value;
+        public IStandardReferenceScopeItemRepository StandardReferenceScopeItem => _standardReferenceScopeItemRepository.Value;
+        public IStandardReferenceDisplayRepository StandardReferenceDisplay => _standardReferenceDisplayRepository.Value;
+        public IStandardReferenceItemDisplayRepository StandardReferenceItemDisplay => _standardReferenceItemDisplayRepository.Value;
+        public ISubDistrictRepository SubDistrict => _subDistrictRepository.Value;
+        public IUserRepository User => _userRepository.Value;
+        public IUserGroupRepository UserGroup => _userGroupRepository.Value;
+        public IUserGroupScopeRepository UserGroupScope => _userGroupScopeRepository.Value;
+        public IUserGroupProgramRepository UserGroupProgram => _userGroupProgramRepository.Value;
+        public IUserCompanyScopeRepository UserCompanyScope => _userCompanyScopeRepository.Value;
+        public IVwStandardReferenceItemRepository VwStandardReferenceItem => _vwStandardReferenceItemRepository.Value;
+    }
+}

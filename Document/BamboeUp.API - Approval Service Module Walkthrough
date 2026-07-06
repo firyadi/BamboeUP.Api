@@ -1,0 +1,40 @@
+# BamboeUp.API - Approval Service Module Walkthrough
+
+> [!SUCCESS]
+> **Modul Approval Service** telah berhasil diprogram dan didaftarkan ke dalam proyek mulai dari tingkat perancangan Schema SQL hingga ke level API Presentation Controllers.
+
+Dokumen ini berisi rangkuman langkah-langkah yang dilakukan untuk menyelesaikan keseluruhan *Implementation Plan* dari phase awal hingga Phase 10.
+
+## 1. Arsitektur Domain
+Kami mengimplementasikan **Approval Service** dalam schema terpisah (`apv`) agar tidak bercampur dengan master core, namun tetap terhubung secara relasi dengan menggunakan agregat `ReferenceGuid` / `ModuleCode`.
+
+### Tabel & Entity (Phase 1-2):
+- **ApprovalTemplate**, **ApprovalTemplateLevel**, **ApprovalTemplateLevelApprover**: Digunakan sebagai Master Engine yang mendefinisikan berapa lapis (level) approval dan siapa PIC di tiap lapisnya. SLA tercatat di tiap Level.
+- **ApprovalRequest**, **ApprovalStep**: Digunakan sebagai Transaction Engine yang menyimpan sebuah tiket ("Cuti", "Lembur") sedang berada di langkah mana, apa status tiket keseluruhan, dan log historis waktu di tiap step.
+- **ApprovalDelegation**: Menyimpan data pengalihan PIC approval untuk timeframe waktu tertentu (jika seorang atasan sedang off).
+- **ApprovalHistory**: Mencatat jejak audit trail seluruh aksi "Submit, Approve, Reject" berlabel `ActionByUserId` dan dicatatkan bersama DateTime UTC.
+
+## 2. Abstraksi Repository & Service Layer (Phase 3-7)
+Seluruh Service Layer dibangun untuk melayani bisnis proses:
+- Semua endpoint dilindungi dan diakses via Injection `Lazy<>` melalui `RepositoryManager` dan `ServiceManager`.
+- Logika transaksi yang ketat dieksekusi di `ApprovalService.cs` dengan fungsi-fungsi utama seperti `SubmitRequestAsync()`, `ApproveStepAsync()`, dan `RejectStepAsync()`. Modul ini meng-handle state machine untuk mendeteksi apakah `StatusId` selanjutnya menjadi *Pending*, *InProgress* atau *Approved*. Logika transaksi juga diamankan memakai `ITransactionManager` untuk konsistensi DB jika terjadi exception di tengah *state-machine* proses `ApproveStep`.
+
+## 3. Integrasi Endpoint API (Phase 8)
+- **`ApprovalTemplatesController`**: API Endpoint bagi Administrator untuk mengeset tipe approval.
+- **`ApprovalsController`**: Engine API bagi modul lain.
+- **`ApprovalDelegationsController`**: Sub-API bagi user untuk self-service mengatur delegasinya.
+
+## 4. Setup Dependency (Phase 9 & 10)
+- **AutoMapper** telah diperbarui di dalam `MappingProfile.cs` yang mem-binding Entity internal (`apv.<tables>`) ke eksternal DTO Objects. Status Enum Name juga dimapping secara dinamis dari `ApprovalConstants`.
+- **Hangfire** library ditambahkan dan dikonfigurasi melalui:
+  - `ServiceExtensions.cs` : Menambahkan `services.AddHangfire()` dan `services.AddHangfireServer()`.
+  - `Program.cs` : Memberikan pipeline UI dashboard `/hangfire` untuk administrator memonitor Jobs, serta menyusun **RecurringJob** (Cron Task) untuk menjalankan Pengecekan SLA (`CheckAndProcessSlaAsync`) yang di-trigger setiap jam.
+
+---
+
+> [!TIP]
+> **Selanjutnya untuk UI/Frontend**:
+> API ini sudah fully-functional untuk ditarik dengan menggunakan `HttpClient` di Project Web UI `BamboeUp.AppShell`. DTO yang kita sediakan dapat langsung dibuatkan halaman form-nya dengan referensi `TemplateForm1.md` yang Bapak miliki.
+
+> [!NOTE]
+> Semua API endpoint dapat langsung dites menggunakan **Postman** atau via dashboard **Swagger** yang tersedia pada server development `https://localhost:<port>/swagger`. Anda juga dapat mengakses Hangfire Dashboard di `https://localhost:<port>/hangfire`.

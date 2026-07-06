@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Entities\**" />
+    <Content Remove="Entities\**" />
+    <EmbeddedResource Remove="Entities\**" />
+    <None Remove="Entities\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
+    <PackageReference Include="Audit.NET" Version="30.0.2" />
+    <PackageReference Include="Audit.NET.JsonNewtonsoftAdapter" Version="30.0.2" />
+    <PackageReference Include="Audit.NET.SqlServer" Version="30.0.2" />
+    <PackageReference Include="Mapster" Version="10.0.7" />
+    <PackageReference Include="Mapster.DependencyInjection" Version="10.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />	  
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.10" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
+    <ProjectReference Include="..\Presentation.Shell\Presentation.Shell.csproj" />
+    <ProjectReference Include="..\Presentation.Modules\Presentation.Modules.csproj" />
+    <ProjectReference Include="..\Repository\Repository.csproj" />
+    <ProjectReference Include="..\Service.Contracts.Shell\Service.Contracts.Shell.csproj" />
+    <ProjectReference Include="..\Service.Contracts.Modules\Service.Contracts.Modules.csproj" />
+    <ProjectReference Include="..\Service.Shell\Service.Shell.csproj" />
+    <ProjectReference Include="..\Service.Modules\Service.Modules.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Reference Include="BamboeUp.Audit">
+      <HintPath>..\Audit\BamboeUp.Audit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,742 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.shell\\extensions\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|solutionrelative:service.shell\\extensions\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.shell\\appautonumbercounterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|solutionrelative:service.shell\\appautonumbercounterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3356886-88C3-B1D2-31FA-CFDA53C7A255}|Service.Contracts.Shell\\Service.Contracts.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.contracts.shell\\iappautonumbercounterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3356886-88C3-B1D2-31FA-CFDA53C7A255}|Service.Contracts.Shell\\Service.Contracts.Shell.csproj|solutionrelative:service.contracts.shell\\iappautonumbercounterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.shell\\appautonumbercomponentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|solutionrelative:service.shell\\appautonumbercomponentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3356886-88C3-B1D2-31FA-CFDA53C7A255}|Service.Contracts.Shell\\Service.Contracts.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.contracts.shell\\iappautonumbercomponentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3356886-88C3-B1D2-31FA-CFDA53C7A255}|Service.Contracts.Shell\\Service.Contracts.Shell.csproj|solutionrelative:service.contracts.shell\\iappautonumbercomponentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3356886-88C3-B1D2-31FA-CFDA53C7A255}|Service.Contracts.Shell\\Service.Contracts.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.contracts.shell\\iappautonumbertemplateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3356886-88C3-B1D2-31FA-CFDA53C7A255}|Service.Contracts.Shell\\Service.Contracts.Shell.csproj|solutionrelative:service.contracts.shell\\iappautonumbertemplateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.shell\\appautonumbertemplateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|solutionrelative:service.shell\\appautonumbertemplateservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.shell\\servicemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B6A4AD28-4BF9-0CB8-8C47-FB8ED1B7146E}|Service.Shell\\Service.Shell.csproj|solutionrelative:service.shell\\servicemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E484A8A-1A15-46D6-9D6A-8EB884119C38}|Service.Modules\\Service.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.modules\\extensions\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E484A8A-1A15-46D6-9D6A-8EB884119C38}|Service.Modules\\Service.Modules.csproj|solutionrelative:service.modules\\extensions\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E484A8A-1A15-46D6-9D6A-8EB884119C38}|Service.Modules\\Service.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\service.modules\\servicemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E484A8A-1A15-46D6-9D6A-8EB884119C38}|Service.Modules\\Service.Modules.csproj|solutionrelative:service.modules\\servicemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\appautonumbertemplatescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\appautonumbertemplatescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\appautonumbercounterscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\appautonumbercounterscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\appautonumbercomponentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\appautonumbercomponentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\vwstandardreferenceitemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\vwstandardreferenceitemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\usergroupscopecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\usergroupscopecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\usergroupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\usergroupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\usergroupprogramscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\usergroupprogramscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\usercompanyscopecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\usercompanyscopecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\standardreferencescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\standardreferencescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\standardreferenceitemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\standardreferenceitemscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\standardreferencedisplayscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\standardreferencedisplayscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\programscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\programscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\parameterscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\parameterscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\organizationunitscopescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\organizationunitscopescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\organizationunitscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\organizationunitscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\companyofficescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\companyofficescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\companiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\companiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\autonumberscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\autonumberscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\auditlogviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\auditlogviewcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\approvaltemplatescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\approvaltemplatescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\approvalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\approvalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.shell\\controllers\\approvaldelegationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91F027C0-5AC6-7AA5-A239-83A06917E1CF}|Presentation.Shell\\Presentation.Shell.csproj|solutionrelative:presentation.shell\\controllers\\approvaldelegationscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\subdistrictscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\subdistrictscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\provincescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\provincescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\postalcodescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\postalcodescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\holidayscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\holidayscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\districtscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\districtscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\countriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\countriescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\citiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\citiescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|d:\\project\\gitrepo\\antigravity\\bamboeup.api\\presentation.modules\\controllers\\bankscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D4CED6F-2F19-467C-BE9D-240F596D650C}|Presentation.Modules\\Presentation.Modules.csproj|solutionrelative:presentation.modules\\controllers\\bankscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ServiceConfiguration.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\Extensions\\ServiceConfiguration.cs",
+              "RelativeDocumentMoniker": "Service.Shell\\Extensions\\ServiceConfiguration.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\Extensions\\ServiceConfiguration.cs",
+              "RelativeToolTip": "Service.Shell\\Extensions\\ServiceConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:46:19.629Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IAppAutoNumberCounterService.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Contracts.Shell\\IAppAutoNumberCounterService.cs",
+              "RelativeDocumentMoniker": "Service.Contracts.Shell\\IAppAutoNumberCounterService.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Contracts.Shell\\IAppAutoNumberCounterService.cs",
+              "RelativeToolTip": "Service.Contracts.Shell\\IAppAutoNumberCounterService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAByAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:45:53.844Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "IAppAutoNumberComponentService.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Contracts.Shell\\IAppAutoNumberComponentService.cs",
+              "RelativeDocumentMoniker": "Service.Contracts.Shell\\IAppAutoNumberComponentService.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Contracts.Shell\\IAppAutoNumberComponentService.cs",
+              "RelativeToolTip": "Service.Contracts.Shell\\IAppAutoNumberComponentService.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAA0wBIAAAB4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:45:34.69Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "IAppAutoNumberTemplateService.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Contracts.Shell\\IAppAutoNumberTemplateService.cs",
+              "RelativeDocumentMoniker": "Service.Contracts.Shell\\IAppAutoNumberTemplateService.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Contracts.Shell\\IAppAutoNumberTemplateService.cs",
+              "RelativeToolTip": "Service.Contracts.Shell\\IAppAutoNumberTemplateService.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAmwBIAAAB1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:45:08.98Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppAutoNumberComponentService.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\AppAutoNumberComponentService.cs",
+              "RelativeDocumentMoniker": "Service.Shell\\AppAutoNumberComponentService.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\AppAutoNumberComponentService.cs",
+              "RelativeToolTip": "Service.Shell\\AppAutoNumberComponentService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:44:03.473Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppAutoNumberCounterService.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\AppAutoNumberCounterService.cs",
+              "RelativeDocumentMoniker": "Service.Shell\\AppAutoNumberCounterService.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\AppAutoNumberCounterService.cs",
+              "RelativeToolTip": "Service.Shell\\AppAutoNumberCounterService.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAowBIAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:43:13.669Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AppAutoNumberTemplateService.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\AppAutoNumberTemplateService.cs",
+              "RelativeDocumentMoniker": "Service.Shell\\AppAutoNumberTemplateService.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\AppAutoNumberTemplateService.cs",
+              "RelativeToolTip": "Service.Shell\\AppAutoNumberTemplateService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:42:01.663Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ServiceManager.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\ServiceManager.cs",
+              "RelativeDocumentMoniker": "Service.Shell\\ServiceManager.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Shell\\ServiceManager.cs",
+              "RelativeToolTip": "Service.Shell\\ServiceManager.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAASwBYAAABfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:41:25.876Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ServiceConfiguration.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Modules\\Extensions\\ServiceConfiguration.cs",
+              "RelativeDocumentMoniker": "Service.Modules\\Extensions\\ServiceConfiguration.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Modules\\Extensions\\ServiceConfiguration.cs",
+              "RelativeToolTip": "Service.Modules\\Extensions\\ServiceConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:38:34.309Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ServiceManager.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Modules\\ServiceManager.cs",
+              "RelativeDocumentMoniker": "Service.Modules\\ServiceManager.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Service.Modules\\ServiceManager.cs",
+              "RelativeToolTip": "Service.Modules\\ServiceManager.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAWwBIAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:37:15.893Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "VwStandardReferenceItemsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\VwStandardReferenceItemsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\VwStandardReferenceItemsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\VwStandardReferenceItemsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\VwStandardReferenceItemsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:45.59Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\UsersController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:43.88Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "UserGroupScopeController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserGroupScopeController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\UserGroupScopeController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserGroupScopeController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\UserGroupScopeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:42.381Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "UserGroupsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserGroupsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\UserGroupsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserGroupsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\UserGroupsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:39.933Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "UserGroupProgramsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserGroupProgramsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\UserGroupProgramsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserGroupProgramsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\UserGroupProgramsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:36.702Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "UserCompanyScopeController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserCompanyScopeController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\UserCompanyScopeController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\UserCompanyScopeController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\UserCompanyScopeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:34.457Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "StandardReferencesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\StandardReferencesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\StandardReferencesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\StandardReferencesController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\StandardReferencesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:32.368Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "StandardReferenceItemsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\StandardReferenceItemsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\StandardReferenceItemsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\StandardReferenceItemsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\StandardReferenceItemsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:29.719Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "StandardReferenceDisplaysController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\StandardReferenceDisplaysController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\StandardReferenceDisplaysController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\StandardReferenceDisplaysController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\StandardReferenceDisplaysController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:27.054Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ProgramsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ProgramsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\ProgramsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ProgramsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\ProgramsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:23.784Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "ParametersController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ParametersController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\ParametersController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ParametersController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\ParametersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:21.703Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "OrganizationUnitScopesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\OrganizationUnitScopesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\OrganizationUnitScopesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\OrganizationUnitScopesController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\OrganizationUnitScopesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:19.05Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "OrganizationUnitsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\OrganizationUnitsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\OrganizationUnitsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\OrganizationUnitsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\OrganizationUnitsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:15.685Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "CompanyOfficesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\CompanyOfficesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\CompanyOfficesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\CompanyOfficesController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\CompanyOfficesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:10.934Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "CompaniesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\CompaniesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\CompaniesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\CompaniesController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\CompaniesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:08.743Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "AutoNumbersController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AutoNumbersController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\AutoNumbersController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AutoNumbersController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\AutoNumbersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:06.334Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:35:03.182Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "AuditLogViewController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AuditLogViewController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\AuditLogViewController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AuditLogViewController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\AuditLogViewController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:58.12Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "ApprovalTemplatesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ApprovalTemplatesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\ApprovalTemplatesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ApprovalTemplatesController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\ApprovalTemplatesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:55.815Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "ApprovalsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ApprovalsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\ApprovalsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ApprovalsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\ApprovalsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:54.147Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "ApprovalDelegationsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ApprovalDelegationsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\ApprovalDelegationsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\ApprovalDelegationsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\ApprovalDelegationsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:51.805Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AppAutoNumberTemplatesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AppAutoNumberTemplatesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\AppAutoNumberTemplatesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AppAutoNumberTemplatesController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\AppAutoNumberTemplatesController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAWwEcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:43.932Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AppAutoNumberCountersController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AppAutoNumberCountersController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\AppAutoNumberCountersController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AppAutoNumberCountersController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\AppAutoNumberCountersController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAWwEgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:39.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AppAutoNumberComponentsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AppAutoNumberComponentsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Shell\\Controllers\\AppAutoNumberComponentsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Shell\\Controllers\\AppAutoNumberComponentsController.cs",
+              "RelativeToolTip": "Presentation.Shell\\Controllers\\AppAutoNumberComponentsController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAWwEcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:26.332Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "SubDistrictsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\SubDistrictsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\SubDistrictsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\SubDistrictsController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\SubDistrictsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:19.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "ProvincesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\ProvincesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\ProvincesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\ProvincesController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\ProvincesController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:12.26Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "PostalCodesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\PostalCodesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\PostalCodesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\PostalCodesController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\PostalCodesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:09.965Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "HolidaysController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\HolidaysController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\HolidaysController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\HolidaysController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\HolidaysController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:07.596Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "DistrictsController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\DistrictsController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\DistrictsController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\DistrictsController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\DistrictsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:04.027Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "CountriesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\CountriesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\CountriesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\CountriesController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\CountriesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:34:00.112Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "CitiesController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\CitiesController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\CitiesController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\CitiesController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\CitiesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:33:55.716Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "BanksController.cs",
+              "DocumentMoniker": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\BanksController.cs",
+              "RelativeDocumentMoniker": "Presentation.Modules\\Controllers\\BanksController.cs",
+              "ToolTip": "D:\\Project\\GitRepo\\Antigravity\\BamboeUp.Api\\Presentation.Modules\\Controllers\\BanksController.cs",
+              "RelativeToolTip": "Presentation.Modules\\Controllers\\BanksController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T12:33:27.508Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
