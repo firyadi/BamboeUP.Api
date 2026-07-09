@@ -11,11 +11,12 @@ namespace Shared.DataTransferObjects
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
         public string ScopeType { get; set; }
-        public string? CompanyName { get; set; }
-        public string? CompanyOfficeName { get; set; }
-        public string? OrganizationUnitName { get; set; }
+public string? CompanyName { get; set; }
+public string? CompanyOfficeName { get; set; }
+public string? OrganizationUnitName { get; set; }
+
         public int StatusId { get; set; }
-        public byte[]? RowVersion { get; set; }
+        public byte[] RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -26,7 +27,7 @@ namespace Shared.DataTransferObjects
 
     public record OrganizationUnitScopeForCreationDto
     {
-        public long OrganizationUnitId { get; set; }
+        public int OrganizationUnitId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
         public string ScopeType { get; set; }
@@ -36,7 +37,7 @@ namespace Shared.DataTransferObjects
     public record OrganizationUnitScopeForUpdateDto
     {
         public Guid OrganizationUnitScopeGuid { get; set; }
-        public long OrganizationUnitId { get; set; }
+        public int OrganizationUnitId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
         public string ScopeType { get; set; }

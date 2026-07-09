@@ -30,7 +30,6 @@ namespace Shared.DataTransferObjects
         // NOTE: PasswordSalt intentionally omitted — always generated server-side
         public string FullName { get; set; }
         public string Email { get; set; }
-        public bool IsAdmin { get; set; }
         public long CreatedById { get; set; }
     }
 
@@ -42,7 +41,6 @@ namespace Shared.DataTransferObjects
         // NOTE: PasswordSalt intentionally omitted — always generated server-side
         public string FullName { get; set; }
         public string Email { get; set; }
-        public bool IsAdmin { get; set; }
         public long? UpdatedById { get; set; }
     }
 

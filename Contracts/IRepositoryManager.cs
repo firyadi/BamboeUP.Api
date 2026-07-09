@@ -6,6 +6,9 @@ namespace Contracts
     public interface IRepositoryManager
     {
         // ##IRepositoryManager##
+        ICostCenterScopeRepository CostCenterScope { get; }
+        ICostCenterAssignmentRepository CostCenterAssignment { get; }
+        ICostCenterRepository CostCenter { get; }
         IHospitalRepository Hospital { get; }
         IParameterscopeRepository Parameterscope { get; }
         IApprovalDelegationRepository ApprovalDelegation { get; }
@@ -49,6 +52,7 @@ namespace Contracts
         IUserGroupScopeRepository UserGroupScope { get; }
         IUserGroupProgramRepository UserGroupProgram { get; }
         IUserCompanyScopeRepository UserCompanyScope { get; }
+        IUserScopeRepository UserScope { get; }
         IVwStandardReferenceItemRepository VwStandardReferenceItem { get; }
     }
 }

@@ -43,6 +43,10 @@
   <ItemGroup>
     <Folder Include="Controllers\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="App_Data\admin.registry.enc" CopyToOutputDirectory="PreserveNewest" Condition="Exists('App_Data\admin.registry.enc')" />
+  </ItemGroup>
     
   <ItemGroup>
     <Reference Include="BamboeUp.Audit">

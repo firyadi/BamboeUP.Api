@@ -40,6 +40,8 @@ builder.Services.ConfigureTransactionManager();
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureShellServices();
 builder.Services.ConfigureModulesServices();
+builder.Services.Configure<Shared.AdminRegistry.AdminRegistrySettings>(
+    builder.Configuration.GetSection(Shared.AdminRegistry.AdminRegistrySettings.SectionName));
 MapsterConfig.RegisterMappings();
 builder.Services.AddMapster();
 

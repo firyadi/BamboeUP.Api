@@ -74,11 +74,9 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
             var conn = transaction?.Connection ?? _context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[OrganizationUnit]
-                (OrganizationUnitGuid, CreatedById, StatusId, CreatedTime, OrganizationUnitCode, OrganizationUnitName,
-                 ParentOrganizationUnitId, SrOrganizationLevel, LevelDepth, HierarchyPath)
+                (OrganizationUnitGuid, CreatedById, StatusId, CreatedTime, OrganizationUnitCode, OrganizationUnitName, ParentOrganizationUnitId, SrOrganizationLevel, LevelDepth, HierarchyPath)
                 VALUES
-                (@OrganizationUnitGuid, @CreatedById, @StatusId, @CreatedTime, @OrganizationUnitCode, @OrganizationUnitName,
-                 @ParentOrganizationUnitId, @SrOrganizationLevel, @LevelDepth, @HierarchyPath);
+                (@OrganizationUnitGuid, @CreatedById, @StatusId, @CreatedTime, @OrganizationUnitCode, @OrganizationUnitName, @ParentOrganizationUnitId, @SrOrganizationLevel, @LevelDepth, @HierarchyPath);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
             organizationUnit.OrganizationUnitId = await conn.QuerySingleAsync<long>(sql, organizationUnit, transaction);
         }
@@ -89,7 +87,7 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
             var conn = transaction?.Connection ?? _context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[OrganizationUnit]
-                SET OrganizationUnitCode = @OrganizationUnitCode,
+                SET                     OrganizationUnitCode = @OrganizationUnitCode,
                     OrganizationUnitName = @OrganizationUnitName,
                     ParentOrganizationUnitId = @ParentOrganizationUnitId,
                     SrOrganizationLevel = @SrOrganizationLevel,
@@ -124,13 +122,19 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         }
 
         public async Task<IEnumerable<OrganizationUnit>> SearchOrganizationUnitAsync(
-            string? organizationUnitCode, string? organizationUnitCodeSearchType,
-            string? organizationUnitName, string? organizationUnitNameSearchType,
-string? parentOrganizationUnitName, string? parentOrganizationUnitNameSearchType,
-
+            string? organizationUnitCode,
+            string? organizationUnitCodeSearchType,
+            string? organizationUnitName,
+            string? organizationUnitNameSearchType,
+            string? srOrganizationLevel,
+            string? srOrganizationLevelSearchType,
+            string? levelDepth,
+            string? levelDepthSearchType,
+            string? hierarchyPath,
+            string? hierarchyPathSearchType,
             IDbTransaction? transaction = null)
         {
-            using var connection = _context.CreateConnection();
+            var connection = transaction?.Connection ?? _context.CreateConnection();
             var whereClauses = new List<string> { "a.StatusId > 0", "a.DeletedTime IS NULL" };
             var parameters = new DynamicParameters();
 
@@ -146,7 +150,24 @@ string? parentOrganizationUnitName, string? parentOrganizationUnitNameSearchType
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-if (!string.IsNullOrWhiteSpace(parentOrganizationUnitName)) { var param = SqlFilterHelper.BuildFilter("j_ParentOrganizationUnitId.OrganizationUnitName", "@parentOrganizationUnitName", parentOrganizationUnitNameSearchType, parameters, "parentOrganizationUnitName", parentOrganizationUnitName); if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param); }
+            if (!string.IsNullOrWhiteSpace(srOrganizationLevel))
+            {
+                var param = SqlFilterHelper.BuildFilter("a.SrOrganizationLevel", "@srOrganizationLevel", srOrganizationLevelSearchType, parameters, "srOrganizationLevel", srOrganizationLevel);
+                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
+            }
+
+            if (!string.IsNullOrWhiteSpace(levelDepth))
+            {
+                var param = SqlFilterHelper.BuildFilter("a.LevelDepth", "@levelDepth", levelDepthSearchType, parameters, "levelDepth", levelDepth);
+                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
+            }
+
+            if (!string.IsNullOrWhiteSpace(hierarchyPath))
+            {
+                var param = SqlFilterHelper.BuildFilter("a.HierarchyPath", "@hierarchyPath", hierarchyPathSearchType, parameters, "hierarchyPath", hierarchyPath);
+                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
+            }
+
 
 
             var sql = $@"

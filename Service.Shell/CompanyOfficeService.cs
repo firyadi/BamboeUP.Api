@@ -16,35 +16,39 @@ namespace Service.Shell
         private readonly ITransactionManager _transactionManager;
         private readonly IAuditService _audit;
         private readonly IUserContext _userContext;
+        private readonly IUserScopeService _userScope;
 
         public CompanyOfficeService(
             IRepositoryManager repository,
             ILoggerManager logger,
             ITransactionManager transactionManager,
             IAuditService audit,
-            IUserContext userContext)
+            IUserContext userContext,
+            IUserScopeService userScope)
         {
             _repository = repository;
             _logger = logger;
             _transactionManager = transactionManager;
             _audit = audit;
             _userContext = userContext;
+            _userScope = userScope;
         }
 
         public async Task<IEnumerable<CompanyOfficeDto>> GetAllCompanyOfficesAsync(bool trackChanges)
         {
-            var entities = await _repository.CompanyOffice.GetAllCompanyOfficesAsync(trackChanges);
-            return entities.Adapt<IEnumerable<CompanyOfficeDto>>();
+            return await _userScope.GetAllAccessibleOfficesAsync();
         }
 
         public async Task<CompanyOfficeDto> GetCompanyOfficeByGuidAsync(Guid companyOfficeGuid, bool trackChanges)
         {
             var entity = await _repository.CompanyOffice.GetCompanyOfficeAsync(companyOfficeGuid, trackChanges);
+            await _userScope.EnsureCanAccessOfficeAsync(entity.CompanyId, entity.CompanyOfficeId);
             return entity.Adapt<CompanyOfficeDto>();
         }
 
         public async Task<CompanyOfficeDto> CreateCompanyOfficeAsync(CompanyOfficeForCreationDto input)
         {
+            await _userScope.EnsureCanAccessCompanyAsync(input.CompanyId);
             var model = input.Adapt<CompanyOffice>();
             model.StatusId = 1;
             await _repository.CompanyOffice.CreateCompanyOfficeAsync(model);
@@ -78,6 +82,7 @@ namespace Service.Shell
         public async Task UpdateCompanyOfficeAsync(Guid companyOfficeGuid, CompanyOfficeForUpdateDto input, bool trackChanges)
         {
             var oldOffice = await _repository.CompanyOffice.GetCompanyOfficeAsync(companyOfficeGuid, false);
+            await _userScope.EnsureCanAccessCompanyAsync(oldOffice.CompanyId);
 
             var model = input.Adapt<CompanyOffice>();
             model.CompanyOfficeGuid = companyOfficeGuid;
@@ -113,6 +118,7 @@ namespace Service.Shell
         public async Task DeleteCompanyOfficeAsync(Guid companyOfficeGuid, CompanyOfficeForDeleteDto input, bool trackChanges)
         {
             var oldOffice = await _repository.CompanyOffice.GetCompanyOfficeAsync(companyOfficeGuid, false);
+            await _userScope.EnsureCanAccessCompanyAsync(oldOffice.CompanyId);
             var model = new CompanyOffice { CompanyOfficeGuid = companyOfficeGuid };
             await _repository.CompanyOffice.SoftDeleteCompanyOfficeAsync(model, input.DeletedById ?? 0);
 
@@ -157,18 +163,32 @@ namespace Service.Shell
         {
             var data = await _repository.CompanyOffice.SearchCompanyOfficeAsync(
                 companyOfficeName, companyOfficeNameSearchType, srAddressType, countryId, stateId, cityId, postalCodeId, postalCodeIdSearchType, address, addressSearchType, companyGuid, companyOfficeGuid);
-            return data.Adapt<IEnumerable<CompanyOfficeDto>>();
+
+            if (companyGuid != Guid.Empty)
+            {
+                var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+                await _userScope.EnsureCanAccessCompanyAsync(company.CompanyId);
+                return data.Adapt<IEnumerable<CompanyOfficeDto>>();
+            }
+
+            var allAccessible = await _userScope.GetAllAccessibleOfficesAsync();
+            var allowedGuids = allAccessible.Select(o => o.CompanyOfficeGuid).ToHashSet();
+            return data.Where(o => allowedGuids.Contains(o.CompanyOfficeGuid)).Adapt<IEnumerable<CompanyOfficeDto>>();
         }
 
-        // Detail (child) helpers
+        // Header-detail: all offices under company (no UserGroupScope office filter).
         public async Task<IEnumerable<CompanyOfficeDto>> GetAllByCompanyGuidAsync(Guid companyGuid)
         {
+            var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            await _userScope.EnsureCanAccessCompanyAsync(company.CompanyId);
             var result = await _repository.CompanyOffice.GetAllByCompanyGuidAsync(companyGuid);
             return result.Adapt<IEnumerable<CompanyOfficeDto>>();
         }
 
         public async Task<CompanyOfficeDto> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid)
         {
+            var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            await _userScope.EnsureCanAccessCompanyAsync(company.CompanyId);
             var result = await _repository.CompanyOffice.GetByCompanyGuidAndCompanyOfficeGuidAsync(companyGuid, companyOfficeGuid);
             return result.Adapt<CompanyOfficeDto>();
         }

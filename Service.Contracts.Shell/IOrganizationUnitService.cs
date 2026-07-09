@@ -15,9 +15,7 @@ namespace Service.Contracts.Shell
         Task DeleteOrganizationUnitByAdminAsync(Guid organizationUnitGuid, bool trackChanges);
 
         Task<IEnumerable<OrganizationUnitDto>> SearchOrganizationUnitAsync(
-            string? organizationUnitCode, string? organizationUnitCodeSearchType,
-            string? organizationUnitName, string? organizationUnitNameSearchType
-, string? parentOrganizationUnitName, string? parentOrganizationUnitNameSearchType
+            string? organizationUnitCode, string? organizationUnitCodeSearchType, string? organizationUnitName, string? organizationUnitNameSearchType, string? srOrganizationLevel, string? srOrganizationLevelSearchType, string? levelDepth, string? levelDepthSearchType, string? hierarchyPath, string? hierarchyPathSearchType
 
         );
     }

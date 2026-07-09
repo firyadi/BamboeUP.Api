@@ -38,7 +38,7 @@ namespace Presentation.Shell.Controllers
         [SwaggerOperation(Summary = "Create")]
         public async Task<IActionResult> Create(Guid headerGuid, [FromBody] OrganizationUnitScopeForCreationDto input)
         {
-            var created = await _service.OrganizationUnitScopeService.CreateOrganizationUnitScopeAsync(input);
+            var created = await _service.OrganizationUnitScopeService.CreateOrganizationUnitScopeAsync(headerGuid, input);
             return CreatedAtAction(nameof(GetByGuid), new { headerGuid = headerGuid, guid = created.OrganizationUnitScopeGuid }, created);
         }
 
@@ -46,7 +46,7 @@ namespace Presentation.Shell.Controllers
         [SwaggerOperation(Summary = "Update")]
         public async Task<IActionResult> Update(Guid headerGuid, Guid guid, [FromBody] OrganizationUnitScopeForUpdateDto input)
         {
-            await _service.OrganizationUnitScopeService.UpdateOrganizationUnitScopeAsync(guid, input, trackChanges: true);
+            await _service.OrganizationUnitScopeService.UpdateOrganizationUnitScopeAsync(headerGuid, guid, input, trackChanges: true);
             return NoContent();
         }
 
@@ -54,7 +54,7 @@ namespace Presentation.Shell.Controllers
         [SwaggerOperation(Summary = "Soft Delete")]
         public async Task<IActionResult> SoftDelete(Guid headerGuid, Guid guid, [FromBody] OrganizationUnitScopeForDeleteDto input)
         {
-            await _service.OrganizationUnitScopeService.DeleteOrganizationUnitScopeAsync(guid, input, trackChanges: true);
+            await _service.OrganizationUnitScopeService.DeleteOrganizationUnitScopeAsync(headerGuid, guid, input, trackChanges: true);
             return NoContent();
         }
 
@@ -79,7 +79,7 @@ namespace Presentation.Shell.Controllers
         public async Task<IActionResult> Search([FromQuery] OrganizationUnitScopeSearchDto input, [FromQuery] Guid headerGuid, [FromQuery] Guid detailGuid)
         {
             var result = await _service.OrganizationUnitScopeService.SearchOrganizationUnitScopeAsync(
-                input.ScopeType, input.ScopeTypeSearchType.ToString(),
+                                input.ScopeType, input.ScopeTypeSearchType.ToString(),
                 headerGuid, detailGuid);
             return Ok(result);
         }

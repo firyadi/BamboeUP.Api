@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
@@ -5,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Shell.Controllers
 {
+    [Authorize]
     [Route("api/companies/{companyGuid:guid}/offices")]
     [ApiController]
     public partial class CompanyOfficesController : ControllerBase
@@ -30,7 +32,7 @@ namespace Presentation.Shell.Controllers
         [SwaggerOperation(Summary = "Get By Guid", Description = "Mengambil satu detail berdasarkan parameter header Guid & internal Guid.")]
         public async Task<IActionResult> GetByGuid(Guid companyGuid, Guid guid)
         {
-            var data = await _service.CompanyOfficeService.GetCompanyOfficeByGuidAsync(guid, trackChanges: false);
+            var data = await _service.CompanyOfficeService.GetByCompanyGuidAndCompanyOfficeGuidAsync(companyGuid, guid);
             return Ok(data);
         }
 

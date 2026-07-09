@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
@@ -5,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Presentation.Shell.Controllers
 {
+    [Authorize]
     [Route("api/companies")]
     [ApiController]
     public partial class CompaniesController : ControllerBase

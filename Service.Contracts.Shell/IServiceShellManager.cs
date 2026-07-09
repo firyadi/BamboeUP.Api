@@ -6,6 +6,9 @@ namespace Service.Contracts.Shell
     public interface IServiceShellManager
     {
         // ##IServiceManager##
+        ICostCenterScopeService CostCenterScopeService { get; }
+        ICostCenterAssignmentService CostCenterAssignmentService { get; }
+        ICostCenterService CostCenterService { get; }
         IParameterscopeService ParameterscopeService { get; }
         IAppParameterManager AppParameterManager { get; }
         IApprovalService ApprovalService { get; }
@@ -37,6 +40,7 @@ namespace Service.Contracts.Shell
         IUserGroupScopeService UserGroupScopeService { get; }
         IUserGroupProgramService UserGroupProgramService { get; }
         IUserCompanyScopeService UserCompanyScopeService { get; }
+        IUserScopeService UserScopeService { get; }
         IVwStandardReferenceItemService VwStandardReferenceItemService { get; }
 		
 		

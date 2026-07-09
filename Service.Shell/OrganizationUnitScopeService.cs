@@ -54,7 +54,7 @@ namespace Service.Shell
             return entity.Adapt<OrganizationUnitScopeDto>();
         }
 
-        public async Task<OrganizationUnitScopeDto> CreateOrganizationUnitScopeAsync(OrganizationUnitScopeForCreationDto input)
+        public async Task<OrganizationUnitScopeDto> CreateOrganizationUnitScopeAsync(Guid organizationUnitGuid, OrganizationUnitScopeForCreationDto input)
         {
             var model = input.Adapt<OrganizationUnitScope>();
             model.StatusId = 1;
@@ -76,7 +76,7 @@ namespace Service.Shell
                         EntityKey = model.OrganizationUnitScopeGuid.ToString(),
                         EntityDisplayName = model.ScopeType,
                         ParentTableName = "OrganizationUnit",
-                        ParentEntityKey = model.OrganizationUnitId.ToString(),
+                        ParentEntityKey = organizationUnitGuid.ToString(),
                         ActionType = "CREATE",
                         OldEntity = null,
                         NewEntity = model
@@ -87,7 +87,7 @@ namespace Service.Shell
             return model.Adapt<OrganizationUnitScopeDto>();
         }
 
-        public async Task UpdateOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, OrganizationUnitScopeForUpdateDto input, bool trackChanges)
+        public async Task UpdateOrganizationUnitScopeAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid, OrganizationUnitScopeForUpdateDto input, bool trackChanges)
         {
             var oldDetail = await _repository.OrganizationUnitScope.GetOrganizationUnitScopeAsync(organizationUnitScopeGuid, false);
 
@@ -112,7 +112,7 @@ namespace Service.Shell
                         EntityKey = model.OrganizationUnitScopeGuid.ToString(),
                         EntityDisplayName = model.ScopeType,
                         ParentTableName = "OrganizationUnit",
-                        ParentEntityKey = model.OrganizationUnitId.ToString(),
+                        ParentEntityKey = organizationUnitGuid.ToString(),
                         ActionType = "UPDATE",
                         OldEntity = oldDetail,
                         NewEntity = model
@@ -121,7 +121,7 @@ namespace Service.Shell
             });
         }
 
-        public async Task DeleteOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, OrganizationUnitScopeForDeleteDto input, bool trackChanges)
+        public async Task DeleteOrganizationUnitScopeAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid, OrganizationUnitScopeForDeleteDto input, bool trackChanges)
         {
             var oldDetail = await _repository.OrganizationUnitScope.GetOrganizationUnitScopeAsync(organizationUnitScopeGuid, false);
             var model = new OrganizationUnitScope
@@ -147,7 +147,7 @@ namespace Service.Shell
                         EntityKey = organizationUnitScopeGuid.ToString(),
                         EntityDisplayName = oldDetail?.ScopeType,
                         ParentTableName = "OrganizationUnit",
-                        ParentEntityKey = oldDetail?.OrganizationUnitId.ToString() ?? string.Empty,
+                        ParentEntityKey = organizationUnitGuid.ToString(),
                         ActionType = "DELETE",
                         OldEntity = oldDetail,
                         NewEntity = null
@@ -166,7 +166,8 @@ namespace Service.Shell
             Guid organizationUnitGuid, Guid organizationUnitScopeGuid)
         {
             var data = await _repository.OrganizationUnitScope.SearchOrganizationUnitScopeAsync(
-                scopeType, scopeTypeSearchType, organizationUnitGuid, organizationUnitScopeGuid);
+                scopeType, scopeTypeSearchType, 
+                organizationUnitGuid, organizationUnitScopeGuid);
             return data.Adapt<IEnumerable<OrganizationUnitScopeDto>>();
         }
 

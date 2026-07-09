@@ -29,6 +29,8 @@ namespace BamboeUp.Api.Context
 
         public long? OfficeId => long.TryParse(User?.FindFirstValue("OfficeId"), out var id) ? id : null;
 
+        public long? UserGroupScopeId => long.TryParse(User?.FindFirstValue("UserGroupScopeId"), out var id) ? id : null;
+
         public bool IsAdmin => Role == "Admin";
     }
 }

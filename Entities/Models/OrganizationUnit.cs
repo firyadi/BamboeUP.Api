@@ -17,23 +17,21 @@ namespace Entities.Models
         public Guid OrganizationUnitGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        [MaxLength(20)]
         public string OrganizationUnitCode { get; set; }
 
         [Required]
-        [MaxLength(200)]
         public string OrganizationUnitName { get; set; }
 
-        public long? ParentOrganizationUnitId { get; set; }
-
-        public string? ParentOrganizationUnitName { get; set; }
+        public int? ParentOrganizationUnitId { get; set; }
 
         public long SrOrganizationLevel { get; set; }
 
         public int LevelDepth { get; set; }
 
-        [MaxLength(500)]
         public string? HierarchyPath { get; set; }
+
+public string? ParentOrganizationUnitName { get; set; }
+
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;

@@ -13,6 +13,9 @@ namespace Repository
         private readonly IUserContext _userContext;
 
         // ##RepositoryManagerFields##
+        private readonly Lazy<ICostCenterScopeRepository> _costCenterScopeRepository;
+        private readonly Lazy<ICostCenterAssignmentRepository> _costCenterAssignmentRepository;
+        private readonly Lazy<ICostCenterRepository> _costCenterRepository;
         private readonly Lazy<IHospitalRepository> _hospitalRepository;
         private readonly Lazy<IParameterscopeRepository> _parameterscopeRepository;
         private readonly Lazy<IApprovalDelegationRepository> _approvalDelegationRepository;
@@ -55,6 +58,7 @@ namespace Repository
         private readonly Lazy<IUserGroupScopeRepository> _userGroupScopeRepository;
         private readonly Lazy<IUserGroupProgramRepository> _userGroupProgramRepository;
         private readonly Lazy<IUserCompanyScopeRepository> _userCompanyScopeRepository;
+        private readonly Lazy<IUserScopeRepository> _userScopeRepository;
         private readonly Lazy<IVwStandardReferenceItemRepository> _vwStandardReferenceItemRepository;
 
         public RepositoryManager(RepositoryContext context, IAuditService auditService, IUserContext userContext)
@@ -63,6 +67,9 @@ namespace Repository
             _auditService = auditService;
             _userContext = userContext;
             // ##RepositoryManagerConstructor##
+            _costCenterScopeRepository = new Lazy<ICostCenterScopeRepository>(() => new CostCenterScopeRepository(_context, _auditService));
+            _costCenterAssignmentRepository = new Lazy<ICostCenterAssignmentRepository>(() => new CostCenterAssignmentRepository(_context, _auditService));
+            _costCenterRepository = new Lazy<ICostCenterRepository>(() => new CostCenterRepository(_context, _auditService));
             _hospitalRepository = new Lazy<IHospitalRepository>(() => new HospitalRepository(_context));
             _parameterscopeRepository = new Lazy<IParameterscopeRepository>(() => new ParameterscopeRepository(_context));
             _approvalDelegationRepository = new Lazy<IApprovalDelegationRepository>(() => new ApprovalDelegationRepository(_context));
@@ -105,10 +112,14 @@ namespace Repository
             _userGroupScopeRepository = new Lazy<IUserGroupScopeRepository>(() => new UserGroupScopeRepository(_context, _auditService));
             _userGroupProgramRepository = new Lazy<IUserGroupProgramRepository>(() => new UserGroupProgramRepository(_context, _auditService));
             _userCompanyScopeRepository = new Lazy<IUserCompanyScopeRepository>(() => new UserCompanyScopeRepository(_context, _auditService));
+            _userScopeRepository = new Lazy<IUserScopeRepository>(() => new UserScopeRepository(_context));
             _vwStandardReferenceItemRepository = new Lazy<IVwStandardReferenceItemRepository>(() => new VwStandardReferenceItemRepository(_context));
         }
 
         // ##RepositoryManagerAccessors##
+        public ICostCenterScopeRepository CostCenterScope => _costCenterScopeRepository.Value;
+        public ICostCenterAssignmentRepository CostCenterAssignment => _costCenterAssignmentRepository.Value;
+        public ICostCenterRepository CostCenter => _costCenterRepository.Value;
         public IHospitalRepository Hospital => _hospitalRepository.Value;
         public IParameterscopeRepository Parameterscope => _parameterscopeRepository.Value;
         public IApprovalDelegationRepository ApprovalDelegation => _approvalDelegationRepository.Value;
@@ -152,6 +163,7 @@ namespace Repository
         public IUserGroupScopeRepository UserGroupScope => _userGroupScopeRepository.Value;
         public IUserGroupProgramRepository UserGroupProgram => _userGroupProgramRepository.Value;
         public IUserCompanyScopeRepository UserCompanyScope => _userCompanyScopeRepository.Value;
+        public IUserScopeRepository UserScope => _userScopeRepository.Value;
         public IVwStandardReferenceItemRepository VwStandardReferenceItem => _vwStandardReferenceItemRepository.Value;
     }
 }

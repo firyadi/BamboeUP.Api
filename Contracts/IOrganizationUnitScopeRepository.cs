@@ -19,7 +19,8 @@ namespace Contracts
         Task DeleteByOrganizationUnitGuidAsync(Guid organizationUnitGuid, IDbTransaction? transaction = null);
 
         Task<IEnumerable<OrganizationUnitScope>> SearchOrganizationUnitScopeAsync(
-            string? scopeType, string? scopeTypeSearchType,
+            string? scopeType,
+            string? scopeTypeSearchType,
             Guid organizationUnitGuid, Guid organizationUnitScopeGuid,
             IDbTransaction? transaction = null);
     }

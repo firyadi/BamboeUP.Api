@@ -18,8 +18,12 @@ namespace Service.Shell
         private readonly IUserContext _userContext;
         private readonly IConfiguration _configuration;
         private readonly IMemoryCache _memoryCache;
+        private readonly IAdminRegistryService _adminRegistry;
 
         // ##ServiceManagerFields##
+        private readonly Lazy<ICostCenterScopeService> _costCenterScopeService;
+        private readonly Lazy<ICostCenterAssignmentService> _costCenterAssignmentService;
+        private readonly Lazy<ICostCenterService> _costCenterService;
         private readonly Lazy<IParameterscopeService> _parameterscopeService;
         private readonly Lazy<IAppParameterManager> _appParameterManager;
         private readonly Lazy<IApprovalNotificationService> _approvalNotificationService;
@@ -50,6 +54,7 @@ namespace Service.Shell
         private readonly Lazy<IUserGroupScopeService> _userGroupScopeService;
         private readonly Lazy<IUserGroupProgramService> _userGroupProgramService;
         private readonly Lazy<IUserCompanyScopeService> _userCompanyScopeService;
+        private readonly Lazy<IUserScopeService> _userScopeService;
         private readonly Lazy<IVwStandardReferenceItemService> _vwStandardReferenceItemService;
 
         public ServiceShellManager(
@@ -59,7 +64,8 @@ namespace Service.Shell
             IAuditService audit,
             IUserContext userContext,
             IConfiguration configuration,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            IAdminRegistryService adminRegistry)
         {
             _repositoryManager = repositoryManager;
             _logger = logger;
@@ -68,26 +74,31 @@ namespace Service.Shell
             _userContext = userContext;
             _configuration = configuration;
             _memoryCache = memoryCache;
+            _adminRegistry = adminRegistry;
 
             // ##ServiceManagerConstructor##
+            _costCenterScopeService = new Lazy<ICostCenterScopeService>(() => new CostCenterScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
+            _costCenterAssignmentService = new Lazy<ICostCenterAssignmentService>(() => new CostCenterAssignmentService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
+            _costCenterService = new Lazy<ICostCenterService>(() => new CostCenterService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _parameterscopeService = new Lazy<IParameterscopeService>(() => new ParameterscopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _appParameterManager = new Lazy<IAppParameterManager>(() => new AppParameterManager(this, _userContext, _memoryCache));
             _approvalNotificationService = new Lazy<IApprovalNotificationService>(() => new ApprovalNotificationService(_logger));
             _approvalTemplateService = new Lazy<IApprovalTemplateService>(() => new ApprovalTemplateService(_repositoryManager, _logger, _transactionManager));
             _approvalDelegationService = new Lazy<IApprovalDelegationService>(() => new ApprovalDelegationService(_repositoryManager, _logger));
             _approvalService = new Lazy<IApprovalService>(() => new ApprovalService(_repositoryManager, _logger, _transactionManager, _approvalNotificationService.Value));
-            _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(_repositoryManager, _configuration));
+            _authenticationService = new Lazy<IAuthenticationService>(() => new AuthenticationService(_repositoryManager, _configuration, _adminRegistry));
             _autoNumberService = new Lazy<IAutoNumberService>(() => new AutoNumberService(_repositoryManager, _logger, _transactionManager));
             _autoNumberTemplateService = new Lazy<IAutoNumberTemplateService>(() => new AutoNumberTemplateService(_repositoryManager, _logger, _transactionManager));
             _autoNumberCounterService = new Lazy<IAutoNumberCounterService>(() => new AutoNumberCounterService(_repositoryManager, _logger, _transactionManager));
             _autoNumberComponentService = new Lazy<IAutoNumberComponentService>(() => new AutoNumberComponentService(_repositoryManager, _logger, _transactionManager));
             _autoNumberLogService = new Lazy<IAutoNumberLogService>(() => new AutoNumberLogService(_repositoryManager, _logger));
             _autoNumberGenerateService = new Lazy<IAutoNumberGenerateService>(() => new AutoNumberGenerateService(_repositoryManager, _logger));
-            _companyService = new Lazy<ICompanyService>(() => new CompanyService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
-            _companyOfficeService = new Lazy<ICompanyOfficeService>(() => new CompanyOfficeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
+            _userScopeService = new Lazy<IUserScopeService>(() => new UserScopeService(_repositoryManager, _userContext, _memoryCache, _configuration));
+            _companyService = new Lazy<ICompanyService>(() => new CompanyService(_repositoryManager, _logger, _transactionManager, _audit, _userContext, _userScopeService.Value));
+            _companyOfficeService = new Lazy<ICompanyOfficeService>(() => new CompanyOfficeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext, _userScopeService.Value));
             _documentNumberRequestService = new Lazy<IDocumentNumberRequestService>(() => new DocumentNumberRequestService(_repositoryManager, _logger));
-            _organizationUnitService = new Lazy<IOrganizationUnitService>(() => new OrganizationUnitService(_repositoryManager, _logger));
-            _organizationUnitScopeService = new Lazy<IOrganizationUnitScopeService>(() => new OrganizationUnitScopeService(_repositoryManager, _logger));
+            _organizationUnitService = new Lazy<IOrganizationUnitService>(() => new OrganizationUnitService(_repositoryManager, _logger, _transactionManager, _audit, _userContext, _userScopeService.Value));
+            _organizationUnitScopeService = new Lazy<IOrganizationUnitScopeService>(() => new OrganizationUnitScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _parameterService = new Lazy<IParameterService>(() => new ParameterService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _programService = new Lazy<IProgramService>(() => new ProgramService(_repositoryManager, _logger, _transactionManager));
             _standardReferenceService = new Lazy<IStandardReferenceService>(() => new StandardReferenceService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
@@ -95,7 +106,7 @@ namespace Service.Shell
             _standardReferenceScopeService = new Lazy<IStandardReferenceScopeService>(() => new StandardReferenceScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _standardReferenceScopeItemService = new Lazy<IStandardReferenceScopeItemService>(() => new StandardReferenceScopeItemService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _standardReferenceDisplayService = new Lazy<IStandardReferenceDisplayService>(() => new StandardReferenceDisplayService(_repositoryManager));
-            _userService = new Lazy<IUserService>(() => new UserService(_repositoryManager, _logger, _transactionManager));
+            _userService = new Lazy<IUserService>(() => new UserService(_repositoryManager, _logger, _transactionManager, _adminRegistry));
             _userGroupService = new Lazy<IUserGroupService>(() => new UserGroupService(_repositoryManager, _logger, _transactionManager));
             _userGroupScopeService = new Lazy<IUserGroupScopeService>(() => new UserGroupScopeService(_repositoryManager, _logger, _transactionManager));
             _userGroupProgramService = new Lazy<IUserGroupProgramService>(() => new UserGroupProgramService(_repositoryManager, _logger, _transactionManager));
@@ -104,6 +115,9 @@ namespace Service.Shell
         }
 
         // ##ServiceManagerAccessors##
+        public ICostCenterScopeService CostCenterScopeService => _costCenterScopeService.Value;
+        public ICostCenterAssignmentService CostCenterAssignmentService => _costCenterAssignmentService.Value;
+        public ICostCenterService CostCenterService => _costCenterService.Value;
         public IParameterscopeService ParameterscopeService => _parameterscopeService.Value;
         public IAppParameterManager AppParameterManager => _appParameterManager.Value;
         public IApprovalService ApprovalService => _approvalService.Value;
@@ -135,6 +149,7 @@ namespace Service.Shell
         public IUserGroupScopeService UserGroupScopeService => _userGroupScopeService.Value;
         public IUserGroupProgramService UserGroupProgramService => _userGroupProgramService.Value;
         public IUserCompanyScopeService UserCompanyScopeService => _userCompanyScopeService.Value;
+        public IUserScopeService UserScopeService => _userScopeService.Value;
         public IVwStandardReferenceItemService VwStandardReferenceItemService => _vwStandardReferenceItemService.Value;
     }
 }

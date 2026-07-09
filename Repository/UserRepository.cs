@@ -80,7 +80,6 @@ namespace Repository
                                       PasswordSalt = @PasswordSalt,
                                       FullName = @FullName,
                                       Email = @Email,
-                                      IsAdmin = @IsAdmin,
                                       StatusId = @StatusId,
                                       UpdatedById = @UpdatedById,
                                       UpdatedTime = @UpdatedTime

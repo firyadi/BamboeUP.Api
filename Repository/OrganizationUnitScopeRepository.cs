@@ -89,9 +89,9 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
             var conn = transaction?.Connection ?? _context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[OrganizationUnitScope]
-                (OrganizationUnitScopeGuid, OrganizationUnitId, CompanyId, CompanyOfficeId, CreatedById, StatusId, CreatedTime, ScopeType)
+                (OrganizationUnitScopeGuid, OrganizationUnitId, CreatedById, StatusId, CreatedTime, CompanyId, CompanyOfficeId, ScopeType)
                 VALUES
-                (@OrganizationUnitScopeGuid, @OrganizationUnitId, @CompanyId, @CompanyOfficeId, @CreatedById, @StatusId, @CreatedTime, @ScopeType);
+                (@OrganizationUnitScopeGuid, @OrganizationUnitId, @CreatedById, @StatusId, @CreatedTime, @CompanyId, @CompanyOfficeId, @ScopeType);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
             organizationUnitScope.OrganizationUnitScopeId = await conn.QuerySingleAsync<long>(sql, organizationUnitScope, transaction);
         }
@@ -102,7 +102,7 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
             var conn = transaction?.Connection ?? _context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[OrganizationUnitScope]
-                SET OrganizationUnitId = @OrganizationUnitId,
+                SET                     OrganizationUnitId = @OrganizationUnitId,
                     CompanyId = @CompanyId,
                     CompanyOfficeId = @CompanyOfficeId,
                     ScopeType = @ScopeType,
@@ -142,11 +142,12 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         }
 
         public async Task<IEnumerable<OrganizationUnitScope>> SearchOrganizationUnitScopeAsync(
-            string? scopeType, string? scopeTypeSearchType,
+            string? scopeType,
+            string? scopeTypeSearchType,
             Guid organizationUnitGuid, Guid organizationUnitScopeGuid,
             IDbTransaction? transaction = null)
         {
-            using var connection = _context.CreateConnection();
+            var connection = transaction?.Connection ?? _context.CreateConnection();
             var whereClauses = new List<string> { "a.StatusId > 0", "a.DeletedTime IS NULL" };
             var parameters = new DynamicParameters();
 

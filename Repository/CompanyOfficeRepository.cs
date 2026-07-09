@@ -87,16 +87,8 @@ namespace Repository
                 LEFT JOIN [core].[City] c ON a.CityId = c.CityId
                 LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
                 LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
-                WHERE a.StatusId > 0 AND a.DeletedTime IS NULL";
-
-            if (!_userContext.IsAdmin && _userContext.CompanyId.HasValue)
-            {
-                sql += " AND a.CompanyId = @companyId";
-                sql += " ORDER BY a.CompanyOfficeId DESC";
-                return await connection.QueryAsync<CompanyOffice>(sql, new { companyId = _userContext.CompanyId.Value });
-            }
-
-            sql += " ORDER BY a.CompanyOfficeId DESC";
+                WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
+                ORDER BY a.CompanyOfficeId DESC";
             return await connection.QueryAsync<CompanyOffice>(sql);
         }
 

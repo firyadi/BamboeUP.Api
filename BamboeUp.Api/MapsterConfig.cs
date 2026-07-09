@@ -9,6 +9,15 @@ namespace BamboeUp.Api
         public static void RegisterMappings()
         {
             // ##MapsterConfig##
+            TypeAdapterConfig<CostCenterScope, CostCenterScopeDto>.NewConfig();
+            TypeAdapterConfig<CostCenterScopeForCreationDto, CostCenterScope>.NewConfig();
+            TypeAdapterConfig<CostCenterScopeForUpdateDto, CostCenterScope>.NewConfig();
+            TypeAdapterConfig<CostCenterAssignment, CostCenterAssignmentDto>.NewConfig();
+            TypeAdapterConfig<CostCenterAssignmentForCreationDto, CostCenterAssignment>.NewConfig();
+            TypeAdapterConfig<CostCenterAssignmentForUpdateDto, CostCenterAssignment>.NewConfig();
+            TypeAdapterConfig<CostCenter, CostCenterDto>.NewConfig();
+            TypeAdapterConfig<CostCenterForCreationDto, CostCenter>.NewConfig();
+            TypeAdapterConfig<CostCenterForUpdateDto, CostCenter>.NewConfig();
             TypeAdapterConfig<OrganizationUnitScope, OrganizationUnitScopeDto>.NewConfig();
             TypeAdapterConfig<OrganizationUnitScopeForCreationDto, OrganizationUnitScope>.NewConfig();
             TypeAdapterConfig<OrganizationUnitScopeForUpdateDto, OrganizationUnitScope>.NewConfig();

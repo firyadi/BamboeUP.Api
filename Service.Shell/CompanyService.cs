@@ -15,30 +15,33 @@ namespace Service.Shell
         private readonly ITransactionManager _transactionManager;
         private readonly IAuditService _audit;
         private readonly IUserContext _userContext;
+        private readonly IUserScopeService _userScope;
 
         public CompanyService(
             IRepositoryManager repository,
             ILoggerManager logger,
             ITransactionManager transactionManager,
             IAuditService audit,
-            IUserContext userContext)
+            IUserContext userContext,
+            IUserScopeService userScope)
         {
             _repository = repository;
             _logger = logger;
             _transactionManager = transactionManager;
             _audit = audit;
             _userContext = userContext;
+            _userScope = userScope;
         }
 
         public async Task<IEnumerable<CompanyDto>> GetAllCompaniesAsync(bool trackChanges)
         {
-            var entities = await _repository.Company.GetAllCompaniesAsync(trackChanges);
-            return entities.Adapt<IEnumerable<CompanyDto>>();
+            return await _userScope.GetAccessibleCompaniesAsync();
         }
 
         public async Task<CompanyDto> GetCompanyByGuidAsync(Guid companyGuid, bool trackChanges)
         {
             var entity = await _repository.Company.GetCompanyAsync(companyGuid, trackChanges);
+            await _userScope.EnsureCanAccessCompanyAsync(entity.CompanyId);
             return entity.Adapt<CompanyDto>();
         }
 
@@ -102,6 +105,8 @@ namespace Service.Shell
 
         public async Task UpdateCompanyAsync(Guid companyGuid, CompanyForUpdateDto input, bool trackChanges)
         {
+            var existing = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            await _userScope.EnsureCanAccessCompanyAsync(existing.CompanyId);
             // Fetch old data for audit diff
             var oldCompany = await _repository.Company.GetCompanyAsync(companyGuid, false);
             var oldOffices = (await _repository.CompanyOffice.GetAllByCompanyGuidAsync(companyGuid)).ToList();
@@ -221,6 +226,7 @@ namespace Service.Shell
         public async Task DeleteCompanyAsync(Guid companyGuid, CompanyForDeleteDto input, bool trackChanges)
         {
             var oldCompany = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            await _userScope.EnsureCanAccessCompanyAsync(oldCompany.CompanyId);
             var model = new Company { CompanyGuid = companyGuid };
             await _repository.Company.SoftDeleteCompanyAsync(model, input.DeletedById ?? 0);
 
@@ -254,9 +260,16 @@ namespace Service.Shell
         public async Task<IEnumerable<CompanyDto>> SearchCompanyAsync(
             string? companyName, string? companyNameSearchType, string? initialName, string? initialNameSearchType, string? taxCompulsionNo, string? taxCompulsionNoSearchType, string? registrationNo, string? registrationNoSearchType, string? defaultCurrency, string? defaultCurrencySearchType)
         {
+            var accessibleIds = (await _userScope.GetAccessibleCompaniesAsync())
+                .Select(c => c.CompanyId)
+                .ToHashSet();
+
             var data = await _repository.Company.SearchCompanyAsync(
                 companyName, companyNameSearchType, initialName, initialNameSearchType, taxCompulsionNo, taxCompulsionNoSearchType, registrationNo, registrationNoSearchType, defaultCurrency, defaultCurrencySearchType);
-            return data.Adapt<IEnumerable<CompanyDto>>();
+
+            return data
+                .Where(c => accessibleIds.Contains(c.CompanyId))
+                .Adapt<IEnumerable<CompanyDto>>();
         }
     }
 }

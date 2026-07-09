@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Presentation.Shell.Controllers
 {
+    [Authorize]
     [Route("api/organizationUnits")]
     [ApiController]
     public partial class OrganizationUnitsController : ControllerBase
@@ -71,9 +73,12 @@ namespace Presentation.Shell.Controllers
         public async Task<IActionResult> Search([FromQuery] OrganizationUnitSearchDto input)
         {
             var result = await _service.OrganizationUnitService.SearchOrganizationUnitAsync(
-                input.OrganizationUnitCode, input.OrganizationUnitCodeSearchType.ToString(), input.OrganizationUnitName, input.OrganizationUnitNameSearchType.ToString()
-, input.ParentOrganizationUnitName, input.ParentOrganizationUnitNameSearchType.ToString()
-
+                input.OrganizationUnitCode, input.OrganizationUnitCodeSearchType.ToString(),
+                input.OrganizationUnitName, input.OrganizationUnitNameSearchType.ToString(),
+                input.SrOrganizationLevel, input.SrOrganizationLevelSearchType.ToString(),
+                input.LevelDepth, input.LevelDepthSearchType.ToString(),
+                input.HierarchyPath, input.HierarchyPathSearchType.ToString()
+                // ── FK Search pass-through ──
             );
             return Ok(result);
         }

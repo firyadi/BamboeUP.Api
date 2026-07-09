@@ -10,14 +10,15 @@ namespace Shared.DataTransferObjects
         public Guid OrganizationUnitGuid { get; init; }
         public string OrganizationUnitCode { get; set; }
         public string OrganizationUnitName { get; set; }
-        public long? ParentOrganizationUnitId { get; set; }
-        public string? ParentOrganizationUnitName { get; set; }
+        public int? ParentOrganizationUnitId { get; set; }
         public long SrOrganizationLevel { get; set; }
         public int LevelDepth { get; set; }
         public string? HierarchyPath { get; set; }
+public string? ParentOrganizationUnitName { get; set; }
+
         public IEnumerable<OrganizationUnitScopeDto>? OrganizationUnitScopes { get; set; }
         public int StatusId { get; set; }
-        public byte[]? RowVersion { get; set; }
+        public byte[] RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -30,7 +31,7 @@ namespace Shared.DataTransferObjects
     {
         public string OrganizationUnitCode { get; set; }
         public string OrganizationUnitName { get; set; }
-        public long? ParentOrganizationUnitId { get; set; }
+        public int? ParentOrganizationUnitId { get; set; }
         public long SrOrganizationLevel { get; set; }
         public int LevelDepth { get; set; }
         public string? HierarchyPath { get; set; }
@@ -42,7 +43,7 @@ namespace Shared.DataTransferObjects
     {
         public string OrganizationUnitCode { get; set; }
         public string OrganizationUnitName { get; set; }
-        public long? ParentOrganizationUnitId { get; set; }
+        public int? ParentOrganizationUnitId { get; set; }
         public long SrOrganizationLevel { get; set; }
         public int LevelDepth { get; set; }
         public string? HierarchyPath { get; set; }
@@ -63,7 +64,16 @@ namespace Shared.DataTransferObjects
         public string? OrganizationUnitName { get; set; }
         public SearchType OrganizationUnitNameSearchType { get; set; } = SearchType.Contains;
 
-        public string? ParentOrganizationUnitName { get; set; }
-        public SearchType ParentOrganizationUnitNameSearchType { get; set; } = SearchType.Contains;
+        public string? SrOrganizationLevel { get; set; }
+        public SearchType SrOrganizationLevelSearchType { get; set; } = SearchType.Contains;
+
+        public string? LevelDepth { get; set; }
+        public SearchType LevelDepthSearchType { get; set; } = SearchType.Contains;
+
+        public string? HierarchyPath { get; set; }
+        public SearchType HierarchyPathSearchType { get; set; } = SearchType.Contains;
+public string? ParentOrganizationUnitName { get; set; }
+public SearchType ParentOrganizationUnitNameSearchType { get; set; } = SearchType.Contains;
+
     }
 }

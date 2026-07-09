@@ -9,9 +9,9 @@ namespace Service.Contracts.Shell
     {
         Task<IEnumerable<OrganizationUnitScopeDto>> GetAllOrganizationUnitScopesAsync(bool trackChanges);
         Task<OrganizationUnitScopeDto> GetOrganizationUnitScopeByGuidAsync(Guid organizationUnitScopeGuid, bool trackChanges);
-        Task<OrganizationUnitScopeDto> CreateOrganizationUnitScopeAsync(OrganizationUnitScopeForCreationDto input);
-        Task UpdateOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, OrganizationUnitScopeForUpdateDto input, bool trackChanges);
-        Task DeleteOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, OrganizationUnitScopeForDeleteDto input, bool trackChanges);
+        Task<OrganizationUnitScopeDto> CreateOrganizationUnitScopeAsync(Guid organizationUnitGuid, OrganizationUnitScopeForCreationDto input);
+        Task UpdateOrganizationUnitScopeAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid, OrganizationUnitScopeForUpdateDto input, bool trackChanges);
+        Task DeleteOrganizationUnitScopeAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid, OrganizationUnitScopeForDeleteDto input, bool trackChanges);
         Task DeleteOrganizationUnitScopeByAdminAsync(Guid organizationUnitScopeGuid, bool trackChanges);
 
         Task<IEnumerable<OrganizationUnitScopeDto>> SearchOrganizationUnitScopeAsync(

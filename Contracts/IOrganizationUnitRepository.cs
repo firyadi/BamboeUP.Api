@@ -18,10 +18,16 @@ namespace Contracts
         Task SoftDeleteOrganizationUnitAsync(OrganizationUnit organizationUnit, long deletedBy, IDbTransaction? transaction = null);
 
         Task<IEnumerable<OrganizationUnit>> SearchOrganizationUnitAsync(
-            string? organizationUnitCode, string? organizationUnitCodeSearchType,
-            string? organizationUnitName, string? organizationUnitNameSearchType,
-string? parentOrganizationUnitName, string? parentOrganizationUnitNameSearchType,
-
+            string? organizationUnitCode,
+            string? organizationUnitCodeSearchType,
+            string? organizationUnitName,
+            string? organizationUnitNameSearchType,
+            string? srOrganizationLevel,
+            string? srOrganizationLevelSearchType,
+            string? levelDepth,
+            string? levelDepthSearchType,
+            string? hierarchyPath,
+            string? hierarchyPathSearchType,
             IDbTransaction? transaction = null);
     }
 }

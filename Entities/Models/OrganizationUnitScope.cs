@@ -19,18 +19,16 @@ namespace Entities.Models
         [Required]
         public long OrganizationUnitId { get; set; }
 
-        [Required]
         public long CompanyId { get; set; }
 
         public long? CompanyOfficeId { get; set; }
 
         [Required]
-        [MaxLength(20)]
         public string ScopeType { get; set; }
 
-        public string? CompanyName { get; set; }
-        public string? CompanyOfficeName { get; set; }
-        public string? OrganizationUnitName { get; set; }
+public string? CompanyName { get; set; }
+public string? CompanyOfficeName { get; set; }
+
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;
