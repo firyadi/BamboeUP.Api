@@ -30,7 +30,7 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                SELECT a.*
                 FROM [core].[Programs] a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
                 ORDER BY a.ProgramCode, a.ProgramId ASC";

@@ -18,5 +18,6 @@ namespace Service.Contracts.Modules
 		
 		
 		// ##IServiceManager Start##
-    }        
+            IAwardService AwardService { get; }
+}        
 }

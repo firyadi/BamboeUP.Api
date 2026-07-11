@@ -5,6 +5,7 @@ namespace Service.Contracts.Shell
     public interface IAuthenticationService
     {
         Task<TokenDto> LoginAsync(LoginRequestDto loginRequest);
+        Task<LoginScopesPreviewDto> GetLoginScopesPreviewAsync(LoginRequestDto loginRequest);
         Task<TokenDto> SwitchScopeAsync(string userName, SwitchScopeRequestDto request);
         /// <summary>Hash password dan generate salt. Returns (hash, salt).</summary>
         (string Hash, string Salt) HashPassword(string password);

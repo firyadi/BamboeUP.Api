@@ -13,6 +13,7 @@ namespace Repository
         private readonly IUserContext _userContext;
 
         // ##RepositoryManagerFields##
+        private readonly Lazy<IAwardRepository> _awardRepository;
         private readonly Lazy<ICostCenterScopeRepository> _costCenterScopeRepository;
         private readonly Lazy<ICostCenterAssignmentRepository> _costCenterAssignmentRepository;
         private readonly Lazy<ICostCenterRepository> _costCenterRepository;
@@ -46,6 +47,7 @@ namespace Repository
         private readonly Lazy<IPostalCodeRepository> _postalCodeRepository;
         private readonly Lazy<IProvinceRepository> _provinceRepository;
         private readonly Lazy<IProgramRepository> _programRepository;
+        private readonly Lazy<IReportRepository> _reportRepository;
         private readonly Lazy<IStandardReferenceRepository> _standardReferenceRepository;
         private readonly Lazy<IStandardReferenceItemRepository> _standardReferenceItemRepository;
         private readonly Lazy<IStandardReferenceScopeRepository> _standardReferenceScopeRepository;
@@ -67,6 +69,7 @@ namespace Repository
             _auditService = auditService;
             _userContext = userContext;
             // ##RepositoryManagerConstructor##
+            _awardRepository = new Lazy<IAwardRepository>(() => new AwardRepository(_context));
             _costCenterScopeRepository = new Lazy<ICostCenterScopeRepository>(() => new CostCenterScopeRepository(_context, _auditService));
             _costCenterAssignmentRepository = new Lazy<ICostCenterAssignmentRepository>(() => new CostCenterAssignmentRepository(_context, _auditService));
             _costCenterRepository = new Lazy<ICostCenterRepository>(() => new CostCenterRepository(_context, _auditService));
@@ -100,6 +103,7 @@ namespace Repository
             _postalCodeRepository = new Lazy<IPostalCodeRepository>(() => new PostalCodeRepository(_context, _auditService));
             _provinceRepository = new Lazy<IProvinceRepository>(() => new ProvinceRepository(_context, _auditService));
             _programRepository = new Lazy<IProgramRepository>(() => new ProgramRepository(_context, _auditService));
+            _reportRepository = new Lazy<IReportRepository>(() => new ReportRepository(_context));
             _standardReferenceRepository = new Lazy<IStandardReferenceRepository>(() => new StandardReferenceRepository(_context, _auditService));
             _standardReferenceItemRepository = new Lazy<IStandardReferenceItemRepository>(() => new StandardReferenceItemRepository(_context, _auditService));
             _standardReferenceScopeRepository = new Lazy<IStandardReferenceScopeRepository>(() => new StandardReferenceScopeRepository(_context));
@@ -117,6 +121,7 @@ namespace Repository
         }
 
         // ##RepositoryManagerAccessors##
+        public IAwardRepository Award => _awardRepository.Value;
         public ICostCenterScopeRepository CostCenterScope => _costCenterScopeRepository.Value;
         public ICostCenterAssignmentRepository CostCenterAssignment => _costCenterAssignmentRepository.Value;
         public ICostCenterRepository CostCenter => _costCenterRepository.Value;
@@ -151,6 +156,7 @@ namespace Repository
         public IPostalCodeRepository PostalCode => _postalCodeRepository.Value;
         public IProvinceRepository Province => _provinceRepository.Value;
         public IProgramRepository Program => _programRepository.Value;
+        public IReportRepository Report => _reportRepository.Value;
         public IStandardReferenceRepository StandardReference => _standardReferenceRepository.Value;
         public IStandardReferenceItemRepository StandardReferenceItem => _standardReferenceItemRepository.Value;
         public IStandardReferenceScopeRepository StandardReferenceScope => _standardReferenceScopeRepository.Value;

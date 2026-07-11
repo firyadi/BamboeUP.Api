@@ -30,6 +30,7 @@ namespace Service.Contracts.Shell
         IParameterService ParameterService { get; }
         IParameterscopeService ParameterScopeService { get; }
         IProgramService ProgramService { get; }
+        IReportService ReportService { get; }
         IStandardReferenceService StandardReferenceService { get; }
         IStandardReferenceItemService StandardReferenceItemService { get; }
         IStandardReferenceScopeService StandardReferenceScopeService { get; }

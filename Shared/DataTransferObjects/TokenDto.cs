@@ -41,4 +41,6 @@ public class LoginScopeDto
     public string CompanyName { get; set; } = string.Empty;
     public long? OfficeId { get; set; }
     public string? OfficeName { get; set; }
+    public long? UserGroupScopeId { get; set; }
+    public string? UserGroupName { get; set; }
 }

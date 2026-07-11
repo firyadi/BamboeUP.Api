@@ -6,6 +6,7 @@ namespace Contracts
     public interface IRepositoryManager
     {
         // ##IRepositoryManager##
+        IAwardRepository Award { get; }
         ICostCenterScopeRepository CostCenterScope { get; }
         ICostCenterAssignmentRepository CostCenterAssignment { get; }
         ICostCenterRepository CostCenter { get; }
@@ -40,6 +41,7 @@ namespace Contracts
         IPostalCodeRepository PostalCode { get; }
         IProvinceRepository Province { get; }
         IProgramRepository Program { get; }
+        IReportRepository Report { get; }
         IStandardReferenceRepository StandardReference { get; }
         IStandardReferenceItemRepository StandardReferenceItem { get; }
         IStandardReferenceScopeRepository StandardReferenceScope { get; }

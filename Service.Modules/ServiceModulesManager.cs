@@ -20,6 +20,8 @@ public sealed class ServiceModulesManager : IServiceModulesManager
 
             private readonly Lazy<IHospitalService> _hospitalService;
 
+        private readonly Lazy<IAwardService> _awardService;
+
 public ServiceModulesManager(
         IRepositoryManager repositoryManager,
         ILoggerManager logger,
@@ -27,6 +29,7 @@ public ServiceModulesManager(
         IAuditService auditService,
         IUserContext userContext)
     {
+            _awardService = new Lazy<IAwardService>(() => new AwardService(repositoryManager, logger, transactionManager, auditService, userContext));
             _hospitalService = new Lazy<IHospitalService>(() => new HospitalService(repositoryManager, logger, transactionManager, auditService, userContext));
         _bankService = new Lazy<IBankService>(() =>
             new BankService(repositoryManager, logger, transactionManager, auditService, userContext));
@@ -61,4 +64,5 @@ public ServiceModulesManager(
     public IAdministrativeAreaDisplayService AdministrativeAreaDisplayService => _administrativeAreaDisplayService.Value;
     public IStandardReferenceItemDisplayService StandardReferenceItemDisplayService => _standardReferenceItemDisplayService.Value;
         public IHospitalService HospitalService => _hospitalService.Value;
+        public IAwardService AwardService => _awardService.Value;
 }

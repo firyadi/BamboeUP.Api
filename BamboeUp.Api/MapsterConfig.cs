@@ -9,6 +9,9 @@ namespace BamboeUp.Api
         public static void RegisterMappings()
         {
             // ##MapsterConfig##
+            TypeAdapterConfig<Award, AwardDto>.NewConfig();
+            TypeAdapterConfig<AwardForCreationDto, Award>.NewConfig();
+            TypeAdapterConfig<AwardForUpdateDto, Award>.NewConfig();
             TypeAdapterConfig<CostCenterScope, CostCenterScopeDto>.NewConfig();
             TypeAdapterConfig<CostCenterScopeForCreationDto, CostCenterScope>.NewConfig();
             TypeAdapterConfig<CostCenterScopeForUpdateDto, CostCenterScope>.NewConfig();

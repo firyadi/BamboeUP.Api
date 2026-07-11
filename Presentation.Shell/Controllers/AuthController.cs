@@ -18,6 +18,26 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
+    [HttpPost("login-scopes")]
+    [AllowAnonymous]
+    [EnableRateLimiting("LoginPolicy")]
+    public async Task<IActionResult> GetLoginScopes([FromBody] LoginRequestDto login)
+    {
+        try
+        {
+            var preview = await _authService.GetLoginScopesPreviewAsync(login);
+            return Ok(preview);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to load login scopes. Please contact the administrator." });
+        }
+    }
+
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting("LoginPolicy")]

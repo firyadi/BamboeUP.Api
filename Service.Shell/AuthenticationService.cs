@@ -43,38 +43,59 @@ namespace Service.Shell
             }
 
             var isAdmin = _adminRegistry.IsAdministrator(user.UserId);
-            var rawScopes = isAdmin
-                ? await BuildAdminScopesAsync()
-                : (await _repository.UserGroupScope.GetAllByUserIdAsync(user.UserId)).ToList();
+            var dbScopes = await GetDbScopesAsync(user.UserId);
 
-            if (loginRequest.CompanyId.HasValue && !isAdmin)
+            List<LoginScopeDto> availableScopes;
+            (long? activeCompanyId, Guid? activeCompanyGuid, string? activeCompanyName,
+             long? activeOfficeId, Guid? activeOfficeGuid, string? activeOfficeName,
+             long? activeUserGroupScopeId) activeScope;
+
+            if (loginRequest.CompanyId.HasValue)
             {
-                var hasAccess = rawScopes.Any(s =>
-                    s.CompanyId == loginRequest.CompanyId.Value &&
-                    (!loginRequest.OfficeId.HasValue ||
-                     s.CompanyOfficeId == loginRequest.OfficeId.Value ||
-                     s.CompanyOfficeId == null));
+                if (isAdmin)
+                {
+                    var adminScopes = await BuildAdminScopesAsync();
+                    activeScope = await ResolveScopeDetailsAsync(
+                        loginRequest.CompanyId.Value,
+                        loginRequest.OfficeId,
+                        adminScopes,
+                        isSyntheticAdminScopes: true);
+                    availableScopes = BuildAvailableScopes(adminScopes);
+                }
+                else
+                {
+                    if (!HasScopeAccess(dbScopes, loginRequest.CompanyId.Value, loginRequest.OfficeId))
+                        throw new UnauthorizedAccessException("User does not have access to this company or office.");
 
-                if (!hasAccess)
-                    throw new UnauthorizedAccessException("User does not have access to this company or office.");
+                    var selectedScope = SelectScopeFromRequest(
+                        loginRequest.CompanyId.Value,
+                        loginRequest.OfficeId,
+                        dbScopes);
+
+                    if (selectedScope == null)
+                        throw new UnauthorizedAccessException("Selected company or office is not in your assigned scopes.");
+
+                    activeScope = await MapDbScopeToActiveAsync(selectedScope);
+                    availableScopes = BuildAvailableScopes(dbScopes);
+                }
+            }
+            else
+            {
+                var defaultScope = dbScopes.FirstOrDefault(s => s.IsDefault) ?? dbScopes.FirstOrDefault();
+                if (defaultScope == null)
+                {
+                    throw new UnauthorizedAccessException(
+                        "No scope is assigned to your account. Please contact your administrator.");
+                }
+
+                activeScope = await MapDbScopeToActiveAsync(defaultScope);
+                availableScopes = BuildAvailableScopes(
+                    isAdmin ? await BuildAdminScopesAsync() : dbScopes);
             }
 
             var (activeCompanyId, activeCompanyGuid, activeCompanyName,
                  activeOfficeId, activeOfficeGuid, activeOfficeName,
-                 activeUserGroupScopeId) = await ResolveActiveScopeAsync(
-                loginRequest, isAdmin, rawScopes);
-
-            var availableScopes = rawScopes
-                .GroupBy(s => new { s.CompanyId, s.CompanyOfficeId })
-                .Select(g => new LoginScopeDto
-                {
-                    CompanyId = g.Key.CompanyId,
-                    CompanyName = g.First().CompanyName ?? string.Empty,
-                    OfficeId = g.Key.CompanyOfficeId,
-                    OfficeName = g.First().CompanyOfficeName
-                })
-                .OrderBy(s => s.CompanyName)
-                .ToList();
+                 activeUserGroupScopeId) = activeScope;
 
             var token = GenerateToken(user, isAdmin, activeCompanyId, activeOfficeId, activeUserGroupScopeId, out var expired);
 
@@ -106,88 +127,22 @@ namespace Service.Shell
                 throw new UnauthorizedAccessException("User not found.");
 
             var isAdmin = _adminRegistry.IsAdministrator(user.UserId);
-            var rawScopes = isAdmin
-                ? await BuildAdminScopesAsync()
-                : (await _repository.UserGroupScope.GetAllByUserIdAsync(user.UserId)).ToList();
+            var selectableScopes = await GetSelectableScopesAsync(user.UserId, isAdmin);
+            var isSyntheticAdminScopes = isAdmin;
 
-            if (!isAdmin)
+            if (!isSyntheticAdminScopes)
             {
-                var hasAccess = rawScopes.Any(s =>
-                    s.CompanyId == request.CompanyId &&
-                    (!request.OfficeId.HasValue ||
-                     s.CompanyOfficeId == request.OfficeId.Value ||
-                     s.CompanyOfficeId == null));
-
-                if (!hasAccess)
+                var dbScopes = await GetDbScopesAsync(user.UserId);
+                if (!HasScopeAccess(dbScopes, request.CompanyId, request.OfficeId))
                     throw new UnauthorizedAccessException("User does not have access to this company or office.");
             }
 
-            long? activeCompanyId = request.CompanyId;
-            Guid? activeCompanyGuid = null;
-            string? activeCompanyName = null;
-            long? activeOfficeId = request.OfficeId;
-            Guid? activeOfficeGuid = null;
-            string? activeOfficeName = null;
-            long? activeUserGroupScopeId = null;
+            var (activeCompanyId, activeCompanyGuid, activeCompanyName,
+                 activeOfficeId, activeOfficeGuid, activeOfficeName,
+                 activeUserGroupScopeId) = await ResolveScopeDetailsAsync(
+                request.CompanyId, request.OfficeId, selectableScopes, isSyntheticAdminScopes);
 
-            if (isAdmin)
-            {
-                if (activeCompanyId.HasValue)
-                {
-                    var comp = await _repository.Company.GetCompanyByIdAsync(activeCompanyId.Value, false);
-                    activeCompanyName = comp?.CompanyName;
-                    activeCompanyGuid = comp?.CompanyGuid;
-                }
-
-                if (activeOfficeId.HasValue)
-                {
-                    var office = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(activeOfficeId.Value, false);
-                    activeOfficeName = office?.CompanyOfficeName;
-                    activeOfficeGuid = office?.CompanyOfficeGuid;
-                }
-            }
-            else
-            {
-                var selectedScope = request.OfficeId.HasValue
-                    ? rawScopes.FirstOrDefault(s =>
-                        s.CompanyId == request.CompanyId &&
-                        s.CompanyOfficeId == request.OfficeId.Value)
-                      ?? rawScopes.FirstOrDefault(s =>
-                        s.CompanyId == request.CompanyId &&
-                        s.CompanyOfficeId == null)
-                    : rawScopes.FirstOrDefault(s =>
-                        s.CompanyId == request.CompanyId &&
-                        s.CompanyOfficeId == null)
-                      ?? rawScopes.FirstOrDefault(s => s.CompanyId == request.CompanyId);
-
-                if (selectedScope != null)
-                {
-                    activeCompanyName = selectedScope.CompanyName;
-                    activeOfficeName = selectedScope.CompanyOfficeName;
-                    activeUserGroupScopeId = selectedScope.UserGroupScopeId;
-
-                    var scopeComp = await _repository.Company.GetCompanyByIdAsync(selectedScope.CompanyId, false);
-                    activeCompanyGuid = scopeComp?.CompanyGuid;
-
-                    if (selectedScope.CompanyOfficeId.HasValue)
-                    {
-                        var scopeOffice = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(selectedScope.CompanyOfficeId.Value, false);
-                        activeOfficeGuid = scopeOffice?.CompanyOfficeGuid;
-                    }
-                }
-            }
-
-            var availableScopes = rawScopes
-                .GroupBy(s => new { s.CompanyId, s.CompanyOfficeId })
-                .Select(g => new LoginScopeDto
-                {
-                    CompanyId = g.Key.CompanyId,
-                    CompanyName = g.First().CompanyName ?? string.Empty,
-                    OfficeId = g.Key.CompanyOfficeId,
-                    OfficeName = g.First().CompanyOfficeName
-                })
-                .OrderBy(s => s.CompanyName)
-                .ToList();
+            var availableScopes = BuildAvailableScopes(selectableScopes);
 
             var token = GenerateToken(user, isAdmin, activeCompanyId, activeOfficeId, activeUserGroupScopeId, out var expired);
 
@@ -210,6 +165,174 @@ namespace Service.Shell
                 ActiveUserGroupScopeId = activeUserGroupScopeId,
                 AvailableScopes = availableScopes
             };
+        }
+
+        public async Task<LoginScopesPreviewDto> GetLoginScopesPreviewAsync(LoginRequestDto loginRequest)
+        {
+            var user = await _repository.User.GetUserByUserNameAsync(loginRequest.Username, false);
+            if (user == null || !VerifyPassword(loginRequest.Password, user.PasswordHash, user.PasswordSalt))
+                throw new UnauthorizedAccessException("Invalid username or password.");
+
+            var isAdmin = _adminRegistry.IsAdministrator(user.UserId);
+            var dbScopes = await GetDbScopesAsync(user.UserId);
+            var selectableScopes = await GetSelectableScopesAsync(user.UserId, isAdmin);
+            var (defaultCompanyId, defaultOfficeId) = ResolveDefaultScopeIdsFromDb(dbScopes);
+
+            return new LoginScopesPreviewDto
+            {
+                IsAdmin = isAdmin,
+                DefaultCompanyId = defaultCompanyId,
+                DefaultOfficeId = defaultOfficeId,
+                AvailableScopes = BuildAvailableScopes(selectableScopes)
+            };
+        }
+
+        private async Task<List<Entities.Models.UserGroupScope>> GetDbScopesAsync(long userId)
+        {
+            return (await _repository.UserGroupScope.GetAllByUserIdAsync(userId)).ToList();
+        }
+
+        private async Task<List<Entities.Models.UserGroupScope>> GetSelectableScopesAsync(long userId, bool isAdmin)
+        {
+            if (isAdmin)
+                return await BuildAdminScopesAsync();
+
+            return await GetDbScopesAsync(userId);
+        }
+
+        private static (long? CompanyId, long? OfficeId) ResolveDefaultScopeIdsFromDb(
+            List<Entities.Models.UserGroupScope> dbScopes)
+        {
+            var userDefault = dbScopes.FirstOrDefault(s => s.IsDefault) ?? dbScopes.FirstOrDefault();
+            if (userDefault == null)
+                return (null, null);
+
+            return (userDefault.CompanyId, userDefault.CompanyOfficeId);
+        }
+
+        private static bool HasScopeAccess(
+            List<Entities.Models.UserGroupScope> scopes,
+            long companyId,
+            long? officeId)
+        {
+            return scopes.Any(s =>
+                s.CompanyId == companyId &&
+                (!officeId.HasValue ||
+                 s.CompanyOfficeId == officeId.Value ||
+                 s.CompanyOfficeId == null));
+        }
+
+        private async Task<(long? CompanyId, Guid? CompanyGuid, string? CompanyName,
+            long? OfficeId, Guid? OfficeGuid, string? OfficeName, long? UserGroupScopeId)> MapDbScopeToActiveAsync(
+            Entities.Models.UserGroupScope selectedScope)
+        {
+            var scopeComp = await _repository.Company.GetCompanyByIdAsync(selectedScope.CompanyId, false);
+            Guid? scopeOfficeGuid = null;
+            if (selectedScope.CompanyOfficeId.HasValue)
+            {
+                var scopeOffice = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(
+                    selectedScope.CompanyOfficeId.Value, false);
+                scopeOfficeGuid = scopeOffice?.CompanyOfficeGuid;
+            }
+
+            return (
+                selectedScope.CompanyId,
+                scopeComp?.CompanyGuid,
+                selectedScope.CompanyName ?? scopeComp?.CompanyName,
+                selectedScope.CompanyOfficeId,
+                scopeOfficeGuid,
+                selectedScope.CompanyOfficeName,
+                selectedScope.UserGroupScopeId);
+        }
+
+        private static List<LoginScopeDto> BuildAvailableScopes(List<Entities.Models.UserGroupScope> rawScopes)
+        {
+            return rawScopes
+                .GroupBy(s => new { s.CompanyId, s.CompanyOfficeId })
+                .Select(g =>
+                {
+                    var first = g.OrderByDescending(x => x.IsDefault).ThenBy(x => x.UserGroupScopeId).First();
+                    return new LoginScopeDto
+                    {
+                        CompanyId = g.Key.CompanyId,
+                        CompanyName = first.CompanyName ?? string.Empty,
+                        OfficeId = g.Key.CompanyOfficeId,
+                        OfficeName = first.CompanyOfficeName,
+                        UserGroupScopeId = first.UserGroupScopeId,
+                        UserGroupName = first.UserGroupName
+                    };
+                })
+                .OrderBy(s => s.CompanyName)
+                .ThenBy(s => s.OfficeName)
+                .ToList();
+        }
+
+        private async Task<(long? CompanyId, Guid? CompanyGuid, string? CompanyName,
+            long? OfficeId, Guid? OfficeGuid, string? OfficeName, long? UserGroupScopeId)> ResolveScopeDetailsAsync(
+            long companyId,
+            long? officeId,
+            List<Entities.Models.UserGroupScope> rawScopes,
+            bool isSyntheticAdminScopes)
+        {
+            if (isSyntheticAdminScopes)
+            {
+                string? activeCompanyName = null;
+                Guid? activeCompanyGuid = null;
+                string? activeOfficeName = null;
+                Guid? activeOfficeGuid = null;
+
+                var comp = await _repository.Company.GetCompanyByIdAsync(companyId, false);
+                activeCompanyName = comp?.CompanyName;
+                activeCompanyGuid = comp?.CompanyGuid;
+
+                if (officeId.HasValue)
+                {
+                    var office = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(officeId.Value, false);
+                    activeOfficeName = office?.CompanyOfficeName;
+                    activeOfficeGuid = office?.CompanyOfficeGuid;
+                }
+
+                return (companyId, activeCompanyGuid, activeCompanyName, officeId, activeOfficeGuid, activeOfficeName, null);
+            }
+
+            var selectedScope = SelectScopeFromRequest(companyId, officeId, rawScopes);
+            if (selectedScope == null)
+                throw new UnauthorizedAccessException("Selected company or office is not in your assigned scopes.");
+
+            var scopeComp = await _repository.Company.GetCompanyByIdAsync(selectedScope.CompanyId, false);
+            Guid? scopeOfficeGuid = null;
+            if (selectedScope.CompanyOfficeId.HasValue)
+            {
+                var scopeOffice = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(selectedScope.CompanyOfficeId.Value, false);
+                scopeOfficeGuid = scopeOffice?.CompanyOfficeGuid;
+            }
+
+            return (
+                selectedScope.CompanyId,
+                scopeComp?.CompanyGuid,
+                selectedScope.CompanyName,
+                selectedScope.CompanyOfficeId,
+                scopeOfficeGuid,
+                selectedScope.CompanyOfficeName,
+                selectedScope.UserGroupScopeId);
+        }
+
+        private static Entities.Models.UserGroupScope? SelectScopeFromRequest(
+            long companyId,
+            long? officeId,
+            List<Entities.Models.UserGroupScope> rawScopes)
+        {
+            if (officeId.HasValue)
+            {
+                return rawScopes.FirstOrDefault(s =>
+                           s.CompanyId == companyId && s.CompanyOfficeId == officeId.Value)
+                       ?? rawScopes.FirstOrDefault(s =>
+                           s.CompanyId == companyId && s.CompanyOfficeId == null);
+            }
+
+            return rawScopes.FirstOrDefault(s =>
+                       s.CompanyId == companyId && s.CompanyOfficeId == null)
+                   ?? rawScopes.FirstOrDefault(s => s.CompanyId == companyId);
         }
 
         private async Task<List<Entities.Models.UserGroupScope>> BuildAdminScopesAsync()
@@ -245,123 +368,6 @@ namespace Service.Shell
             }
 
             return rawScopes;
-        }
-
-        private async Task<(long? CompanyId, Guid? CompanyGuid, string? CompanyName,
-            long? OfficeId, Guid? OfficeGuid, string? OfficeName, long? UserGroupScopeId)> ResolveActiveScopeAsync(
-            LoginRequestDto loginRequest,
-            bool isAdmin,
-            List<Entities.Models.UserGroupScope> rawScopes)
-        {
-            long? activeCompanyId = null;
-            Guid? activeCompanyGuid = null;
-            string? activeCompanyName = null;
-            long? activeOfficeId = null;
-            Guid? activeOfficeGuid = null;
-            string? activeOfficeName = null;
-            long? activeUserGroupScopeId = null;
-
-            if (isAdmin)
-            {
-                activeCompanyId = loginRequest.CompanyId;
-                activeOfficeId = loginRequest.OfficeId;
-
-                if (!activeCompanyId.HasValue)
-                {
-                    if (rawScopes.Any())
-                    {
-                        var defaultScope = rawScopes.FirstOrDefault(s => s.IsDefault) ?? rawScopes.First();
-                        activeCompanyId = defaultScope.CompanyId;
-                        activeOfficeId = defaultScope.CompanyOfficeId;
-                    }
-                    else
-                    {
-                        var firstComp = (await _repository.Company.GetAllCompaniesAsync(false))
-                            .OrderBy(c => c.CompanyName)
-                            .FirstOrDefault();
-                        if (firstComp != null)
-                        {
-                            activeCompanyId = firstComp.CompanyId;
-                            var firstOffice = (await _repository.CompanyOffice.GetAllCompanyOfficesAsync(false))
-                                .Where(o => o.CompanyId == firstComp.CompanyId)
-                                .OrderBy(o => o.CompanyOfficeName)
-                                .FirstOrDefault();
-                            activeOfficeId = firstOffice?.CompanyOfficeId;
-                        }
-                    }
-                }
-
-                if (activeCompanyId.HasValue)
-                {
-                    var comp = await _repository.Company.GetCompanyByIdAsync(activeCompanyId.Value, false);
-                    activeCompanyName = comp?.CompanyName;
-                    activeCompanyGuid = comp?.CompanyGuid;
-                }
-
-                if (activeOfficeId.HasValue)
-                {
-                    var office = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(activeOfficeId.Value, false);
-                    activeOfficeName = office?.CompanyOfficeName;
-                    activeOfficeGuid = office?.CompanyOfficeGuid;
-                }
-            }
-            else if (rawScopes.Count > 0)
-            {
-                Entities.Models.UserGroupScope? selectedScope = null;
-
-                if (loginRequest.CompanyId.HasValue)
-                {
-                    selectedScope = loginRequest.OfficeId.HasValue
-                        ? rawScopes.FirstOrDefault(s =>
-                            s.CompanyId == loginRequest.CompanyId.Value &&
-                            s.CompanyOfficeId == loginRequest.OfficeId.Value)
-                          ?? rawScopes.FirstOrDefault(s =>
-                            s.CompanyId == loginRequest.CompanyId.Value &&
-                            s.CompanyOfficeId == null)
-                        : rawScopes.FirstOrDefault(s =>
-                            s.CompanyId == loginRequest.CompanyId.Value &&
-                            s.CompanyOfficeId == null)
-                          ?? rawScopes.FirstOrDefault(s => s.CompanyId == loginRequest.CompanyId.Value);
-                }
-
-                if (selectedScope == null)
-                {
-                    var uniqueCompanies = rawScopes.Select(s => s.CompanyId).Distinct().ToList();
-                    if (uniqueCompanies.Count == 1)
-                    {
-                        selectedScope = rawScopes.FirstOrDefault(s => s.IsDefault)
-                                        ?? rawScopes.First(s => s.CompanyId == uniqueCompanies[0]);
-                    }
-                    else
-                    {
-                        selectedScope = rawScopes.FirstOrDefault(s => s.IsDefault);
-                        if (selectedScope == null)
-                        {
-                            throw new UnauthorizedAccessException(
-                                "No default company is configured for your account. " +
-                                "Please select a company and office, or contact your administrator.");
-                        }
-                    }
-                }
-
-                activeCompanyId = selectedScope.CompanyId;
-                activeCompanyName = selectedScope.CompanyName;
-                activeOfficeId = selectedScope.CompanyOfficeId;
-                activeOfficeName = selectedScope.CompanyOfficeName;
-                activeUserGroupScopeId = selectedScope.UserGroupScopeId;
-
-                var scopeComp = await _repository.Company.GetCompanyByIdAsync(selectedScope.CompanyId, false);
-                activeCompanyGuid = scopeComp?.CompanyGuid;
-
-                if (selectedScope.CompanyOfficeId.HasValue)
-                {
-                    var scopeOffice = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(selectedScope.CompanyOfficeId.Value, false);
-                    activeOfficeGuid = scopeOffice?.CompanyOfficeGuid;
-                }
-            }
-
-            return (activeCompanyId, activeCompanyGuid, activeCompanyName,
-                activeOfficeId, activeOfficeGuid, activeOfficeName, activeUserGroupScopeId);
         }
 
         public (string Hash, string Salt) HashPassword(string password)
