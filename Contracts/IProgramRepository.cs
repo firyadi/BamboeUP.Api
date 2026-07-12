@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IProgramRepository
     {
-        Task<Programs> GetProgramAsync(Guid programGuid, bool trackChanges);
+        Task<Programs?> GetProgramAsync(Guid programGuid, bool trackChanges);
         Task<IEnumerable<Programs>> GetAllProgramsAsync(bool trackChanges);
         Task CreateProgramAsync(Programs program, IDbTransaction? transaction = null);
         Task UpdateProgramAsync(Programs program, IDbTransaction? transaction = null);

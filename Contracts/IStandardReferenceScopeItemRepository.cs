@@ -8,7 +8,7 @@ namespace Contracts
 {
     public interface IStandardReferenceScopeItemRepository
     {
-        Task<StandardReferenceScopeItem> GetStandardReferenceScopeItemAsync(Guid scopeItemGuid, bool trackChanges);
+        Task<StandardReferenceScopeItem?> GetStandardReferenceScopeItemAsync(Guid scopeItemGuid, bool trackChanges);
         Task<IEnumerable<StandardReferenceScopeItem>> GetAllStandardReferenceScopeItemsAsync(bool trackChanges);
         Task CreateStandardReferenceScopeItemAsync(StandardReferenceScopeItem scopeItem, IDbTransaction? transaction = null);
         Task UpdateStandardReferenceScopeItemAsync(StandardReferenceScopeItem scopeItem, IDbTransaction? transaction = null);
@@ -22,6 +22,6 @@ namespace Contracts
             IDbTransaction? transaction = null);
 
         Task<IEnumerable<StandardReferenceScopeItem>> GetAllByStandardReferenceScopeGuidAsync(Guid standardReferenceScopeGuid);
-        Task<StandardReferenceScopeItem> GetByScopeGuidAndItemGuidAsync(Guid standardReferenceScopeGuid, Guid standardReferenceScopeItemGuid);
+        Task<StandardReferenceScopeItem?> GetByScopeGuidAndItemGuidAsync(Guid standardReferenceScopeGuid, Guid standardReferenceScopeItemGuid);
     }
 }

@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IAutoNumberRepository
     {
-        Task<AutoNumber> GetAutoNumberAsync(Guid autoNumberGuid, bool trackChanges);
+        Task<AutoNumber?> GetAutoNumberAsync(Guid autoNumberGuid, bool trackChanges);
         Task<IEnumerable<AutoNumber>> GetAllAutoNumbersAsync(bool trackChanges);
 
         Task<IEnumerable<AutoNumber>> SearchAutoNumberAsync(

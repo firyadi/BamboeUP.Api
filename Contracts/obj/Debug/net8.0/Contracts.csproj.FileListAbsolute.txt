@@ -45,6 +45,7 @@ D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.GeneratedM
 D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.AssemblyInfoInputs.cache
 D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.AssemblyInfo.cs
 D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.csproj.CoreCompileInputs.cache
+D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.sourcelink.json
 D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.csproj.Up2Date
 D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\Contracts.dll
 D:\Project\BamboeUp\BamboeUp.Api\Contracts\obj\Debug\net8.0\refint\Contracts.dll

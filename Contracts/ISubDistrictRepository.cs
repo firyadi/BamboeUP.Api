@@ -7,7 +7,7 @@ namespace Contracts
     {
         Task<long?> GetDistrictIdByGuidAsync(Guid districtGuid);
         Task<long?> GetSubDistrictIdByGuidAsync(Guid subDistrictGuid);
-        Task<SubDistrict> GetSubDistrictAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges);
+        Task<SubDistrict?> GetSubDistrictAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges);
         Task<IEnumerable<SubDistrict>> GetAllSubDistrictsAsync(Guid districtGuid, bool trackChanges);
         Task CreateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction? transaction = null);
         Task UpdateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction? transaction = null);

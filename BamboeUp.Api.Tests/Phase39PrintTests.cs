@@ -111,3 +111,53 @@ public class PrintEntityValidatorTests
             entityId: bankGuid.ToString());
     }
 }
+
+public class TelerikReportRendererTests
+{
+    [Fact]
+    public async Task RenderAsync_WithValidTrdx_DoesNotThrowWindowsFormsException()
+    {
+        var renderer = new BamboeUp.Report.Telerik.TelerikReportRenderer();
+        var templatePath = Path.GetFullPath(Path.Combine(
+            AppContext.BaseDirectory, 
+            "..", "..", "..", "..", "..", 
+            "BamboeUp.Report", "Doc", "Standard", "EngineDemo", "BankMasterSlip_Telerik.trdx"));
+
+        if (!File.Exists(templatePath))
+        {
+            templatePath = Path.GetFullPath(Path.Combine(
+                Directory.GetCurrentDirectory(), 
+                "..", "..", "..", "..", 
+                "BamboeUp.Report", "Doc", "Standard", "EngineDemo", "BankMasterSlip_Telerik.trdx"));
+        }
+
+        Assert.True(File.Exists(templatePath), $"Template path not found: {templatePath}");
+
+        var dataSet = new System.Data.DataSet();
+        var table = new System.Data.DataTable("BankData");
+        table.Columns.Add("BankId", typeof(int));
+        table.Columns.Add("BankName", typeof(string));
+        table.Columns.Add("BankInitial", typeof(string));
+        table.Columns.Add("PrintedAt", typeof(string));
+        table.Rows.Add(1, "Bank Central Asia", "BCA", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+        dataSet.Tables.Add(table);
+
+        var request = new BamboeUp.Report.Abstractions.ReportRenderRequest
+        {
+            Context = new BamboeUp.Report.Abstractions.ReportRunContext
+            {
+                ProgramId = 1,
+                ProgramCode = "02.09.04",
+                Parameters = new Dictionary<string, object?>()
+            },
+            Data = dataSet,
+            ResolvedTemplatePath = templatePath
+        };
+
+        var result = await renderer.RenderAsync(request);
+
+        Assert.True(result.Success, result.Message);
+        Assert.NotNull(result.OutputBytes);
+        Assert.True(result.OutputBytes.Length > 0);
+    }
+}

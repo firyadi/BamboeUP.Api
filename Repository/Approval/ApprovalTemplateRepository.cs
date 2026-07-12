@@ -62,7 +62,7 @@ namespace Repository.Approval
                 WHERE ApprovalTemplateId = @ApprovalTemplateId";
             
             await conn.ExecuteAsync(sql, template, transaction);
-            await _auditService.LogAsync("UPDATE", "ApprovalTemplate", template.ApprovalTemplateGuid.ToString(), template.UpdatedById?.ToString(), null, template);
+            await _auditService.LogAsync("UPDATE", "ApprovalTemplate", template.ApprovalTemplateGuid.ToString(), template.UpdatedById?.ToString() ?? "system", null, template);
         }
 
         public async Task SoftDeleteAsync(ApprovalTemplate template, long deletedBy, IDbTransaction? transaction = null)

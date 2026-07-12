@@ -49,7 +49,7 @@ namespace Repository
             return await connection.QueryAsync<AutoNumberLog>(sql, new { templateId });
         }
 
-        public async Task<AutoNumberLog> GetAutoNumberLogByGuidAsync(Guid logGuid, bool trackChanges)
+        public async Task<AutoNumberLog?> GetAutoNumberLogByGuidAsync(Guid logGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
 

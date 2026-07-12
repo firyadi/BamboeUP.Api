@@ -8,7 +8,7 @@ namespace Contracts
 {
     public interface IDocumentNumberRequestRepository
     {
-        Task<DocumentNumberRequest> GetDocumentNumberRequestAsync(Guid requestGuid, bool trackChanges);
+        Task<DocumentNumberRequest?> GetDocumentNumberRequestAsync(Guid requestGuid, bool trackChanges);
         Task<IEnumerable<DocumentNumberRequest>> GetAllDocumentNumberRequestsAsync(bool trackChanges);
         Task CreateDocumentNumberRequestAsync(DocumentNumberRequest request, IDbTransaction? transaction = null);
         Task UpdateDocumentNumberRequestAsync(DocumentNumberRequest request, IDbTransaction? transaction = null);

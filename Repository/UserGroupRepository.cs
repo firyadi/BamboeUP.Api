@@ -19,7 +19,7 @@ namespace Repository
             _auditService = auditService;
         }
 
-        public async Task<UserGroup> GetUserGroupAsync(Guid userGroupGuid, bool trackChanges)
+        public async Task<UserGroup?> GetUserGroupAsync(Guid userGroupGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[UserGroup] 
@@ -79,7 +79,7 @@ namespace Repository
                 actionType: "UPDATE",
                 tableName: "UserGroup",
                 primaryKey: userGroup.UserGroupGuid.ToString(),
-                userId: userGroup.UpdatedById?.ToString(),
+                userId: userGroup.UpdatedById?.ToString() ?? "system",
                 oldEntity: oldData,
                 newEntity: userGroup);
         }

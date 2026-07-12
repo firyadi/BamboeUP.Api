@@ -19,7 +19,7 @@ namespace Repository
             _auditService = auditService;
         }
 
-        public async Task<SubDistrict> GetSubDistrictAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges)
+        public async Task<SubDistrict?> GetSubDistrictAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -82,7 +82,7 @@ namespace Repository
                 actionType: "UPDATE",
                 tableName: "SubDistrict",
                 primaryKey: subDistrict.SubDistrictGuid.ToString(),
-                userId: subDistrict.UpdatedById?.ToString(),
+                userId: subDistrict.UpdatedById?.ToString() ?? "system",
                 oldEntity: oldData,
                 newEntity: subDistrict);
         }

@@ -28,7 +28,7 @@ namespace Service
             return entities.Adapt<IEnumerable<CityDto>>();
         }
 
-        public async Task<CityDto> GetCityByGuidAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges)
+        public async Task<CityDto?> GetCityByGuidAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges)
         {
             var entity = await _repository.City.GetCityAsync(provinceGuid, cityGuid, trackChanges);
             return entity.Adapt<CityDto>();

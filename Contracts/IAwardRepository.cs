@@ -8,7 +8,7 @@ namespace Contracts
 {
     public partial interface IAwardRepository
     {
-        Task<Award> GetAwardAsync(Guid awardGuid, bool trackChanges);
+        Task<Award?> GetAwardAsync(Guid awardGuid, bool trackChanges);
         Task<IEnumerable<Award>> GetAllAwardsAsync(bool trackChanges);
 
         Task CreateAwardAsync(Award award, IDbTransaction? transaction = null);

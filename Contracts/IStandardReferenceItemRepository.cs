@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IStandardReferenceItemRepository
     {
-        Task<StandardReferenceItem> GetStandardReferenceItemAsync(Guid standardReferenceItemGuid, bool trackChanges);
+        Task<StandardReferenceItem?> GetStandardReferenceItemAsync(Guid standardReferenceItemGuid, bool trackChanges);
         Task<IEnumerable<StandardReferenceItem>> GetAllStandardReferenceItemsAsync(bool trackChanges);
 
         Task CreateStandardReferenceItemAsync(StandardReferenceItem standardReferenceItem, IDbTransaction? transaction = null);
@@ -23,6 +23,6 @@ IDbTransaction? transaction = null);
 
         // Detail helpers (only if entity has a parent)
         Task<IEnumerable<StandardReferenceItem>> GetAllByStandardReferenceGuidAsync(Guid standardReferenceGuid);
-        Task<StandardReferenceItem> GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(Guid standardReferenceGuid, Guid standardReferenceItemGuid);
+        Task<StandardReferenceItem?> GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(Guid standardReferenceGuid, Guid standardReferenceItemGuid);
     }
 }

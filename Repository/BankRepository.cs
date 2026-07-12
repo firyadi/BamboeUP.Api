@@ -16,7 +16,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<Bank> GetBankAsync(Guid bankGuid, bool trackChanges)
+        public async Task<Bank?> GetBankAsync(Guid bankGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

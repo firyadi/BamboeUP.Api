@@ -7,7 +7,7 @@ namespace Contracts
     {
         Task<long?> GetProvinceIdByGuidAsync(Guid provinceGuid);
         Task<long?> GetCityIdByGuidAsync(Guid cityGuid);
-        Task<City> GetCityAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges);
+        Task<City?> GetCityAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges);
         Task<IEnumerable<City>> GetAllCitiesAsync(Guid provinceGuid, bool trackChanges);
         Task CreateCityAsync(City city, IDbTransaction? transaction = null);
         Task UpdateCityAsync(City city, IDbTransaction? transaction = null);

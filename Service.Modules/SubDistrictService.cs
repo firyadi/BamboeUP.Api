@@ -28,7 +28,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<SubDistrictDto>>();
         }
 
-        public async Task<SubDistrictDto> GetSubDistrictByGuidAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges)
+        public async Task<SubDistrictDto?> GetSubDistrictByGuidAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges)
         {
             var entity = await _repository.SubDistrict.GetSubDistrictAsync(districtGuid, subDistrictGuid, trackChanges);
             return entity.Adapt<SubDistrictDto>();

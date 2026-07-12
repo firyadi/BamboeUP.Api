@@ -148,7 +148,7 @@ namespace Repository
             return await connection.QueryAsync<StandardReferenceItem>(sql, new { standardReferenceGuid });
         }
 
-        public async Task<StandardReferenceItem> GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(Guid standardReferenceGuid, Guid standardReferenceItemGuid)
+        public async Task<StandardReferenceItem?> GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(Guid standardReferenceGuid, Guid standardReferenceItemGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [app].[StandardReferenceItem]

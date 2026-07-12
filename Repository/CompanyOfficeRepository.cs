@@ -274,7 +274,7 @@ if (cityId.HasValue) { whereClauses.Add("a.CityId = @cityId"); parameters.Add("c
             return await connection.QueryAsync<CompanyOffice>(sql, new { companyGuid });
         }
 
-        public async Task<CompanyOffice> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid)
+        public async Task<CompanyOffice?> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"SELECT a.*

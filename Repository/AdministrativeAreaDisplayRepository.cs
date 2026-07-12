@@ -62,7 +62,7 @@ namespace Repository
             return await connection.QueryAsync<AdministrativeAreaDisplay>(sql, dapperParams);
         }
 
-        public async Task<AdministrativeAreaDisplay> GetOneAsync(string id, bool trackChanges)
+        public async Task<AdministrativeAreaDisplay?> GetOneAsync(string id, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             string sql = @"

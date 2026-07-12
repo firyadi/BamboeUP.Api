@@ -18,7 +18,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<StandardReferenceScopeItem> GetStandardReferenceScopeItemAsync(Guid scopeItemGuid, bool trackChanges)
+        public async Task<StandardReferenceScopeItem?> GetStandardReferenceScopeItemAsync(Guid scopeItemGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -118,7 +118,7 @@ namespace Repository
             return await connection.QueryAsync<StandardReferenceScopeItem>(sql, new { standardReferenceScopeGuid });
         }
 
-        public async Task<StandardReferenceScopeItem> GetByScopeGuidAndItemGuidAsync(Guid standardReferenceScopeGuid, Guid standardReferenceScopeItemGuid)
+        public async Task<StandardReferenceScopeItem?> GetByScopeGuidAndItemGuidAsync(Guid standardReferenceScopeGuid, Guid standardReferenceScopeItemGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

@@ -5,7 +5,7 @@ namespace Contracts
 {
     public partial interface ICompanyRepository
     {
-        Task<Company> GetCompanyAsync(Guid companyGuid, bool trackChanges);
+        Task<Company?> GetCompanyAsync(Guid companyGuid, bool trackChanges);
         Task<Company?> GetCompanyByIdAsync(long companyId, bool trackChanges);
         Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges);
 

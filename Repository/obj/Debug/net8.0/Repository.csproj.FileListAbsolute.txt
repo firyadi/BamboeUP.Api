@@ -57,6 +57,7 @@ D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.Generate
 D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.AssemblyInfoInputs.cache
 D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.AssemblyInfo.cs
 D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.csproj.CoreCompileInputs.cache
+D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.sourcelink.json
 D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.csproj.Up2Date
 D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\Repository.dll
 D:\Project\BamboeUp\BamboeUp.Api\Repository\obj\Debug\net8.0\refint\Repository.dll

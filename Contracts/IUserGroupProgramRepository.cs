@@ -8,7 +8,7 @@ namespace Contracts
 {
     public interface IUserGroupProgramRepository
     {
-        Task<UserGroupProgram> GetUserGroupProgramAsync(Guid userGroupProgramGuid, bool trackChanges);
+        Task<UserGroupProgram?> GetUserGroupProgramAsync(Guid userGroupProgramGuid, bool trackChanges);
         Task<IEnumerable<UserGroupProgram>> GetAllUserGroupProgramsAsync(bool trackChanges);
         Task<IEnumerable<UserGroupProgram>> GetUserGroupProgramsByUserGroupGuidAsync(Guid userGroupGuid, bool trackChanges);
         Task CreateUserGroupProgramAsync(UserGroupProgram userGroupProgram, IDbTransaction? transaction = null);

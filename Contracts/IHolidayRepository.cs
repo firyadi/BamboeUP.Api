@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IHolidayRepository
     {
-        Task<Holiday> GetHolidayAsync(Guid holidayGuid, bool trackChanges);
+        Task<Holiday?> GetHolidayAsync(Guid holidayGuid, bool trackChanges);
         Task<IEnumerable<Holiday>> GetAllHolidaysAsync(bool trackChanges);
 
         Task CreateHolidayAsync(Holiday holiday, IDbTransaction? transaction = null);

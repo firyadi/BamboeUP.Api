@@ -5,7 +5,7 @@ namespace Contracts
 {
     public partial interface ICompanyOfficeRepository
     {
-        Task<CompanyOffice> GetCompanyOfficeAsync(Guid companyOfficeGuid, bool trackChanges);
+        Task<CompanyOffice?> GetCompanyOfficeAsync(Guid companyOfficeGuid, bool trackChanges);
         Task<CompanyOffice?> GetCompanyOfficeByIdAsync(long companyOfficeId, bool trackChanges);
         Task<IEnumerable<CompanyOffice>> GetAllCompanyOfficesAsync(bool trackChanges);
 
@@ -27,7 +27,7 @@ namespace Contracts
 
         // Detail helpers (only if entity has a parent)
         Task<IEnumerable<CompanyOffice>> GetAllByCompanyGuidAsync(Guid companyGuid);
-        Task<CompanyOffice> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid);
+        Task<CompanyOffice?> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid);
     }
 }
 

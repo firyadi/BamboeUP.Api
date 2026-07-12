@@ -27,7 +27,7 @@ namespace Repository
             return await connection.QuerySingleOrDefaultAsync<User>(sql, new { userName });
         }
 
-        public async Task<User> GetUserAsync(Guid userGuid, bool trackChanges)
+        public async Task<User?> GetUserAsync(Guid userGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Users] 
@@ -91,7 +91,7 @@ namespace Repository
                 actionType: "UPDATE",
                 tableName: "Users",
                 primaryKey: user.UserGuid.ToString(),
-                userId: user.UpdatedById?.ToString(),
+                userId: user.UpdatedById?.ToString() ?? "system",
                 oldEntity: oldData,
                 newEntity: user);
         }

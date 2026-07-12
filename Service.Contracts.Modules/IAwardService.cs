@@ -8,7 +8,7 @@ namespace Service.Contracts.Modules
     public partial interface IAwardService
     {
         Task<IEnumerable<AwardDto>> GetAllAwardsAsync(bool trackChanges);
-        Task<AwardDto> GetAwardByGuidAsync(Guid awardGuid, bool trackChanges);
+        Task<AwardDto?> GetAwardByGuidAsync(Guid awardGuid, bool trackChanges);
         Task<AwardDto> CreateAwardAsync(AwardForCreationDto input);
         Task UpdateAwardAsync(Guid awardGuid, AwardForUpdateDto input, bool trackChanges);
         Task DeleteAwardAsync(Guid awardGuid, AwardForDeleteDto input, bool trackChanges);

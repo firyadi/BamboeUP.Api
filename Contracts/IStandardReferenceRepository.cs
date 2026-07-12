@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IStandardReferenceRepository
     {
-        Task<StandardReference> GetStandardReferenceAsync(Guid standardReferenceGuid, bool trackChanges);
+        Task<StandardReference?> GetStandardReferenceAsync(Guid standardReferenceGuid, bool trackChanges);
         Task<IEnumerable<StandardReference>> GetAllStandardReferencesAsync(bool trackChanges);
         Task<IEnumerable<StandardReference>> GetStandardReferencesForParentSelectionAsync(Guid? currentRecordGuid, bool trackChanges);
 

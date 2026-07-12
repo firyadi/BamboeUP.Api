@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IAutoNumberComponentRepository
     {
-        Task<AutoNumberComponent> GetAutoNumberComponentAsync(Guid autoNumberComponentGuid, bool trackChanges);
+        Task<AutoNumberComponent?> GetAutoNumberComponentAsync(Guid autoNumberComponentGuid, bool trackChanges);
         Task<IEnumerable<AutoNumberComponent>> GetAllAutoNumberComponentsAsync(bool trackChanges);
 
         Task CreateAutoNumberComponentAsync(AutoNumberComponent autoNumberComponent, IDbTransaction? transaction = null);

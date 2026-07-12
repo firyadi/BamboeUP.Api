@@ -39,7 +39,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<AwardDto>>();
         }
 
-        public async Task<AwardDto> GetAwardByGuidAsync(Guid awardGuid, bool trackChanges)
+        public async Task<AwardDto?> GetAwardByGuidAsync(Guid awardGuid, bool trackChanges)
         {
             var entity = await _repository.Award.GetAwardAsync(awardGuid, trackChanges);
             return entity.Adapt<AwardDto>();

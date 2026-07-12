@@ -21,7 +21,7 @@ namespace Repository
             _audit = audit;
         }
 
-        public async Task<OrganizationUnit> GetOrganizationUnitAsync(Guid organizationUnitGuid, bool trackChanges)
+        public async Task<OrganizationUnit?> GetOrganizationUnitAsync(Guid organizationUnitGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

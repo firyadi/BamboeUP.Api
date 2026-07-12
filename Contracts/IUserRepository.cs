@@ -10,7 +10,7 @@ namespace Contracts
     public interface IUserRepository
     {
         Task<User?> GetUserByUserNameAsync(string userName, bool trackChanges);
-        Task<User> GetUserAsync(Guid userGuid, bool trackChanges);
+        Task<User?> GetUserAsync(Guid userGuid, bool trackChanges);
         Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges);
         Task CreateUserAsync(User user, IDbTransaction? transaction = null);
         Task UpdateUserAsync(User user, IDbTransaction? transaction = null);

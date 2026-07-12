@@ -19,7 +19,7 @@ namespace Repository
             _auditService = auditService;
         }
 
-        public async Task<PostalCode> GetPostalCodeAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges)
+        public async Task<PostalCode?> GetPostalCodeAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             const string sql = @"
@@ -82,7 +82,7 @@ namespace Repository
                 actionType: "UPDATE",
                 tableName: "PostalCode",
                 primaryKey: postalCode.PostalCodeGuid.ToString(),
-                userId: postalCode.UpdatedById?.ToString(),
+                userId: postalCode.UpdatedById?.ToString() ?? "system",
                 oldEntity: oldData,
                 newEntity: postalCode);
         }

@@ -52,7 +52,7 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = "It seems there is a problem with your account. Please contact the administrator." });
         }

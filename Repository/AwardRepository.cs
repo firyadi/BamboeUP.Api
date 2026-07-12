@@ -15,7 +15,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<Award> GetAwardAsync(Guid awardGuid, bool trackChanges)
+        public async Task<Award?> GetAwardAsync(Guid awardGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

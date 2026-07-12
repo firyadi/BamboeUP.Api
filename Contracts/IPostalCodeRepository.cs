@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IPostalCodeRepository
     {
-        Task<PostalCode> GetPostalCodeAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges);
+        Task<PostalCode?> GetPostalCodeAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges);
         Task<IEnumerable<PostalCode>> GetAllPostalCodesAsync(Guid subDistrictGuid, bool trackChanges);
         Task CreatePostalCodeAsync(PostalCode postalCode, IDbTransaction? transaction = null);
         Task UpdatePostalCodeAsync(PostalCode postalCode, IDbTransaction? transaction = null);

@@ -18,7 +18,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<Parameterscope> GetParameterscopeAsync(Guid parameterscopeGuid, bool trackChanges)
+        public async Task<Parameterscope?> GetParameterscopeAsync(Guid parameterscopeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -38,7 +38,7 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
             return await connection.QuerySingleOrDefaultAsync<Parameterscope>(sql, new { parameterscopeGuid });
         }
 
-        public async Task<Parameterscope> GetByParameterGuidAndParameterscopeGuidAsync(Guid parameterGuid, Guid parameterscopeGuid)
+        public async Task<Parameterscope?> GetByParameterGuidAndParameterscopeGuidAsync(Guid parameterGuid, Guid parameterscopeGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

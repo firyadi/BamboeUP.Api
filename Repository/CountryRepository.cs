@@ -19,7 +19,7 @@ namespace Repository
             _auditService = auditService;
         }
 
-        public async Task<Country> GetCountryAsync(Guid countryGuid, bool trackChanges)
+        public async Task<Country?> GetCountryAsync(Guid countryGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Country] 
@@ -80,7 +80,7 @@ namespace Repository
                 actionType: "UPDATE",
                 tableName: "Country",
                 primaryKey: country.CountryGuid.ToString(),
-                userId: country.UpdatedById?.ToString(),
+                userId: country.UpdatedById?.ToString() ?? "system",
                 oldEntity: oldData,
                 newEntity: country);
         }

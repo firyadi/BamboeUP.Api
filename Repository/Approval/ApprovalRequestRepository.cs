@@ -78,7 +78,7 @@ namespace Repository.Approval
                 WHERE ApprovalRequestId = @ApprovalRequestId";
                 
             await conn.ExecuteAsync(sql, request, transaction);
-            await _auditService.LogAsync("UPDATE", "ApprovalRequest", request.ApprovalRequestGuid.ToString(), request.UpdatedById?.ToString(), null, request);
+            await _auditService.LogAsync("UPDATE", "ApprovalRequest", request.ApprovalRequestGuid.ToString(), request.UpdatedById?.ToString() ?? "system", null, request);
         }
     }
 }

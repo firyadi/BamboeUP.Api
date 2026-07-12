@@ -127,7 +127,7 @@ namespace Repository
 
             await _audit.LogAsync("UPDATE", "UserCompanyScope",
                 entity.UserCompanyScopeGuid.ToString(),
-                entity.UpdatedById?.ToString(), oldData, entity);
+                entity.UpdatedById?.ToString() ?? "system", oldData, entity);
         }
 
         public async Task SoftDeleteAsync(UserCompanyScope entity, long deletedBy, IDbTransaction? transaction = null)

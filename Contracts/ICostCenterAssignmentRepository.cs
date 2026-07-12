@@ -8,8 +8,8 @@ namespace Contracts
 {
     public partial interface ICostCenterAssignmentRepository
     {
-        Task<CostCenterAssignment> GetCostCenterAssignmentAsync(Guid costCenterAssignmentGuid, bool trackChanges);
-        Task<CostCenterAssignment> GetByCostCenterGuidAndCostCenterAssignmentGuidAsync(Guid costCenterGuid, Guid costCenterAssignmentGuid);
+        Task<CostCenterAssignment?> GetCostCenterAssignmentAsync(Guid costCenterAssignmentGuid, bool trackChanges);
+        Task<CostCenterAssignment?> GetByCostCenterGuidAndCostCenterAssignmentGuidAsync(Guid costCenterGuid, Guid costCenterAssignmentGuid);
         Task<IEnumerable<CostCenterAssignment>> GetAllByCostCenterGuidAsync(Guid costCenterGuid);
 
         Task CreateCostCenterAssignmentAsync(CostCenterAssignment costCenterAssignment, IDbTransaction? transaction = null);

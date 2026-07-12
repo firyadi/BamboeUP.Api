@@ -8,7 +8,7 @@ namespace Contracts
 {
     public partial interface ICostCenterRepository
     {
-        Task<CostCenter> GetCostCenterAsync(Guid costCenterGuid, bool trackChanges);
+        Task<CostCenter?> GetCostCenterAsync(Guid costCenterGuid, bool trackChanges);
         Task<CostCenter?> GetCostCenterByIdAsync(long costCenterId, bool trackChanges);
         Task<IEnumerable<CostCenter>> GetAllCostCentersAsync(bool trackChanges);
 

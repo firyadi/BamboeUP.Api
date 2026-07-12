@@ -40,7 +40,7 @@ namespace Repository
             return await connection.QueryAsync<StandardReferenceDisplay>(sql, dapperParams);
         }
 
-        public async Task<StandardReferenceDisplay> GetOneAsync(long id, bool trackChanges)
+        public async Task<StandardReferenceDisplay?> GetOneAsync(long id, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             const string sql = @"

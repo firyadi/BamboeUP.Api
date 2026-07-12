@@ -8,7 +8,7 @@ namespace Contracts
 {
     public partial interface IOrganizationUnitRepository
     {
-        Task<OrganizationUnit> GetOrganizationUnitAsync(Guid organizationUnitGuid, bool trackChanges);
+        Task<OrganizationUnit?> GetOrganizationUnitAsync(Guid organizationUnitGuid, bool trackChanges);
         Task<OrganizationUnit?> GetOrganizationUnitByIdAsync(long organizationUnitId, bool trackChanges);
         Task<IEnumerable<OrganizationUnit>> GetAllOrganizationUnitsAsync(bool trackChanges);
 

@@ -18,7 +18,7 @@ namespace Repository
             _audit = auditService;
         }
 
-        public async Task<DocumentNumberRequest> GetDocumentNumberRequestAsync(Guid requestGuid, bool trackChanges)
+        public async Task<DocumentNumberRequest?> GetDocumentNumberRequestAsync(Guid requestGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

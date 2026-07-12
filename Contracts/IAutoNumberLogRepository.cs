@@ -15,7 +15,7 @@ namespace Contracts
         Task<IEnumerable<AutoNumberLog>> GetLogsByTemplateIdAsync(long templateId, bool trackChanges);
 
         /// <summary>Ambil log berdasarkan Guid.</summary>
-        Task<AutoNumberLog> GetAutoNumberLogByGuidAsync(Guid logGuid, bool trackChanges);
+        Task<AutoNumberLog?> GetAutoNumberLogByGuidAsync(Guid logGuid, bool trackChanges);
 
         /// <summary>Ambil semua log (opsional batasi dengan pagination jika diperlukan nanti).</summary>
         Task<IEnumerable<AutoNumberLog>> GetAllLogsAsync(bool trackChanges);

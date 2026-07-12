@@ -21,7 +21,7 @@ namespace Repository
             _audit = audit;
         }
 
-        public async Task<CostCenterScope> GetCostCenterScopeAsync(Guid costCenterScopeGuid, bool trackChanges)
+        public async Task<CostCenterScope?> GetCostCenterScopeAsync(Guid costCenterScopeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -37,7 +37,7 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
             return await connection.QuerySingleOrDefaultAsync<CostCenterScope>(sql, new { costCenterScopeGuid });
         }
 
-        public async Task<CostCenterScope> GetByCostCenterGuidAndCostCenterScopeGuidAsync(Guid costCenterGuid, Guid costCenterScopeGuid)
+        public async Task<CostCenterScope?> GetByCostCenterGuidAndCostCenterScopeGuidAsync(Guid costCenterGuid, Guid costCenterScopeGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

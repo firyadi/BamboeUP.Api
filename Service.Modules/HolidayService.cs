@@ -28,7 +28,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<HolidayDto>>();
         }
 
-        public async Task<HolidayDto> GetHolidayByGuidAsync(Guid holidayGuid, bool trackChanges)
+        public async Task<HolidayDto?> GetHolidayByGuidAsync(Guid holidayGuid, bool trackChanges)
         {
             var entity = await _repository.Holiday.GetHolidayAsync(holidayGuid, trackChanges);
             return entity.Adapt<HolidayDto>();

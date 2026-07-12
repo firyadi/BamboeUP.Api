@@ -19,7 +19,7 @@ namespace Repository
             _audit = auditService;
         }
 
-        public async Task<Holiday> GetHolidayAsync(Guid holidayGuid, bool trackChanges)
+        public async Task<Holiday?> GetHolidayAsync(Guid holidayGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

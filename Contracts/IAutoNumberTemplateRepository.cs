@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IAutoNumberTemplateRepository
     {
-        Task<AutoNumberTemplate> GetAutoNumberTemplateAsync(Guid autoNumberTemplateGuid, bool trackChanges);
+        Task<AutoNumberTemplate?> GetAutoNumberTemplateAsync(Guid autoNumberTemplateGuid, bool trackChanges);
         Task<IEnumerable<AutoNumberTemplate>> GetAllAutoNumberTemplatesAsync(bool trackChanges);
 
         Task CreateAutoNumberTemplateAsync(AutoNumberTemplate autoNumberTemplate, IDbTransaction? transaction = null);

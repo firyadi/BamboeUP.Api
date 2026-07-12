@@ -21,7 +21,7 @@ namespace Repository
             _audit = audit;
         }
 
-        public async Task<CostCenter> GetCostCenterAsync(Guid costCenterGuid, bool trackChanges)
+        public async Task<CostCenter?> GetCostCenterAsync(Guid costCenterGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

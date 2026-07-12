@@ -21,7 +21,7 @@ namespace Repository
             _audit = audit;
         }
 
-        public async Task<OrganizationUnitScope> GetOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, bool trackChanges)
+        public async Task<OrganizationUnitScope?> GetOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -41,7 +41,7 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
             return await connection.QuerySingleOrDefaultAsync<OrganizationUnitScope>(sql, new { organizationUnitScopeGuid });
         }
 
-        public async Task<OrganizationUnitScope> GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid)
+        public async Task<OrganizationUnitScope?> GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

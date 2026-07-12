@@ -28,7 +28,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<ProvinceDto>>();
         }
 
-        public async Task<ProvinceDto> GetProvinceByGuidAsync(Guid countryGuid, Guid provinceGuid, bool trackChanges)
+        public async Task<ProvinceDto?> GetProvinceByGuidAsync(Guid countryGuid, Guid provinceGuid, bool trackChanges)
         {
             var entity = await _repository.Province.GetProvinceAsync(countryGuid, provinceGuid, trackChanges);
             return entity.Adapt<ProvinceDto>();

@@ -42,7 +42,7 @@ namespace Repository
             return await connection.QueryAsync<VwStandardReferenceItem>(sql, new { Initial = standardReferenceInitial });
         }
 
-        public async Task<VwStandardReferenceItem> GetOneAsync(long id, bool trackChanges)
+        public async Task<VwStandardReferenceItem?> GetOneAsync(long id, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             const string sql = @"

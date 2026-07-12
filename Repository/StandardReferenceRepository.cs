@@ -21,7 +21,7 @@ namespace Repository
             _audit = auditService;
         }
 
-        public async Task<StandardReference> GetStandardReferenceAsync(Guid standardReferenceGuid, bool trackChanges)
+        public async Task<StandardReference?> GetStandardReferenceAsync(Guid standardReferenceGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

@@ -8,7 +8,7 @@ namespace Contracts
 {
     public partial interface IParameterRepository
     {
-        Task<Parameter> GetParameterAsync(Guid parameterGuid, bool trackChanges);
+        Task<Parameter?> GetParameterAsync(Guid parameterGuid, bool trackChanges);
         Task<Parameter?> GetParameterByIdAsync(long parameterId, bool trackChanges);
         Task<IEnumerable<Parameter>> GetAllParametersAsync(bool trackChanges);
 

@@ -20,7 +20,7 @@ namespace Service.Modules
             return dtos;
         }
 
-        public async Task<AdministrativeAreaDisplayDto> GetOneAsync(string id, bool trackChanges)
+        public async Task<AdministrativeAreaDisplayDto?> GetOneAsync(string id, bool trackChanges)
         {
             var entity = await _repository.AdministrativeAreaDisplay.GetOneAsync(id, trackChanges);
             if (entity == null)

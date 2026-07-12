@@ -37,6 +37,7 @@ D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service.Module
 D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service.Modules.AssemblyInfoInputs.cache
 D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service.Modules.AssemblyInfo.cs
 D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service.Modules.csproj.CoreCompileInputs.cache
+D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service.Modules.sourcelink.json
 D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service..5E360A7A.Up2Date
 D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\Service.Modules.dll
 D:\Project\BamboeUp\BamboeUp.Api\Service.Modules\obj\Debug\net8.0\refint\Service.Modules.dll

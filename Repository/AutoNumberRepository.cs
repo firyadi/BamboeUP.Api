@@ -19,7 +19,7 @@ namespace Repository
             _audit = auditService;
         }
 
-        public async Task<AutoNumber> GetAutoNumberAsync(Guid autoNumberGuid, bool trackChanges)
+        public async Task<AutoNumber?> GetAutoNumberAsync(Guid autoNumberGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

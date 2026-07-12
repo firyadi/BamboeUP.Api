@@ -8,8 +8,8 @@ namespace Contracts
 {
     public partial interface IParameterscopeRepository
     {
-        Task<Parameterscope> GetParameterscopeAsync(Guid parameterscopeGuid, bool trackChanges);
-        Task<Parameterscope> GetByParameterGuidAndParameterscopeGuidAsync(Guid parameterGuid, Guid parameterscopeGuid);
+        Task<Parameterscope?> GetParameterscopeAsync(Guid parameterscopeGuid, bool trackChanges);
+        Task<Parameterscope?> GetByParameterGuidAndParameterscopeGuidAsync(Guid parameterGuid, Guid parameterscopeGuid);
         Task<IEnumerable<Parameterscope>> GetAllByParameterGuidAsync(Guid parameterGuid);
 
         Task CreateParameterscopeAsync(Parameterscope parameterscope, IDbTransaction? transaction = null);

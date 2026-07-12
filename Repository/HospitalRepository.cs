@@ -15,7 +15,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<Hospital> GetHospitalAsync(Guid hospitalGuid, bool trackChanges)
+        public async Task<Hospital?> GetHospitalAsync(Guid hospitalGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

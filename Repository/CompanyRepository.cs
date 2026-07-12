@@ -16,7 +16,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<Company> GetCompanyAsync(Guid companyGuid, bool trackChanges)
+        public async Task<Company?> GetCompanyAsync(Guid companyGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

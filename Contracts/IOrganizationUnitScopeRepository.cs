@@ -8,8 +8,8 @@ namespace Contracts
 {
     public partial interface IOrganizationUnitScopeRepository
     {
-        Task<OrganizationUnitScope> GetOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, bool trackChanges);
-        Task<OrganizationUnitScope> GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid);
+        Task<OrganizationUnitScope?> GetOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, bool trackChanges);
+        Task<OrganizationUnitScope?> GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid);
         Task<IEnumerable<OrganizationUnitScope>> GetAllByOrganizationUnitGuidAsync(Guid organizationUnitGuid);
 
         Task CreateOrganizationUnitScopeAsync(OrganizationUnitScope organizationUnitScope, IDbTransaction? transaction = null);

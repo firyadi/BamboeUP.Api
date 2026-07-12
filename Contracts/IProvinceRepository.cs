@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IProvinceRepository
     {
-        Task<Province> GetProvinceAsync(Guid countryGuid, Guid provinceGuid, bool trackChanges);
+        Task<Province?> GetProvinceAsync(Guid countryGuid, Guid provinceGuid, bool trackChanges);
         Task<IEnumerable<Province>> GetAllProvincesAsync(Guid countryGuid, bool trackChanges);
         Task CreateProvinceAsync(Province province, IDbTransaction? transaction = null);
         Task UpdateProvinceAsync(Province province, IDbTransaction? transaction = null);

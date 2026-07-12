@@ -8,7 +8,7 @@ namespace Service.Contracts.Modules
     public partial interface IHospitalService
     {
         Task<IEnumerable<HospitalDto>> GetAllHospitalsAsync(bool trackChanges);
-        Task<HospitalDto> GetHospitalByGuidAsync(Guid hospitalGuid, bool trackChanges);
+        Task<HospitalDto?> GetHospitalByGuidAsync(Guid hospitalGuid, bool trackChanges);
         Task<HospitalDto> CreateHospitalAsync(HospitalForCreationDto input);
         Task UpdateHospitalAsync(Guid hospitalGuid, HospitalForUpdateDto input, bool trackChanges);
         Task DeleteHospitalAsync(Guid hospitalGuid, HospitalForDeleteDto input, bool trackChanges);

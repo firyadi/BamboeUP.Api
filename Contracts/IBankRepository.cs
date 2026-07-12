@@ -5,7 +5,7 @@ namespace Contracts
 {
     public partial interface IBankRepository
     {
-        Task<Bank> GetBankAsync(Guid bankGuid, bool trackChanges);
+        Task<Bank?> GetBankAsync(Guid bankGuid, bool trackChanges);
         Task<IEnumerable<Bank>> GetAllBanksAsync(bool trackChanges);
 
         Task CreateBankAsync(Bank bank, IDbTransaction? transaction = null);

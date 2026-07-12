@@ -18,7 +18,7 @@ namespace Repository
             _context = context;
         }
 
-        public async Task<StandardReferenceScope> GetStandardReferenceScopeAsync(Guid standardReferenceScopeGuid, bool trackChanges)
+        public async Task<StandardReferenceScope?> GetStandardReferenceScopeAsync(Guid standardReferenceScopeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -38,7 +38,7 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
             return await connection.QuerySingleOrDefaultAsync<StandardReferenceScope>(sql, new { standardReferenceScopeGuid });
         }
 
-        public async Task<StandardReferenceScope> GetByStandardReferenceGuidAndScopeGuidAsync(Guid standardReferenceGuid, Guid standardReferenceScopeGuid)
+        public async Task<StandardReferenceScope?> GetByStandardReferenceGuidAndScopeGuidAsync(Guid standardReferenceGuid, Guid standardReferenceScopeGuid)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"

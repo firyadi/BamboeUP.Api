@@ -33,7 +33,7 @@ namespace Repository
             return await connection.QuerySingleOrDefaultAsync<long?>(sql, new { cityGuid });
         }
 
-        public async Task<City> GetCityAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges)
+        public async Task<City?> GetCityAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
@@ -96,7 +96,7 @@ namespace Repository
                 actionType: "UPDATE",
                 tableName: "City",
                 primaryKey: city.CityGuid.ToString(),
-                userId: city.UpdatedById?.ToString(),
+                userId: city.UpdatedById?.ToString() ?? "system",
                 oldEntity: oldData,
                 newEntity: city);
         }

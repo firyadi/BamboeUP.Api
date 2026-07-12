@@ -37,7 +37,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<BankDto>>();
         }
 
-        public async Task<BankDto> GetBankByGuidAsync(Guid bankGuid, bool trackChanges)
+        public async Task<BankDto?> GetBankByGuidAsync(Guid bankGuid, bool trackChanges)
         {
             var entity = await _repository.Bank.GetBankAsync(bankGuid, trackChanges);
             return entity.Adapt<BankDto>();

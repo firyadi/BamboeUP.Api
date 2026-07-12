@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface ICountryRepository
     {
-        Task<Country> GetCountryAsync(Guid countryGuid, bool trackChanges);
+        Task<Country?> GetCountryAsync(Guid countryGuid, bool trackChanges);
         Task<IEnumerable<Country>> GetAllCountriesAsync(bool trackChanges);
         Task CreateCountryAsync(Country country, IDbTransaction? transaction = null);
         Task UpdateCountryAsync(Country country, IDbTransaction? transaction = null);

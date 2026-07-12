@@ -39,7 +39,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<HospitalDto>>();
         }
 
-        public async Task<HospitalDto> GetHospitalByGuidAsync(Guid hospitalGuid, bool trackChanges)
+        public async Task<HospitalDto?> GetHospitalByGuidAsync(Guid hospitalGuid, bool trackChanges)
         {
             var entity = await _repository.Hospital.GetHospitalAsync(hospitalGuid, trackChanges);
             return entity.Adapt<HospitalDto>();

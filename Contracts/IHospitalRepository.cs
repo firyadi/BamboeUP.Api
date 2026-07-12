@@ -8,7 +8,7 @@ namespace Contracts
 {
     public partial interface IHospitalRepository
     {
-        Task<Hospital> GetHospitalAsync(Guid hospitalGuid, bool trackChanges);
+        Task<Hospital?> GetHospitalAsync(Guid hospitalGuid, bool trackChanges);
         Task<IEnumerable<Hospital>> GetAllHospitalsAsync(bool trackChanges);
 
         Task CreateHospitalAsync(Hospital hospital, IDbTransaction? transaction = null);

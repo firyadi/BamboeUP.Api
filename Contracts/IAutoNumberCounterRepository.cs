@@ -5,7 +5,7 @@ namespace Contracts
 {
     public interface IAutoNumberCounterRepository
     {
-        Task<AutoNumberCounter> GetAutoNumberCounterAsync(Guid autoNumberCounterGuid, bool trackChanges);
+        Task<AutoNumberCounter?> GetAutoNumberCounterAsync(Guid autoNumberCounterGuid, bool trackChanges);
         Task<IEnumerable<AutoNumberCounter>> GetAllAutoNumberCountersAsync(bool trackChanges);
 
         Task CreateAutoNumberCounterAsync(AutoNumberCounter autoNumberCounter, IDbTransaction? transaction = null);

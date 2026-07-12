@@ -28,7 +28,7 @@ namespace Service.Modules
             return entities.Adapt<IEnumerable<PostalCodeDto>>();
         }
 
-        public async Task<PostalCodeDto> GetPostalCodeByGuidAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges)
+        public async Task<PostalCodeDto?> GetPostalCodeByGuidAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges)
         {
             var entity = await _repository.PostalCode.GetPostalCodeAsync(subDistrictGuid, postalCodeGuid, trackChanges);
             return entity.Adapt<PostalCodeDto>();
