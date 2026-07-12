@@ -1,4 +1,5 @@
 using Shared.DataTransferObjects;
+using System.Collections.Generic;
 using System.Data;
 
 namespace Contracts
@@ -18,12 +19,6 @@ namespace Contracts
 
         Task<IEnumerable<ReportParameterDefinitionDto>> GetParametersAsync(long reportDefinitionId, IDbTransaction? transaction = null);
 
-        Task<long> InsertExecutionLogAsync(ReportExecutionLogInsert row, IDbTransaction? transaction = null);
-
-        Task UpdateExecutionLogAsync(ReportExecutionLogUpdate row, IDbTransaction? transaction = null);
-
-        Task<ReportExecutionLogDto?> GetExecutionByPrintIdAsync(string reportPrintId, bool includeFullPrintId, IDbTransaction? transaction = null);
-
         Task<IEnumerable<ReportLookupItemDto>> LookupAsync(
             string lookupType,
             string? query,
@@ -31,6 +26,22 @@ namespace Contracts
             long? officeId,
             string? lookupConfig,
             int take,
+            IDbTransaction? transaction = null);
+
+        Task<IEnumerable<PrintSlipDto>> GetAllowedPrintsAsync(
+            Guid userGuid,
+            string? companyId,
+            string? officeId,
+            string sourceProgramCode,
+            IDbTransaction? transaction = null);
+
+        Task<IEnumerable<PrintSlipDto>> GetAllPrintSlipsBySourceAsync(
+            string sourceProgramCode,
+            IDbTransaction? transaction = null);
+
+        Task<DataTable> ExecuteReportDataAsync(
+            string storedProcedureName,
+            IReadOnlyDictionary<string, object?> parameters,
             IDbTransaction? transaction = null);
     }
 
@@ -42,9 +53,11 @@ namespace Contracts
         public long? CompanyId { get; set; }
         public string ReportKind { get; set; } = "RPT";
         public string DefinitionKey { get; set; } = string.Empty;
+        public string? RendererType { get; set; }
         public string? FilePath { get; set; }
         public string? StoreProcedureName { get; set; }
         public bool RequiresPrintId { get; set; }
+        public bool IsTracked { get; set; }
         public string? PrintIdPolicy { get; set; }
         public string? PrintIdPrefix { get; set; }
     }
@@ -53,8 +66,11 @@ namespace Contracts
     {
         public Guid ReportExecutionGuid { get; set; } = Guid.NewGuid();
         public long ProgramId { get; set; }
+        public string ProgramCode { get; set; } = string.Empty;
+        public string ProgramName { get; set; } = string.Empty;
         public long? ReportDefinitionId { get; set; }
         public long UserId { get; set; }
+        public string? UserDisplayName { get; set; }
         public long? CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
         public string ReportKind { get; set; } = "RPT";

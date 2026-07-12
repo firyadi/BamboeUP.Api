@@ -6,14 +6,14 @@ namespace Shared.DataTransferObjects
     {
         public long UserId { get; set; }
         public Guid UserGuid { get; init; }
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
         // PasswordHash sengaja tidak disertakan di response DTO — tidak boleh dikirim ke client
-        public string FullName { get; set; }
-        public string Email { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public bool IsAdmin { get; set; }
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -24,23 +24,23 @@ namespace Shared.DataTransferObjects
 
     public record UserForCreationDto
     {
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
         /// <summary>Plain-text password. Will be salted and hashed server-side before storage.</summary>
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
         // NOTE: PasswordSalt intentionally omitted — always generated server-side
-        public string FullName { get; set; }
-        public string Email { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public long CreatedById { get; set; }
     }
 
     public record UserForUpdateDto
     {
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
         /// <summary>Plain-text password. Leave null/empty to keep existing password unchanged. Will be salted and hashed server-side.</summary>
         public string? PasswordHash { get; set; }
         // NOTE: PasswordSalt intentionally omitted — always generated server-side
-        public string FullName { get; set; }
-        public string Email { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public long? UpdatedById { get; set; }
     }
 

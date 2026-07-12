@@ -66,7 +66,7 @@ namespace Service.Shell.Approval
                 await _repository.ApprovalRequest.CreateAsync(request, transaction);
 
                 // 3. Create Steps for all levels
-                ApprovalStep firstPendingStep = null;
+                ApprovalStep? firstPendingStep = null;
 
                 foreach (var level in levels)
                 {
@@ -136,7 +136,7 @@ namespace Service.Shell.Approval
         public async Task<ApprovalRequestDto> GetRequestAsync(Guid guid, bool trackChanges)
         {
             var req = await _repository.ApprovalRequest.GetAsync(guid, trackChanges);
-            if (req == null) return null;
+            if (req == null) return null!;
 
             var dto = req.Adapt<ApprovalRequestDto>();
             var steps = await _repository.ApprovalStep.GetStepsByRequestIdAsync(req.ApprovalRequestId, trackChanges);
@@ -272,6 +272,7 @@ namespace Service.Shell.Approval
             catch (Exception ex)
             {
                 await _transactionManager.RollbackAsync();
+                _logger.LogError($"RejectStep Error: {ex.Message}");
                 throw;
             }
         }

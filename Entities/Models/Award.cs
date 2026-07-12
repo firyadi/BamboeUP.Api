@@ -17,10 +17,10 @@ namespace Entities.Models
         public Guid AwardGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string AwardCode { get; set; }
+        public string AwardCode { get; set; } = string.Empty;
 
         [Required]
-        public string AwardName { get; set; }
+        public string AwardName { get; set; } = string.Empty;
 
         public long SrAwardCriteria { get; set; }
 

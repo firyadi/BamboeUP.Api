@@ -22,7 +22,7 @@ namespace Entities.Models
         [Required]
         [MaxLength(10)]
         [Column("PostalCode", TypeName = "varchar(10)")]
-        public string PostalCodeValue { get; set; }
+        public string PostalCodeValue { get; set; } = string.Empty;
 
         [Required]
         public int StatusId { get; set; }  = 1;

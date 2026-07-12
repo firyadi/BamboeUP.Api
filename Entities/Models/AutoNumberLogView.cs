@@ -4,10 +4,10 @@ namespace Entities.Models
 {
     public class AutoNumberLogView : AutoNumberLog
     {
-        public string TemplateName { get; set; }
-        public string CompanyName { get; set; }
-        public string CompanyOfficeName { get; set; }
-        public string OrganizationUnitName { get; set; }
-        public string CreatedByName { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
+        public string CompanyName { get; set; } = string.Empty;
+        public string CompanyOfficeName { get; set; } = string.Empty;
+        public string OrganizationUnitName { get; set; } = string.Empty;
+        public string CreatedByName { get; set; } = string.Empty;
     }
 }

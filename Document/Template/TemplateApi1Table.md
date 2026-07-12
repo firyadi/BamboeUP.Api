@@ -4,6 +4,13 @@
 > Dokumen ini berisi boilerplate lengkap yang harus diikuti oleh AI untuk menghasilkan kode API yang konsisten dengan standar BamboeUP.
 > **PENTING:** Template ini sudah diverifikasi dari kode nyata. Jangan ubah pola tanpa alasan kuat.
 > **V2:** Ditambahkan sistem FK Auto-Join untuk otomatis mendeteksi dan menampilkan relasi antar tabel.
+> **Canonical V3:** `BamboeUP.SchemaStudio/SchemaStudio.Generator/Templates/Api/TemplateApi1Table.md` — salinan ini diselaraskan untuk nullable CS8601–CS8604, CS8618, CS8625.
+
+---
+
+## Nullable reference types (CS8601–CS8604, CS8618, CS8625)
+
+Lihat tabel lengkap di template canonical V3. Ringkas: Repository `Task<{Entity}?>`, Service `Task<{Entity}Dto?>`, DTO/Entity string NOT NULL `= string.Empty`, transaksi `IDbTransaction? transaction = null`, Controller `NotFound()` jika data null.
 
 ---
 
@@ -94,8 +101,8 @@ namespace Shared.DataTransferObjects
     {
         public long {IdColumn} { get; set; }
         public Guid {GuidColumn} { get; init; }
-        public string {Field1} { get; set; }
-        public string {Field2} { get; set; }
+        public string {Field1} { get; set; } = string.Empty;
+        public string {Field2} { get; set; } = string.Empty;
         // ── FK Virtual Fields (repeat per FK Join entry) ──
         // Untuk setiap FK: public string? {FK.VirtualField} { get; set; }
         // Contoh:
@@ -104,7 +111,7 @@ namespace Shared.DataTransferObjects
         // public string? AddressTypeName { get; set; }      // Sr: SrAddressType → vw_StandardReference_Display
         // ── End FK Virtual Fields ──
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -115,8 +122,8 @@ namespace Shared.DataTransferObjects
 
     public record {Entity}ForCreationDto
     {
-        public string {Field1} { get; set; }
-        public string {Field2} { get; set; }
+        public string {Field1} { get; set; } = string.Empty;
+        public string {Field2} { get; set; } = string.Empty;
         // ── FK Fields (hanya physical FK columns, BUKAN virtual) ──
         // Contoh: public long CompanyId { get; set; }
         //         public long SrAddressType { get; set; }
@@ -126,8 +133,8 @@ namespace Shared.DataTransferObjects
 
     public record {Entity}ForUpdateDto
     {
-        public string {Field1} { get; set; }
-        public string {Field2} { get; set; }
+        public string {Field1} { get; set; } = string.Empty;
+        public string {Field2} { get; set; } = string.Empty;
         // ── FK Fields (sama seperti CreationDto) ──
         public long UpdatedById { get; set; }
     }
@@ -182,11 +189,11 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(200)]
-        public string {Field1} { get; set; }
+        public string {Field1} { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(15)]
-        public string {Field2} { get; set; }
+        public string {Field2} { get; set; } = string.Empty;
 
         // ── FK Physical Columns (repeat per FK Join entry) ──
         // Contoh: public long CompanyId { get; set; }
@@ -236,7 +243,7 @@ namespace Contracts
 {
     public interface I{Entity}Repository
     {
-        Task<{Entity}> Get{Entity}Async(Guid {entity}Guid, bool trackChanges);
+        Task<{Entity}?> Get{Entity}Async(Guid {entity}Guid, bool trackChanges);
         Task<IEnumerable<{Entity}>> GetAll{EntityPlural}Async(bool trackChanges);
 
         Task Create{Entity}Async({Entity} {entity}, IDbTransaction? transaction = null);
@@ -280,7 +287,7 @@ namespace Repository
             _audit = auditService;
         }
 
-        public async Task<{Entity}> Get{Entity}Async(Guid {entity}Guid, bool trackChanges)
+        public async Task<{Entity}?> Get{Entity}Async(Guid {entity}Guid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             const string sql = @"
@@ -483,7 +490,7 @@ namespace Service.Contracts.{TargetLayer}
     public interface I{Entity}Service
     {
         Task<IEnumerable<{Entity}Dto>> GetAll{EntityPlural}Async(bool trackChanges);
-        Task<{Entity}Dto> Get{Entity}ByGuidAsync(Guid {entity}Guid, bool trackChanges);
+        Task<{Entity}Dto?> Get{Entity}ByGuidAsync(Guid {entity}Guid, bool trackChanges);
         Task<{Entity}Dto> Create{Entity}Async({Entity}ForCreationDto input);
         Task Update{Entity}Async(Guid {entity}Guid, {Entity}ForUpdateDto input, bool trackChanges);
         Task Delete{Entity}Async(Guid {entity}Guid, {Entity}ForDeleteDto input, bool trackChanges);
@@ -535,9 +542,10 @@ namespace Service.{TargetLayer}
             return entities.Adapt<IEnumerable<{Entity}Dto>>();
         }
 
-        public async Task<{Entity}Dto> Get{Entity}ByGuidAsync(Guid {entity}Guid, bool trackChanges)
+        public async Task<{Entity}Dto?> Get{Entity}ByGuidAsync(Guid {entity}Guid, bool trackChanges)
         {
             var entity = await _repository.{Entity}.Get{Entity}Async({entity}Guid, trackChanges);
+            if (entity == null) return null;
             return entity.Adapt<{Entity}Dto>();
         }
 
@@ -625,6 +633,7 @@ namespace Presentation.{TargetLayer}.Controllers
         public async Task<IActionResult> GetByGuid(Guid guid)
         {
             var data = await _service.{Entity}Service.Get{Entity}ByGuidAsync(guid, trackChanges: false);
+            if (data is null) return NotFound();
             return Ok(data);
         }
 

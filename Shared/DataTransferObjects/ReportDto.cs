@@ -13,6 +13,7 @@ namespace Shared.DataTransferObjects
         public string? StoreProcedureName { get; init; }
         public bool IsProgramPrintAble { get; init; }
         public string? ReportScope { get; init; }
+        public bool IsTracked { get; init; }
         public bool RequiresPrintId { get; init; }
         public long? ReportDefinitionId { get; init; }
     }
@@ -51,6 +52,7 @@ namespace Shared.DataTransferObjects
         public long ReportDefinitionId { get; init; }
         public string DefinitionKey { get; init; } = string.Empty;
         public byte LayoutColumns { get; init; } = 3;
+        public bool IsTracked { get; init; }
         public bool RequiresPrintId { get; init; }
         public ReportSystemContextDto SystemContext { get; init; } = new();
         public IReadOnlyList<ReportParameterDefinitionDto> Fields { get; init; } = Array.Empty<ReportParameterDefinitionDto>();
@@ -62,11 +64,27 @@ namespace Shared.DataTransferObjects
         public string Label { get; init; } = string.Empty;
     }
 
+    /// <summary>Toolbar print slip (ProgramType = DOC) linked to a parent form PRG.</summary>
+    public record PrintSlipDto
+    {
+        public long ProgramId { get; init; }
+        public Guid ProgramGuid { get; init; }
+        public string ProgramCode { get; init; } = string.Empty;
+        public string ProgramName { get; init; } = string.Empty;
+        public int SortOrder { get; init; }
+        public string? DefinitionKey { get; init; }
+        public bool IsTracked { get; init; }
+        public bool RequiresPrintId { get; init; }
+        public long? ReportDefinitionId { get; init; }
+    }
+
     public record ReportRunRequestDto
     {
         public long ProgramId { get; init; }
         public string ProgramCode { get; init; } = string.Empty;
         public string ReportKind { get; init; } = "RPT";
+        /// <summary>Parent form program code — required when ReportKind = DOC.</summary>
+        public string? SourceProgramCode { get; init; }
         public long? CompanyId { get; init; }
         public long? CompanyOfficeId { get; init; }
         public DateTime? DateFrom { get; init; }
@@ -84,6 +102,9 @@ namespace Shared.DataTransferObjects
         public Guid ReportExecutionGuid { get; init; }
         public string? ReportPrintId { get; init; }
         public string? ReportPrintIdMasked { get; init; }
+        public string? OutputContentType { get; init; }
+        public string? OutputFileName { get; init; }
+        public string? OutputBase64 { get; init; }
     }
 
     public record ReportExecutionLogDto
@@ -98,5 +119,26 @@ namespace Shared.DataTransferObjects
         public string? ReportPrintIdMasked { get; init; }
         public string Status { get; init; } = string.Empty;
         public DateTime CreatedTime { get; init; }
+        public int? DurationMs { get; init; }
+        public string? OutputFormat { get; init; }
+        public string? UserDisplayName { get; init; }
+        public long? CompanyId { get; init; }
+        public long? CompanyOfficeId { get; init; }
+        public bool IsReprint { get; init; }
+        public string? ReprintOfPrintId { get; init; }
+        public string? ReprintReason { get; init; }
+        public string? ParametersJson { get; init; }
+        public string? ErrorMessage { get; init; }
+    }
+
+    public record ReportExecutionLogQueryDto
+    {
+        public string? Q { get; init; }
+        public long? ProgramId { get; init; }
+        public string? Status { get; init; }
+        public DateTime? DateFrom { get; init; }
+        public DateTime? DateTo { get; init; }
+        public int Page { get; init; } = 1;
+        public int PageSize { get; init; } = 25;
     }
 }

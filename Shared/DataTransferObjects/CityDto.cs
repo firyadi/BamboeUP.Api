@@ -6,11 +6,11 @@ namespace Shared.DataTransferObjects
     {
         public long CityId { get; set; }
         public Guid CityGuid { get; init; }
-        public string CityName { get; set; }
+        public string CityName { get; set; } = string.Empty;
         public long ProvinceId { get; set; }
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -21,13 +21,13 @@ namespace Shared.DataTransferObjects
 
     public record CityForCreationDto
     {
-        public string CityName { get; set; }
+        public string CityName { get; set; } = string.Empty;
         public long CreatedById { get; set; }
     }
 
     public record CityForUpdateDto
     {
-        public string CityName { get; set; }
+        public string CityName { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 

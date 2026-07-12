@@ -9,10 +9,10 @@ namespace Contracts
         Task<long?> GetCityIdByGuidAsync(Guid cityGuid);
         Task<City> GetCityAsync(Guid provinceGuid, Guid cityGuid, bool trackChanges);
         Task<IEnumerable<City>> GetAllCitiesAsync(Guid provinceGuid, bool trackChanges);
-        Task CreateCityAsync(City city, IDbTransaction transaction = null);
-        Task UpdateCityAsync(City city, IDbTransaction transaction = null);
-        Task DeleteCityAsync(Guid cityGuid, IDbTransaction transaction = null);
-        Task SoftDeleteCityAsync(City city, long deletedBy, IDbTransaction transaction = null);
+        Task CreateCityAsync(City city, IDbTransaction? transaction = null);
+        Task UpdateCityAsync(City city, IDbTransaction? transaction = null);
+        Task DeleteCityAsync(Guid cityGuid, IDbTransaction? transaction = null);
+        Task SoftDeleteCityAsync(City city, long deletedBy, IDbTransaction? transaction = null);
 
         Task<IEnumerable<City>> SearchCityAsync(
             Guid provinceGuid,

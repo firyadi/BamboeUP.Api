@@ -1,5 +1,6 @@
 using BamboeUp.Audit.Contracts;
 using BamboeUp.Audit.Services;
+using Repository;
 
 namespace BamboeUp.Api.Extensions
 {
@@ -7,13 +8,19 @@ namespace BamboeUp.Api.Extensions
     {
         public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
+            var auditConn = configuration.GetConnectionString("AuditConnection") 
+                ?? throw new InvalidOperationException("Connection string 'AuditConnection' not found.");
+            var mainConn = configuration.GetConnectionString("sqlConnection") 
+                ?? throw new InvalidOperationException("Connection string 'sqlConnection' not found.");
+
+            services.AddScoped<AuditRepositoryContext>(_ =>
+                new AuditRepositoryContext(auditConn));
+
             services.AddScoped<IAuditService, AuditService>(provider =>
             {
                 var auditService = new AuditService();
-                var connStr = configuration.GetConnectionString("AuditConnection");
-                var mainConnStr = configuration.GetConnectionString("sqlConnection");
-                auditService.ConfigureAudit(connStr);
-                auditService.ConfigureMain(mainConnStr);
+                auditService.ConfigureAudit(auditConn);
+                auditService.ConfigureMain(mainConn);
                 return auditService;
             });
         }

@@ -38,7 +38,7 @@ namespace Repository
             return await connection.QueryAsync<Programs>(sql);
         }
 
-        public async Task CreateProgramAsync(Programs program, IDbTransaction transaction = null)
+        public async Task CreateProgramAsync(Programs program, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(program);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -68,7 +68,7 @@ namespace Repository
                 newEntity: program);
         }
 
-        public async Task UpdateProgramAsync(Programs program, IDbTransaction transaction = null)
+        public async Task UpdateProgramAsync(Programs program, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(program);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -123,7 +123,7 @@ namespace Repository
                 newEntity: program);
         }
 
-        public async Task SoftDeleteProgramAsync(Programs program, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteProgramAsync(Programs program, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(program, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -146,7 +146,7 @@ namespace Repository
                 newEntity: program);
         }
 
-        public async Task DeleteProgramAsync(Guid programGuid, IDbTransaction transaction = null)
+        public async Task DeleteProgramAsync(Guid programGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetProgramAsync(programGuid, false);

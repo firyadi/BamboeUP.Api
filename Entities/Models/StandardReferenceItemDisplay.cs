@@ -16,10 +16,10 @@ namespace Entities.Models
         public Guid StandardReferenceGuid { get; set; }
 
         [Column("StandardReferenceInitial")]
-        public string StandardReferenceInitial { get; set; }
+        public string StandardReferenceInitial { get; set; } = string.Empty;
 
         [Column("StandardReferenceName")]
-        public string StandardReferenceName { get; set; }
+        public string StandardReferenceName { get; set; } = string.Empty;
 
         [Column("StandardReferenceItemId")]
         public long StandardReferenceItemId { get; set; }
@@ -28,13 +28,13 @@ namespace Entities.Models
         public Guid StandardReferenceItemGuid { get; set; }
 
         [Column("StandardReferenceItemInitial")]
-        public string StandardReferenceItemInitial { get; set; }
+        public string StandardReferenceItemInitial { get; set; } = string.Empty;
 
         [Column("StandardReferenceItemName")]
-        public string StandardReferenceItemName { get; set; }
+        public string StandardReferenceItemName { get; set; } = string.Empty;
 
         [Column("StandardReferenceItemValue")]
-        public string StandardReferenceItemValue { get; set; }
+        public string StandardReferenceItemValue { get; set; } = string.Empty;
 
         [Column("DisplayOrder")]
         public int DisplayOrder { get; set; }
@@ -43,6 +43,6 @@ namespace Entities.Models
         /// "Scope" when resolved from a company/office scope override, "Template" when using the global template.
         /// </summary>
         [Column("DataSource")]
-        public string DataSource { get; set; }
+        public string DataSource { get; set; } = string.Empty;
     }
 }

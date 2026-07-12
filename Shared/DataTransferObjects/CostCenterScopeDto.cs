@@ -10,11 +10,11 @@ namespace Shared.DataTransferObjects
         public long CostCenterId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
 public string? CostCenterName { get; set; }
 
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -28,7 +28,7 @@ public string? CostCenterName { get; set; }
         public long CostCenterId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
         public long CreatedById { get; set; } = 0;
     }
 
@@ -38,7 +38,7 @@ public string? CostCenterName { get; set; }
         public long CostCenterId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 

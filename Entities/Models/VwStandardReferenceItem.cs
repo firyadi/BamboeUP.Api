@@ -32,15 +32,15 @@ namespace Entities.Models
         public Guid StandardReferenceGuid { get; set; }
 
         [Column("StandardReferenceInitial")]
-        public string StandardReferenceInitial { get; set; }
+        public string StandardReferenceInitial { get; set; } = string.Empty;
 
         [Column("StandardReferenceItemInitial")]
-        public string StandardReferenceItemInitial { get; set; }
+        public string StandardReferenceItemInitial { get; set; } = string.Empty;
 
         [Column("StandardReferenceItemName")]
-        public string StandardReferenceItemName { get; set; }
+        public string StandardReferenceItemName { get; set; } = string.Empty;
 
         [Column("Note")]
-        public string Note { get; set; }
+        public string Note { get; set; } = string.Empty;
     }
 }

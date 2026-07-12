@@ -17,10 +17,10 @@ namespace Entities.Models
         public Guid CostCenterGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string CostCenterCode { get; set; }
+        public string CostCenterCode { get; set; } = string.Empty;
 
         [Required]
-        public string CostCenterName { get; set; }
+        public string CostCenterName { get; set; } = string.Empty;
 
         public string? CostCenterDescription { get; set; }
 

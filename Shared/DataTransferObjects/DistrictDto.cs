@@ -6,11 +6,11 @@ namespace Shared.DataTransferObjects
     {
         public long DistrictId { get; set; }
         public Guid DistrictGuid { get; init; }
-        public string DistrictName { get; set; }
+        public string DistrictName { get; set; } = string.Empty;
         public long CityId { get; set; }
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -21,13 +21,13 @@ namespace Shared.DataTransferObjects
 
     public record DistrictForCreationDto
     {
-        public string DistrictName { get; set; }
+        public string DistrictName { get; set; } = string.Empty;
         public long CreatedById { get; set; }
     }
 
     public record DistrictForUpdateDto
     {
-        public string DistrictName { get; set; }
+        public string DistrictName { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 

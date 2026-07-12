@@ -19,7 +19,7 @@ namespace Entities.Models
         [Required]
         [MaxLength(255)]
         [Column(TypeName = "nvarchar(255)")]
-        public string SubDistrictName { get; set; }
+        public string SubDistrictName { get; set; } = string.Empty;
 
         [Required]
         public long DistrictId { get; set; }

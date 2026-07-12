@@ -7,10 +7,11 @@ internal static class ReportParameterValidator
 {
     public static Dictionary<string, string?> ValidateAndNormalize(
         ReportRunRequestDto request,
-        IReadOnlyList<ReportParameterDefinitionDto> schemaFields)
+        IReadOnlyList<ReportParameterDefinitionDto> schemaFields,
+        bool isDocPrint = false)
     {
         if (schemaFields.Count == 0)
-            return NormalizeLegacy(request);
+            return isDocPrint ? NormalizeContextualPrint(request) : NormalizeLegacy(request);
 
         var allowed = schemaFields
             .ToDictionary(f => f.ParameterName, f => f, StringComparer.OrdinalIgnoreCase);
@@ -86,6 +87,24 @@ internal static class ReportParameterValidator
 
     private static string? GetRaw(ReportRunRequestDto request, string parameterName)
         => request.Parameters.TryGetValue(parameterName, out var value) ? value : null;
+
+    private static Dictionary<string, string?> NormalizeContextualPrint(ReportRunRequestDto request)
+    {
+        var result = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var kv in request.Parameters)
+        {
+            if (!string.IsNullOrWhiteSpace(kv.Value))
+                result[kv.Key] = kv.Value.Trim();
+        }
+
+        if (request.CompanyId.HasValue && !result.ContainsKey("CompanyId"))
+            result["CompanyId"] = request.CompanyId.Value.ToString();
+        if (request.CompanyOfficeId.HasValue && !result.ContainsKey("CompanyOfficeId"))
+            result["CompanyOfficeId"] = request.CompanyOfficeId.Value.ToString();
+
+        return result;
+    }
 
     private static Dictionary<string, string?> NormalizeLegacy(ReportRunRequestDto request)
     {

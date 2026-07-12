@@ -43,7 +43,7 @@ namespace Repository
             return await connection.QueryAsync<PostalCode>(sql, new { subDistrictGuid });
         }
 
-        public async Task CreatePostalCodeAsync(PostalCode postalCode, IDbTransaction transaction = null)
+        public async Task CreatePostalCodeAsync(PostalCode postalCode, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(postalCode);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -62,7 +62,7 @@ namespace Repository
                 newEntity: postalCode);
         }
 
-        public async Task UpdatePostalCodeAsync(PostalCode postalCode, IDbTransaction transaction = null)
+        public async Task UpdatePostalCodeAsync(PostalCode postalCode, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(postalCode);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -87,7 +87,7 @@ namespace Repository
                 newEntity: postalCode);
         }
 
-        public async Task SoftDeletePostalCodeAsync(PostalCode postalCode, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeletePostalCodeAsync(PostalCode postalCode, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(postalCode, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -111,7 +111,7 @@ namespace Repository
                 newEntity: postalCode);
         }
 
-        public async Task DeletePostalCodeAsync(Guid postalCodeGuid, IDbTransaction transaction = null)
+        public async Task DeletePostalCodeAsync(Guid postalCodeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[PostalCode] WHERE PostalCodeGuid = @PostalCodeGuid";

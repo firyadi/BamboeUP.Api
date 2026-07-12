@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -21,8 +21,8 @@
     <PackageReference Include="Audit.NET.SqlServer" Version="30.0.2" />
     <PackageReference Include="Mapster" Version="10.0.7" />
     <PackageReference Include="Mapster.DependencyInjection" Version="10.0.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />	  
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="10.7.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.3" />
   </ItemGroup>
@@ -38,6 +38,7 @@
     <ProjectReference Include="..\Service.Shell\Service.Shell.csproj" />
     <ProjectReference Include="..\Service.Modules\Service.Modules.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\BamboeUp.Audit\BamboeUp.Audit.csproj" />
   </ItemGroup>
     
   <ItemGroup>
@@ -46,12 +47,10 @@
 
   <ItemGroup>
     <Content Include="App_Data\admin.registry.enc" CopyToOutputDirectory="PreserveNewest" Condition="Exists('App_Data\admin.registry.enc')" />
-  </ItemGroup>
-    
-  <ItemGroup>
-    <Reference Include="BamboeUp.Audit">
-      <HintPath>..\Audit\BamboeUp.Audit.dll</HintPath>
-    </Reference>
+    <Content Include="..\..\BamboeUp.Report\Doc\Standard\EngineDemo\**\*.*">
+      <Link>Reports\Doc\Standard\EngineDemo\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

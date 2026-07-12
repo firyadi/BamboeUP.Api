@@ -39,7 +39,7 @@ namespace Repository
             return await connection.QueryAsync<Country>(sql);
         }
 
-        public async Task CreateCountryAsync(Country country, IDbTransaction transaction = null)
+        public async Task CreateCountryAsync(Country country, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(country);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -58,7 +58,7 @@ namespace Repository
                 newEntity: country);
         }
 
-        public async Task UpdateCountryAsync(Country country, IDbTransaction transaction = null)
+        public async Task UpdateCountryAsync(Country country, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(country);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -85,7 +85,7 @@ namespace Repository
                 newEntity: country);
         }
 
-        public async Task SoftDeleteCountryAsync(Country country, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteCountryAsync(Country country, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(country, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -108,7 +108,7 @@ namespace Repository
                 newEntity: country);
         }
 
-        public async Task DeleteCountryAsync(Guid countryGuid, IDbTransaction transaction = null)
+        public async Task DeleteCountryAsync(Guid countryGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetCountryAsync(countryGuid, false);

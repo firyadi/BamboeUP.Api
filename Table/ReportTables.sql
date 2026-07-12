@@ -18,6 +18,7 @@ BEGIN
         [DefinitionKey]        NVARCHAR(100)    NOT NULL,
         [FilePath]             NVARCHAR(500)    NULL,
         [StoreProcedureName]   NVARCHAR(200)    NULL,
+        [IsTracked]            BIT              NOT NULL CONSTRAINT [DF_ReportDefinition_IsTracked] DEFAULT (0),
         [RequiresPrintId]      BIT              NOT NULL CONSTRAINT [DF_ReportDefinition_RequiresPrintId] DEFAULT (0),
         [PrintIdPolicy]        NVARCHAR(30)     NULL,
         [PrintIdPrefix]        NVARCHAR(10)     NULL,
@@ -32,7 +33,8 @@ BEGIN
         [UpdatedById]          BIGINT           NULL,
         [UpdatedTime]          DATETIME2(7)     NULL,
         CONSTRAINT [PK_ReportDefinition] PRIMARY KEY CLUSTERED ([ReportDefinitionId] ASC),
-        CONSTRAINT [UQ_ReportDefinition_Guid] UNIQUE NONCLUSTERED ([ReportDefinitionGuid] ASC)
+        CONSTRAINT [UQ_ReportDefinition_Guid] UNIQUE NONCLUSTERED ([ReportDefinitionGuid] ASC),
+        CONSTRAINT [CK_ReportDefinition_PrintIdRequiresTracked] CHECK ([RequiresPrintId] = 0 OR [IsTracked] = 1)
     ) ON [PRIMARY];
 END
 GO
@@ -60,6 +62,8 @@ GO
 
 IF OBJECT_ID(N'[core].[ReportExecutionLog]', N'U') IS NULL
 BEGIN
+    -- Migrated to BamboeUpAuditDB: see ReportExecutionLog_AuditDB.sql ([rpt].[ReportExecutionLog])
+    -- Legacy table kept for existing deployments; new installs should run audit DB script instead.
     CREATE TABLE [core].[ReportExecutionLog](
         [ReportExecutionLogId] BIGINT           IDENTITY(1,1) NOT NULL,
         [ReportExecutionGuid]  UNIQUEIDENTIFIER NOT NULL CONSTRAINT [DF_ReportExecutionLog_Guid] DEFAULT (NEWID()),

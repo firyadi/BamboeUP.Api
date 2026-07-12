@@ -45,6 +45,7 @@ namespace Service.Shell
         private readonly Lazy<IParameterService> _parameterService;
         private readonly Lazy<IProgramService> _programService;
         private readonly Lazy<IReportService> _reportService;
+        private readonly Lazy<IReportDefinitionService> _reportDefinitionService;
         private readonly Lazy<IStandardReferenceService> _standardReferenceService;
         private readonly Lazy<IStandardReferenceItemService> _standardReferenceItemService;
         private readonly Lazy<IStandardReferenceScopeService> _standardReferenceScopeService;
@@ -103,6 +104,7 @@ namespace Service.Shell
             _parameterService = new Lazy<IParameterService>(() => new ParameterService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _programService = new Lazy<IProgramService>(() => new ProgramService(_repositoryManager, _logger, _transactionManager));
             _reportService = new Lazy<IReportService>(() => new ReportService(_repositoryManager, _logger));
+            _reportDefinitionService = new Lazy<IReportDefinitionService>(() => new ReportDefinitionService(_repositoryManager));
             _standardReferenceService = new Lazy<IStandardReferenceService>(() => new StandardReferenceService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _standardReferenceItemService = new Lazy<IStandardReferenceItemService>(() => new StandardReferenceItemService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _standardReferenceScopeService = new Lazy<IStandardReferenceScopeService>(() => new StandardReferenceScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
@@ -142,6 +144,7 @@ namespace Service.Shell
         public IParameterscopeService ParameterScopeService => _parameterscopeService.Value;
         public IProgramService ProgramService => _programService.Value;
         public IReportService ReportService => _reportService.Value;
+        public IReportDefinitionService ReportDefinitionService => _reportDefinitionService.Value;
         public IStandardReferenceService StandardReferenceService => _standardReferenceService.Value;
         public IStandardReferenceItemService StandardReferenceItemService => _standardReferenceItemService.Value;
         public IStandardReferenceScopeService StandardReferenceScopeService => _standardReferenceScopeService.Value;

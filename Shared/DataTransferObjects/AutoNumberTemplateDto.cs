@@ -6,19 +6,19 @@ namespace Shared.DataTransferObjects
     {
         public long AutoNumberTemplateId { get; set; }
         public Guid AutoNumberTemplateGuid { get; init; }
-        public string TemplateName { get; set; }
-        public string Description { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public DateTime EffectiveDate { get; set; }
 
         // Scope
-        public string TemplateScopeType { get; set; }
+        public string TemplateScopeType { get; set; } = string.Empty;
         public long SrFormMappingNumbering { get; set; }
         public long? CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
 
         // Audit
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -29,8 +29,8 @@ namespace Shared.DataTransferObjects
 
     public record AutoNumberTemplateForCreationDto
     {
-        public string TemplateName { get; set; }
-        public string Description { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public DateTime EffectiveDate { get; set; }
 
         public string TemplateScopeType { get; set; } = "GLOBAL";
@@ -43,11 +43,11 @@ namespace Shared.DataTransferObjects
 
     public record AutoNumberTemplateForUpdateDto
     {
-        public string TemplateName { get; set; }
-        public string Description { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public DateTime EffectiveDate { get; set; }
 
-        public string TemplateScopeType { get; set; }
+        public string TemplateScopeType { get; set; } = string.Empty;
         public long SrFormMappingNumbering { get; set; }
         public long? CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }

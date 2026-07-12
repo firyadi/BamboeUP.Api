@@ -12,10 +12,10 @@ namespace Contracts
         Task<User?> GetUserByUserNameAsync(string userName, bool trackChanges);
         Task<User> GetUserAsync(Guid userGuid, bool trackChanges);
         Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges);
-        Task CreateUserAsync(User user, IDbTransaction transaction = null);
-        Task UpdateUserAsync(User user, IDbTransaction transaction = null);
-        Task DeleteUserAsync(Guid userGuid, IDbTransaction transaction = null);
-        Task SoftDeleteUserAsync(User user, long deletedBy, IDbTransaction transaction = null);
+        Task CreateUserAsync(User user, IDbTransaction? transaction = null);
+        Task UpdateUserAsync(User user, IDbTransaction? transaction = null);
+        Task DeleteUserAsync(Guid userGuid, IDbTransaction? transaction = null);
+        Task SoftDeleteUserAsync(User user, long deletedBy, IDbTransaction? transaction = null);
         /// <summary>Upgrade password hash dari plaintext ke BCrypt setelah login berhasil.</summary>
         Task UpgradePasswordHashAsync(long userId, string newBcryptHash, string newSalt, IDbTransaction? transaction = null);
 

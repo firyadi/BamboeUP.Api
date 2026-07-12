@@ -18,24 +18,24 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(200)]
-        public string CompanyName { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
 
         [MaxLength(20)]
-        public string InitialName { get; set; }
+        public string InitialName { get; set; } = string.Empty;
 
         [MaxLength(30)]
-        public string TaxCompulsionNo { get; set; }
+        public string TaxCompulsionNo { get; set; } = string.Empty;
 
         [MaxLength(30)]
-        public string RegistrationNo { get; set; }
+        public string RegistrationNo { get; set; } = string.Empty;
 
         [Column("ParentCompanyId")]
         public long ParentCompanyId { get; set; } = 0;
 
         [MaxLength(3)]
-        public string DefaultCurrency { get; set; }
+        public string DefaultCurrency { get; set; } = string.Empty;
 
-        public byte[] CompanyLogo { get; set; }
+        public byte[]? CompanyLogo { get; set; }
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;

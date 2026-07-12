@@ -48,7 +48,7 @@ namespace Repository
             return await connection.QueryAsync<User>(sql);
         }
 
-        public async Task CreateUserAsync(User user, IDbTransaction transaction = null)
+        public async Task CreateUserAsync(User user, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(user);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -67,7 +67,7 @@ namespace Repository
                 newEntity: user);
         }
 
-        public async Task UpdateUserAsync(User user, IDbTransaction transaction = null)
+        public async Task UpdateUserAsync(User user, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(user);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -96,7 +96,7 @@ namespace Repository
                 newEntity: user);
         }
 
-        public async Task SoftDeleteUserAsync(User user, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteUserAsync(User user, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(user, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -129,7 +129,7 @@ namespace Repository
             await conn.ExecuteAsync(sql, new { userId, newBcryptHash, newSalt, UpdatedTime = DateTime.UtcNow }, transaction);
         }
 
-        public async Task DeleteUserAsync(Guid userGuid, IDbTransaction transaction = null)
+        public async Task DeleteUserAsync(Guid userGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserAsync(userGuid, false);

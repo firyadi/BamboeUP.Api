@@ -24,7 +24,7 @@ namespace Shared.DataTransferObjects
 
         // Audit
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }

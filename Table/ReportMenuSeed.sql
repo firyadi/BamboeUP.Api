@@ -43,6 +43,26 @@ BEGIN
      N'/app/reportselection?tp=pvt', N'PivotTableChart', @CreatedById, SYSDATETIME(), 1);
 END
 
+IF NOT EXISTS (SELECT 1 FROM [core].[Programs] WHERE ProgramCode = N'96.00.03')
+BEGIN
+    INSERT INTO [core].[Programs]
+    (ProgramGuid, ProgramCode, ProgramName, ParentId, RootLevel, RowIndex, ProgramType, IsProgramViewAble, IsProgramPrintAble,
+     IsVisible, IsActive, NavigateUrl, IconCode, CreatedById, CreatedTime, StatusId)
+    VALUES
+    (NEWID(), N'96.00.03', N'Report Execution Log', @ReportsMenuId, 2, 6, N'PRG', 1, 0, 1, 1,
+     N'/app/reportexecutionlog', N'History', @CreatedById, SYSDATETIME(), 1);
+END
+
+IF NOT EXISTS (SELECT 1 FROM [core].[Programs] WHERE ProgramCode = N'96.00.04')
+BEGIN
+    INSERT INTO [core].[Programs]
+    (ProgramGuid, ProgramCode, ProgramName, ParentId, RootLevel, RowIndex, ProgramType, IsProgramViewAble, IsProgramAddAble, IsProgramEditAble, IsProgramDeleteAble,
+     IsVisible, IsActive, NavigateUrl, IconCode, CreatedById, CreatedTime, StatusId)
+    VALUES
+    (NEWID(), N'96.00.04', N'Report Definition', @ReportsMenuId, 2, 7, N'PRG', 1, 1, 1, 1, 1, 1,
+     N'/app/reportdefinitionlist', N'Tune', @CreatedById, SYSDATETIME(), 1);
+END
+
 DECLARE @EmployeeListId BIGINT;
 IF NOT EXISTS (SELECT 1 FROM [core].[Programs] WHERE ProgramCode = N'96.01.01')
 BEGIN
@@ -85,30 +105,30 @@ IF @EmployeeListId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [core].[ReportDefin
 BEGIN
     INSERT INTO [core].[ReportDefinition]
     (ReportDefinitionGuid, ProgramId, ReportScope, CompanyId, ReportKind, DefinitionKey, FilePath, StoreProcedureName,
-     RequiresPrintId, PrintIdPolicy, PrintIdPrefix, [Version], IsActive, StatusId, CreatedById, CreatedTime)
+     IsTracked, RequiresPrintId, PrintIdPolicy, PrintIdPrefix, [Version], IsActive, StatusId, CreatedById, CreatedTime)
     VALUES
     (NEWID(), @EmployeeListId, N'Standard', NULL, N'RPT', N'EmployeeList', N'Rpt/Standard/EmployeeList.rdlc', N'app.rpt_EmployeeList',
-     0, N'PerRun', N'EL', 1, 1, 1, @CreatedById, SYSDATETIME());
+     1, 0, N'PerRun', N'EL', 1, 1, 1, @CreatedById, SYSDATETIME());
 END
 
 IF @SalarySlipId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [core].[ReportDefinition] WHERE ProgramId = @SalarySlipId AND ReportKind = N'RPT' AND CompanyId IS NULL)
 BEGIN
     INSERT INTO [core].[ReportDefinition]
     (ReportDefinitionGuid, ProgramId, ReportScope, CompanyId, ReportKind, DefinitionKey, FilePath, StoreProcedureName,
-     RequiresPrintId, PrintIdPolicy, PrintIdPrefix, [Version], IsActive, StatusId, CreatedById, CreatedTime)
+     IsTracked, RequiresPrintId, PrintIdPolicy, PrintIdPrefix, [Version], IsActive, StatusId, CreatedById, CreatedTime)
     VALUES
     (NEWID(), @SalarySlipId, N'Standard', NULL, N'RPT', N'SalarySlip', N'Rpt/Standard/SalarySlip.rdlc', N'app.rpt_SalarySlip',
-     1, N'PerEmployeePerPeriod', N'SS', 1, 1, 1, @CreatedById, SYSDATETIME());
+     1, 1, N'PerEmployeePerPeriod', N'SS', 1, 1, 1, @CreatedById, SYSDATETIME());
 END
 
 IF @PayrollPivotId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM [core].[ReportDefinition] WHERE ProgramId = @PayrollPivotId AND ReportKind = N'PVT' AND CompanyId IS NULL)
 BEGIN
     INSERT INTO [core].[ReportDefinition]
     (ReportDefinitionGuid, ProgramId, ReportScope, CompanyId, ReportKind, DefinitionKey, FilePath, StoreProcedureName,
-     RequiresPrintId, PrintIdPolicy, PrintIdPrefix, [Version], IsActive, StatusId, CreatedById, CreatedTime)
+     IsTracked, RequiresPrintId, PrintIdPolicy, PrintIdPrefix, [Version], IsActive, StatusId, CreatedById, CreatedTime)
     VALUES
     (NEWID(), @PayrollPivotId, N'Standard', NULL, N'PVT', N'PayrollSummary', N'Pvt/Standard/PayrollSummary.pvt', N'app.pvt_PayrollSummary',
-     0, N'PerRun', N'PV', 1, 1, 1, @CreatedById, SYSDATETIME());
+     0, 0, N'PerRun', N'PV', 1, 1, 1, @CreatedById, SYSDATETIME());
 END
 
 DECLARE @AdminUserGroupId BIGINT = 1;

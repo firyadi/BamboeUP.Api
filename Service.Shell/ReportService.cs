@@ -1,8 +1,9 @@
 using BamboeUp.Report.Abstractions;
-using BamboeUp.Report.Handlers;
+using BamboeUp.Report.Engines;
 using BamboeUp.Report.Services;
 using Contracts;
 using Service.Contracts.Shell;
+using Service.Shell.Reporting;
 using Shared.DataTransferObjects;
 using System.Diagnostics;
 using System.Text.Json;
@@ -13,13 +14,14 @@ namespace Service.Shell
     {
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
-        private readonly StubReportHandler _reportHandler = new();
-        private readonly StubPivotHandler _pivotHandler = new();
+        private readonly ReportHandlerSet _handlers;
 
         public ReportService(IRepositoryManager repository, ILoggerManager logger)
         {
             _repository = repository;
             _logger = logger;
+            var dataProvider = new RepositoryReportDataProvider(repository);
+            _handlers = ReportEngineBootstrap.CreateHandlers(dataProvider);
         }
 
         public async Task<IEnumerable<ReportProgramDto>> GetAllowedReportsAsync(
@@ -29,11 +31,40 @@ namespace Service.Shell
             string? officeId,
             bool isAdmin)
         {
-            var normalized = NormalizeReportType(reportType);
+            var normalized = NormalizeCatalogReportType(reportType);
             if (isAdmin)
                 return await _repository.Report.GetAllReportsByTypeAsync(normalized);
 
             return await _repository.Report.GetAllowedReportsAsync(userGuid, companyId, officeId, normalized);
+        }
+
+        public async Task<IEnumerable<PrintSlipDto>> GetAllowedPrintsAsync(
+            string sourceProgramCode,
+            Guid userGuid,
+            string? companyId,
+            string? officeId,
+            bool isAdmin,
+            string? entityId = null)
+        {
+            if (string.IsNullOrWhiteSpace(sourceProgramCode))
+                throw new ArgumentException("Source program code is required.");
+
+            if (!string.IsNullOrWhiteSpace(entityId))
+            {
+                await PrintEntityValidator.ValidateAsync(
+                    _repository,
+                    sourceProgramCode.Trim(),
+                    entityId);
+            }
+
+            if (isAdmin)
+                return await _repository.Report.GetAllPrintSlipsBySourceAsync(sourceProgramCode.Trim());
+
+            return await _repository.Report.GetAllowedPrintsAsync(
+                userGuid,
+                companyId,
+                officeId,
+                sourceProgramCode.Trim());
         }
 
         public async Task<ReportParameterSchemaDto> GetReportParameterSchemaAsync(
@@ -64,6 +95,7 @@ namespace Service.Shell
                 ReportDefinitionId = definition.ReportDefinitionId,
                 DefinitionKey = definition.DefinitionKey,
                 LayoutColumns = layoutColumns,
+                IsTracked = definition.IsTracked,
                 RequiresPrintId = definition.RequiresPrintId,
                 SystemContext = BuildSystemContext(companyId, officeId, companyName, officeName),
                 Fields = fields
@@ -144,30 +176,75 @@ namespace Service.Shell
             var companyIdLong = request.CompanyId ?? ParseLong(companyId);
             var officeIdLong = request.CompanyOfficeId ?? ParseLong(officeId);
 
-            var allowed = (await GetAllowedReportsAsync(reportKind, userGuid, companyId, officeId, isAdmin))
-                .Any(r => r.ProgramId == request.ProgramId);
-            if (!allowed)
-                throw new UnauthorizedAccessException("You do not have permission to run this report.");
+            ReportProgramDto? selectedReport;
+            if (reportKind == "DOC")
+            {
+                if (string.IsNullOrWhiteSpace(request.SourceProgramCode))
+                    throw new ArgumentException("SourceProgramCode is required for DOC print.");
+
+                await PrintEntityValidator.ValidateAsync(
+                    _repository,
+                    request.SourceProgramCode,
+                    entityId: null,
+                    parameters: request.Parameters);
+
+                var allowedPrints = (await GetAllowedPrintsAsync(
+                    request.SourceProgramCode,
+                    userGuid,
+                    companyId,
+                    officeId,
+                    isAdmin,
+                    ResolveEntityIdForValidation(request.Parameters))).ToList();
+
+                var selectedPrint = allowedPrints.FirstOrDefault(p => p.ProgramId == request.ProgramId);
+                if (selectedPrint == null)
+                    throw new UnauthorizedAccessException("You do not have permission to run this print slip.");
+
+                selectedReport = new ReportProgramDto
+                {
+                    ProgramId = selectedPrint.ProgramId,
+                    ProgramGuid = selectedPrint.ProgramGuid,
+                    ProgramCode = selectedPrint.ProgramCode,
+                    ProgramName = selectedPrint.ProgramName,
+                    ProgramType = "DOC",
+                    IsTracked = selectedPrint.IsTracked,
+                    RequiresPrintId = selectedPrint.RequiresPrintId,
+                    ReportDefinitionId = selectedPrint.ReportDefinitionId
+                };
+            }
+            else
+            {
+                var allowedReports = (await GetAllowedReportsAsync(reportKind, userGuid, companyId, officeId, isAdmin)).ToList();
+                selectedReport = allowedReports.FirstOrDefault(r => r.ProgramId == request.ProgramId);
+                if (selectedReport == null)
+                    throw new UnauthorizedAccessException("You do not have permission to run this report.");
+            }
 
             var definition = await _repository.Report.ResolveDefinitionAsync(request.ProgramId, companyIdLong, reportKind);
             var schemaFields = definition == null
                 ? new List<ReportParameterDefinitionDto>()
                 : (await _repository.Report.GetParametersAsync(definition.ReportDefinitionId)).ToList();
 
-            var normalizedParameters = ReportParameterValidator.ValidateAndNormalize(request, schemaFields);
+            var normalizedParameters = ReportParameterValidator.ValidateAndNormalize(
+                request,
+                schemaFields,
+                isDocPrint: reportKind == "DOC");
+
+            var isTracked = definition?.IsTracked == true;
+            var requiresPrintId = isTracked && definition?.RequiresPrintId == true;
 
             var executionGuid = Guid.NewGuid();
             string? printId = null;
             string? printIdMasked = null;
 
-            if (definition?.RequiresPrintId == true)
+            if (requiresPrintId)
             {
                 if (request.IsReprint && string.IsNullOrWhiteSpace(request.ReprintOfPrintId))
                     throw new ArgumentException("Original Print ID is required for reprint.");
                 if (request.IsReprint && string.IsNullOrWhiteSpace(request.ReprintReason))
                     throw new ArgumentException("Reprint reason is required.");
 
-                var prefix = string.IsNullOrWhiteSpace(definition.PrintIdPrefix) ? "RP" : definition.PrintIdPrefix!;
+                var prefix = string.IsNullOrWhiteSpace(definition!.PrintIdPrefix) ? "RP" : definition.PrintIdPrefix!;
                 var period = request.DateFrom?.ToString("yyyyMM")
                              ?? (normalizedParameters.TryGetValue("DateFrom", out var df) && DateTime.TryParse(df, out var dfrom) ? dfrom.ToString("yyyyMM") : DateTime.UtcNow.ToString("yyyyMM"));
                 (printId, printIdMasked) = ReportPrintIdGenerator.Generate(prefix, period);
@@ -176,35 +253,51 @@ namespace Service.Shell
             var maskedLogParameters = ReportParameterValidator.MaskForLog(normalizedParameters, schemaFields);
             var parametersJson = JsonSerializer.Serialize(maskedLogParameters);
 
-            await _repository.Report.InsertExecutionLogAsync(new ReportExecutionLogInsert
+            if (isTracked)
             {
-                ReportExecutionGuid = executionGuid,
-                ProgramId = request.ProgramId,
-                ReportDefinitionId = definition?.ReportDefinitionId,
-                UserId = userId,
-                CompanyId = companyIdLong,
-                CompanyOfficeId = officeIdLong,
-                ReportKind = reportKind,
-                ParametersJson = parametersJson,
-                ReportPrintId = printId,
-                ReportPrintIdMasked = printIdMasked,
-                IsReprint = request.IsReprint,
-                ReprintOfPrintId = request.ReprintOfPrintId,
-                ReprintReason = request.ReprintReason,
-                Status = "Running",
-                OutputFormat = reportKind == "PVT" ? "Pivot" : "PDF"
-            });
+                var user = await _repository.User.GetUserAsync(userGuid, trackChanges: false);
+                var userDisplayName = string.IsNullOrWhiteSpace(user?.FullName) ? user?.UserName : user?.FullName;
+
+                await _repository.ReportExecutionLog.InsertAsync(new ReportExecutionLogInsert
+                {
+                    ReportExecutionGuid = executionGuid,
+                    ProgramId = request.ProgramId,
+                    ProgramCode = selectedReport.ProgramCode ?? request.ProgramCode,
+                    ProgramName = selectedReport.ProgramName ?? string.Empty,
+                    ReportDefinitionId = definition?.ReportDefinitionId,
+                    UserId = userId,
+                    UserDisplayName = userDisplayName,
+                    CompanyId = companyIdLong,
+                    CompanyOfficeId = officeIdLong,
+                    ReportKind = reportKind,
+                    ParametersJson = parametersJson,
+                    ReportPrintId = printId,
+                    ReportPrintIdMasked = printIdMasked,
+                    IsReprint = request.IsReprint,
+                    ReprintOfPrintId = request.ReprintOfPrintId,
+                    ReprintReason = request.ReprintReason,
+                    Status = "Running",
+                    OutputFormat = reportKind switch
+                    {
+                        "PVT" => "Pivot",
+                        "DOC" => "PDF",
+                        _ => "PDF"
+                    }
+                });
+            }
 
             try
             {
                 var context = new ReportRunContext
                 {
                     ProgramId = request.ProgramId,
-                    ProgramCode = request.ProgramCode,
+                    ProgramCode = selectedReport.ProgramCode ?? request.ProgramCode,
+                    ProgramName = selectedReport.ProgramName ?? string.Empty,
                     ReportKind = reportKind,
                     ReportDefinitionId = definition?.ReportDefinitionId,
                     DefinitionKey = definition?.DefinitionKey,
                     FilePath = definition?.FilePath,
+                    RendererType = definition?.RendererType,
                     StoreProcedureName = definition?.StoreProcedureName,
                     UserId = userId,
                     CompanyId = companyIdLong,
@@ -212,7 +305,7 @@ namespace Service.Shell
                     Parameters = BuildRunParameters(request, normalizedParameters),
                     Print = new ReportPrintContext
                     {
-                        RequiresPrintId = definition?.RequiresPrintId == true,
+                        RequiresPrintId = requiresPrintId,
                         ReportPrintId = printId,
                         ReportPrintIdMasked = printIdMasked,
                         IsReprint = request.IsReprint,
@@ -221,42 +314,74 @@ namespace Service.Shell
                     }
                 };
 
-                var handler = reportKind == "PVT" ? (IReportHandler)_pivotHandler : _reportHandler;
+                var handler = _handlers.Resolve(reportKind);
                 var handlerResult = await handler.RunAsync(context);
 
-                await _repository.Report.UpdateExecutionLogAsync(new ReportExecutionLogUpdate
+                if (isTracked)
                 {
-                    ReportExecutionGuid = executionGuid,
-                    Status = handlerResult.Success ? "Completed" : "Failed",
-                    DurationMs = (int)sw.ElapsedMilliseconds,
-                    ErrorMessage = handlerResult.Success ? null : handlerResult.Message
-                });
+                    await _repository.ReportExecutionLog.UpdateAsync(new ReportExecutionLogUpdate
+                    {
+                        ReportExecutionGuid = executionGuid,
+                        Status = handlerResult.Success ? "Completed" : "Failed",
+                        DurationMs = (int)sw.ElapsedMilliseconds,
+                        ErrorMessage = handlerResult.Success ? null : handlerResult.Message
+                    });
+                }
 
                 return new ReportRunResultDto
                 {
                     Success = handlerResult.Success,
                     Message = handlerResult.Message,
-                    ReportExecutionGuid = executionGuid,
+                    ReportExecutionGuid = isTracked ? executionGuid : Guid.Empty,
                     ReportPrintId = isAdmin ? printId : null,
-                    ReportPrintIdMasked = printIdMasked
+                    ReportPrintIdMasked = printIdMasked,
+                    OutputContentType = handlerResult.OutputContentType,
+                    OutputFileName = handlerResult.OutputFileName,
+                    OutputBase64 = handlerResult.OutputBytes is { Length: > 0 } bytes
+                        ? Convert.ToBase64String(bytes)
+                        : null
                 };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Report run failed: {ex.Message}");
-                await _repository.Report.UpdateExecutionLogAsync(new ReportExecutionLogUpdate
+                if (isTracked)
+                {
+                    await _repository.ReportExecutionLog.UpdateAsync(new ReportExecutionLogUpdate
                 {
                     ReportExecutionGuid = executionGuid,
                     Status = "Failed",
                     DurationMs = (int)sw.ElapsedMilliseconds,
                     ErrorMessage = ex.Message
                 });
+                }
                 throw;
             }
         }
 
         public Task<ReportExecutionLogDto?> GetExecutionByPrintIdAsync(string reportPrintId, bool includeFullPrintId)
-            => _repository.Report.GetExecutionByPrintIdAsync(reportPrintId, includeFullPrintId);
+            => _repository.ReportExecutionLog.GetByPrintIdAsync(reportPrintId, includeFullPrintId);
+
+        public async Task<PagedResult<ReportExecutionLogDto>> GetExecutionLogsAsync(
+            ReportExecutionLogQueryDto query,
+            Guid userGuid,
+            string? companyId,
+            string? officeId,
+            bool isAdmin)
+        {
+            var result = await _repository.ReportExecutionLog.GetPagedAsync(
+                userGuid,
+                companyId,
+                officeId,
+                scoped: !isAdmin,
+                query);
+
+            var maskedItems = result.Items
+                .Select(item => item with { ReportPrintId = null })
+                .ToList();
+
+            return result with { Items = maskedItems };
+        }
 
         private static string NormalizeReportType(string reportType)
         {
@@ -265,8 +390,46 @@ namespace Service.Shell
             {
                 "RPT" => "RPT",
                 "PVT" => "PVT",
-                _ => throw new ArgumentException("Invalid report type. Use rpt or pvt.")
+                "DOC" => "DOC",
+                _ => throw new ArgumentException("Invalid report type. Use rpt, pvt, or doc.")
             };
+        }
+
+        private static string NormalizeCatalogReportType(string reportType)
+        {
+            var normalized = NormalizeReportType(reportType);
+            if (normalized == "DOC")
+            {
+                throw new ArgumentException(
+                    "DOC slips are not available through the report catalog. Use GET /api/prints/allowed.");
+            }
+
+            return normalized;
+        }
+
+        private static string? ResolveEntityIdForValidation(IReadOnlyDictionary<string, string?> parameters)
+        {
+            if (parameters.TryGetValue("EntityGuid", out var entityGuid) && !string.IsNullOrWhiteSpace(entityGuid))
+                return entityGuid;
+
+            foreach (var kv in parameters)
+            {
+                if (!kv.Key.EndsWith("Guid", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (kv.Key.Equals("CompanyGuid", StringComparison.OrdinalIgnoreCase)
+                    || kv.Key.Equals("CompanyOfficeGuid", StringComparison.OrdinalIgnoreCase)
+                    || kv.Key.Equals("ProgramGuid", StringComparison.OrdinalIgnoreCase)
+                    || kv.Key.Equals("UserGuid", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                if (!string.IsNullOrWhiteSpace(kv.Value))
+                    return kv.Value;
+            }
+
+            return null;
         }
 
         private static long? ParseLong(string? value)

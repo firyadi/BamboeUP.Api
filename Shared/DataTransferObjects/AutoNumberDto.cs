@@ -6,25 +6,25 @@ namespace Shared.DataTransferObjects
     {
         public long AutoNumberId { get; set; }
         public Guid AutoNumberGuid { get; init; }
-        public string Prefik { get; set; }
-        public string SeparatorAfterPrefik { get; set; }
+        public string Prefik { get; set; } = string.Empty;
+        public string SeparatorAfterPrefik { get; set; } = string.Empty;
         public bool? IsUsedDepartment { get; set; }
-        public string SeparatorAfterDept { get; set; }
+        public string SeparatorAfterDept { get; set; } = string.Empty;
         public bool? IsUsedYear { get; set; }
         public byte? YearDigit { get; set; }
-        public string SeparatorAfterYear { get; set; }
+        public string SeparatorAfterYear { get; set; } = string.Empty;
         public bool? IsUsedMonth { get; set; }
         public bool? IsMonthInRomawi { get; set; }
-        public string SeparatorAfterMonth { get; set; }
+        public string SeparatorAfterMonth { get; set; } = string.Empty;
         public bool? IsUsedDay { get; set; }
-        public string SeparatorAfterDay { get; set; }
+        public string SeparatorAfterDay { get; set; } = string.Empty;
         public byte? NumberLength { get; set; }
         public byte? NumberGroupLength { get; set; }
-        public string NumberGroupSeparator { get; set; }
-        public string NumberFormat { get; set; }
+        public string NumberGroupSeparator { get; set; } = string.Empty;
+        public string NumberFormat { get; set; } = string.Empty;
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -35,44 +35,44 @@ namespace Shared.DataTransferObjects
 
     public record AutoNumberForCreationDto
     {
-        public string Prefik { get; set; }
-        public string SeparatorAfterPrefik { get; set; }
+        public string Prefik { get; set; } = string.Empty;
+        public string SeparatorAfterPrefik { get; set; } = string.Empty;
         public bool? IsUsedDepartment { get; set; }
-        public string SeparatorAfterDept { get; set; }
+        public string SeparatorAfterDept { get; set; } = string.Empty;
         public bool? IsUsedYear { get; set; }
         public byte? YearDigit { get; set; }
-        public string SeparatorAfterYear { get; set; }
+        public string SeparatorAfterYear { get; set; } = string.Empty;
         public bool? IsUsedMonth { get; set; }
         public bool? IsMonthInRomawi { get; set; }
-        public string SeparatorAfterMonth { get; set; }
+        public string SeparatorAfterMonth { get; set; } = string.Empty;
         public bool? IsUsedDay { get; set; }
-        public string SeparatorAfterDay { get; set; }
+        public string SeparatorAfterDay { get; set; } = string.Empty;
         public byte? NumberLength { get; set; }
         public byte? NumberGroupLength { get; set; }
-        public string NumberGroupSeparator { get; set; }
-        public string NumberFormat { get; set; }
+        public string NumberGroupSeparator { get; set; } = string.Empty;
+        public string NumberFormat { get; set; } = string.Empty;
         public long CreatedById { get; set; } = 0;
         public DateTime CreatedTime { get; set; }
     }
 
     public record AutoNumberForUpdateDto
     {
-        public string Prefik { get; set; }
-        public string SeparatorAfterPrefik { get; set; }
+        public string Prefik { get; set; } = string.Empty;
+        public string SeparatorAfterPrefik { get; set; } = string.Empty;
         public bool? IsUsedDepartment { get; set; }
-        public string SeparatorAfterDept { get; set; }
+        public string SeparatorAfterDept { get; set; } = string.Empty;
         public bool? IsUsedYear { get; set; }
         public byte? YearDigit { get; set; }
-        public string SeparatorAfterYear { get; set; }
+        public string SeparatorAfterYear { get; set; } = string.Empty;
         public bool? IsUsedMonth { get; set; }
         public bool? IsMonthInRomawi { get; set; }
-        public string SeparatorAfterMonth { get; set; }
+        public string SeparatorAfterMonth { get; set; } = string.Empty;
         public bool? IsUsedDay { get; set; }
-        public string SeparatorAfterDay { get; set; }
+        public string SeparatorAfterDay { get; set; } = string.Empty;
         public byte? NumberLength { get; set; }
         public byte? NumberGroupLength { get; set; }
-        public string NumberGroupSeparator { get; set; }
-        public string NumberFormat { get; set; }
+        public string NumberGroupSeparator { get; set; } = string.Empty;
+        public string NumberFormat { get; set; } = string.Empty;
         public long? UpdatedById { get; set; }
     }
 
@@ -83,24 +83,24 @@ namespace Shared.DataTransferObjects
 
     public class AutoNumberSearchDto
     {
-        public string Prefik { get; set; }
+        public string Prefik { get; set; } = string.Empty;
         public SearchType PrefikSearchType { get; set; } = SearchType.Contains;
-        public string SeparatorAfterPrefik { get; set; }
+        public string SeparatorAfterPrefik { get; set; } = string.Empty;
         public SearchType SeparatorAfterPrefikSearchType { get; set; } = SearchType.Contains;
-        public string SeparatorAfterDept { get; set; }
+        public string SeparatorAfterDept { get; set; } = string.Empty;
         public SearchType SeparatorAfterDeptSearchType { get; set; } = SearchType.Contains;
         public byte? YearDigit { get; set; }
-        public string SeparatorAfterYear { get; set; }
+        public string SeparatorAfterYear { get; set; } = string.Empty;
         public SearchType SeparatorAfterYearSearchType { get; set; } = SearchType.Contains;
-        public string SeparatorAfterMonth { get; set; }
+        public string SeparatorAfterMonth { get; set; } = string.Empty;
         public SearchType SeparatorAfterMonthSearchType { get; set; } = SearchType.Contains;
-        public string SeparatorAfterDay { get; set; }
+        public string SeparatorAfterDay { get; set; } = string.Empty;
         public SearchType SeparatorAfterDaySearchType { get; set; } = SearchType.Contains;
         public byte? NumberLength { get; set; }
         public byte? NumberGroupLength { get; set; }
-        public string NumberGroupSeparator { get; set; }
+        public string NumberGroupSeparator { get; set; } = string.Empty;
         public SearchType NumberGroupSeparatorSearchType { get; set; } = SearchType.Contains;
-        public string NumberFormat { get; set; }
+        public string NumberFormat { get; set; } = string.Empty;
         public SearchType NumberFormatSearchType { get; set; } = SearchType.Contains;
     }
 }

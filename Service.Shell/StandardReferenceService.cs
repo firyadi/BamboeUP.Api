@@ -49,7 +49,7 @@ namespace Service.Shell
         public async Task<StandardReferenceDto> GetStandardReferenceByGuidAsync(Guid standardReferenceGuid, bool trackChanges)
         {
             var entity = await _repository.StandardReference.GetStandardReferenceAsync(standardReferenceGuid, trackChanges);
-            if (entity == null) return null;
+            if (entity == null) return null!;
 
             var dto = entity.Adapt<StandardReferenceDto>();
 
@@ -493,7 +493,7 @@ namespace Service.Shell
                 RootTableName = "StandardReference",
                 RootEntityKey = model.StandardReferenceGuid.ToString(),
                 RootDisplayName = model.StandardReferenceName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : input.UpdatedById.ToString(),
+                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : (input.UpdatedById ?? 0).ToString(),
                 Entries = entries
             });
         }

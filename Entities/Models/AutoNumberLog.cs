@@ -22,14 +22,14 @@ namespace Entities.Models
         [Required]
         [MaxLength(200)]
         [Column("GeneratedNumber")]
-        public string GeneratedNumber { get; set; }
+        public string GeneratedNumber { get; set; } = string.Empty;
 
         [Column("CounterValue")]
         public int CounterValue { get; set; }
 
         [MaxLength(100)]
         [Column("ReferenceId")]
-        public string ReferenceId { get; set; }
+        public string ReferenceId { get; set; } = string.Empty;
 
         [MaxLength(20)]
         [Column("Status")]

@@ -8,12 +8,12 @@ namespace Shared.DataTransferObjects
     {
         public long ParameterId { get; set; }
         public Guid ParameterGuid { get; init; }
-        public string Parametername { get; set; }
-        public string Parametervalue { get; set; }
+        public string Parametername { get; set; } = string.Empty;
+        public string Parametervalue { get; set; } = string.Empty;
 
         public IEnumerable<ParameterscopeDto>? Parameterscopes { get; set; }
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -24,8 +24,8 @@ namespace Shared.DataTransferObjects
 
     public record ParameterForCreationDto
     {
-        public string Parametername { get; set; }
-        public string Parametervalue { get; set; }
+        public string Parametername { get; set; } = string.Empty;
+        public string Parametervalue { get; set; } = string.Empty;
 
         public IEnumerable<ParameterscopeForCreationDto>? Parameterscopes { get; set; }
         public long CreatedById { get; set; } = 0;
@@ -33,8 +33,8 @@ namespace Shared.DataTransferObjects
 
     public record ParameterForUpdateDto
     {
-        public string Parametername { get; set; }
-        public string Parametervalue { get; set; }
+        public string Parametername { get; set; } = string.Empty;
+        public string Parametervalue { get; set; } = string.Empty;
 
         public IEnumerable<ParameterscopeForUpdateDto>? Parameterscopes { get; set; }
         public long UpdatedById { get; set; }

@@ -18,11 +18,11 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(50)]
-        public string DocumentType { get; set; }
+        public string DocumentType { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(100)]
-        public string DocumentNo { get; set; }
+        public string DocumentNo { get; set; } = string.Empty;
 
         public long AutoNumberLogId { get; set; }
 

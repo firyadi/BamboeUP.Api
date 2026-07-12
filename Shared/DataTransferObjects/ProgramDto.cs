@@ -7,11 +7,11 @@ namespace Shared.DataTransferObjects
     {
         public long ProgramId { get; set; }
         public Guid ProgramGuid { get; init; }
-        public string ProgramCode { get; set; }
+        public string ProgramCode { get; set; } = string.Empty;
         public long? ParentId { get; set; }
-        public string ParentProgramName { get; set; }
+        public string ParentProgramName { get; set; } = string.Empty;
         public string? IconCode { get; set; }
-        public string ProgramName { get; set; }
+        public string ProgramName { get; set; } = string.Empty;
         public long? TopLevelProgramId { get; set; }
         public byte RootLevel { get; set; }
         public byte RowIndex { get; set; }
@@ -52,10 +52,10 @@ namespace Shared.DataTransferObjects
 
     public record ProgramForCreationDto
     {
-        public string ProgramCode { get; set; }
+        public string ProgramCode { get; set; } = string.Empty;
         public long? ParentId { get; set; }
         public string? IconCode { get; set; }
-        public string ProgramName { get; set; }
+        public string ProgramName { get; set; } = string.Empty;
         public long? TopLevelProgramId { get; set; }
         public byte RootLevel { get; set; }
         public byte RowIndex { get; set; }
@@ -89,10 +89,10 @@ namespace Shared.DataTransferObjects
 
     public record ProgramForUpdateDto
     {
-        public string ProgramCode { get; set; }
+        public string ProgramCode { get; set; } = string.Empty;
         public long? ParentId { get; set; }
         public string? IconCode { get; set; }
-        public string ProgramName { get; set; }
+        public string ProgramName { get; set; } = string.Empty;
         public long? TopLevelProgramId { get; set; }
         public byte RootLevel { get; set; }
         public byte RowIndex { get; set; }

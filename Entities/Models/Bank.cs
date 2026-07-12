@@ -18,11 +18,11 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(200)]
-        public string BankName { get; set; }
+        public string BankName { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(15)]
-        public string BankInitial { get; set; }
+        public string BankInitial { get; set; } = string.Empty;
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;

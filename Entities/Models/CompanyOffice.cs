@@ -24,7 +24,7 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(150)]
-        public string CompanyOfficeName { get; set; }
+        public string CompanyOfficeName { get; set; } = string.Empty;
 
         [Required]
         public long SrAddressType { get; set; }
@@ -40,11 +40,11 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(8)]
-        public string PostalCodeId { get; set; }
+        public string PostalCodeId { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(500)]
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
         [Column("CreatedById")]
         public long CreatedById { get; set; } = 0;

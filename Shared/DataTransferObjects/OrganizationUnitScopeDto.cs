@@ -10,13 +10,13 @@ namespace Shared.DataTransferObjects
         public long OrganizationUnitId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
 public string? CompanyName { get; set; }
 public string? CompanyOfficeName { get; set; }
 public string? OrganizationUnitName { get; set; }
 
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -30,7 +30,7 @@ public string? OrganizationUnitName { get; set; }
         public int OrganizationUnitId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
         public long CreatedById { get; set; } = 0;
     }
 
@@ -40,7 +40,7 @@ public string? OrganizationUnitName { get; set; }
         public int OrganizationUnitId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 

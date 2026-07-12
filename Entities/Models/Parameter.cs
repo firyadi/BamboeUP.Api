@@ -18,11 +18,11 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(200)]
-        public string Parametername { get; set; }
+        public string Parametername { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(15)]
-        public string Parametervalue { get; set; }
+        public string Parametervalue { get; set; } = string.Empty;
 
 
 

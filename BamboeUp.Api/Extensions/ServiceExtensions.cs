@@ -4,9 +4,7 @@ using Entities.ConfigurationModels;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository;
@@ -14,7 +12,7 @@ using Service.Contracts.Shell;
 using Service.Contracts.Modules;
 using Service.Shell;
 using Service.Modules;
-using System.Data;
+using Shared.Settings;
 using System.Text;
 // using Hangfire;
 
@@ -26,8 +24,10 @@ namespace BamboeUp.Api.Extensions
         public static void ConfigureDapperServices(this IServiceCollection services, IConfiguration config)
         {
             // Database
+            var sqlConn = config.GetConnectionString("sqlConnection") 
+                ?? throw new InvalidOperationException("Connection string 'sqlConnection' not found.");
             services.AddScoped<RepositoryContext>(_ =>
-                new RepositoryContext(config.GetConnectionString("sqlConnection")));
+                new RepositoryContext(sqlConn));
 
             // Repository Services
             services.AddScoped<ITransactionManager, DapperTransactionManager>();
@@ -39,15 +39,36 @@ namespace BamboeUp.Api.Extensions
 
         }
 
-        public static void ConfigureCors(this IServiceCollection services) =>
-           services.AddCors(options =>
-           {
-               options.AddPolicy("CorsPolicy", builder =>
-               builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .WithExposedHeaders("X-Pagination"));
-           });
+        public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+        {
+            var corsSettings = configuration.GetSection(CorsSettings.SectionName).Get<CorsSettings>() ?? new CorsSettings();
+            var allowedOrigins = corsSettings.AllowedOrigins
+                .Where(origin => !string.IsNullOrWhiteSpace(origin))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToArray();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy", builder =>
+                {
+                    if (allowedOrigins.Length > 0)
+                    {
+                        builder.WithOrigins(allowedOrigins)
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    }
+                    else
+                    {
+                        builder.SetIsOriginAllowed(_ => true)
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    }
+
+                    builder.WithExposedHeaders("X-Pagination");
+                });
+            });
+        }
 
         public static void ConfigureIISIntegration(this IServiceCollection services) =>
              services.Configure<IISOptions>(options =>
@@ -60,8 +81,10 @@ namespace BamboeUp.Api.Extensions
         // Extensions/ServiceExtensions.cs
         public static void ConfigureDapperContext(this IServiceCollection services, IConfiguration configuration)
         {
+            var sqlConn = configuration.GetConnectionString("sqlConnection") 
+                ?? throw new InvalidOperationException("Connection string 'sqlConnection' not found.");
             services.AddScoped<RepositoryContext>(_ =>
-                new RepositoryContext(configuration.GetConnectionString("sqlConnection")));
+                new RepositoryContext(sqlConn));
         }
 
         // Extensions/ServiceExtensions.cs
@@ -83,7 +106,7 @@ namespace BamboeUp.Api.Extensions
         }
 
 
-        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
         {
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtConfiguration>()
                 ?? throw new InvalidOperationException("JwtSettings is not configured properly");
@@ -95,16 +118,19 @@ namespace BamboeUp.Api.Extensions
             })
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = !environment.IsDevelopment();
+                options.SaveToken = false;
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-
                     ValidIssuer = jwtSettings.ValidIssuer,
                     ValidAudience = jwtSettings.ValidAudience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                    ClockSkew = TimeSpan.FromMinutes(1)
                 };
             });
         }
@@ -165,21 +191,21 @@ namespace BamboeUp.Api.Extensions
                     Scheme = "Bearer"
                 });
 
-                s.AddSecurityRequirement(new OpenApiSecurityRequirement()
-            {
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Name = "Bearer",
                         },
-                        Name = "Bearer",
-                    },
-                    new List<string>()
-                }
-            });
+                        []
+                    }
+                });
             });
         }
     }

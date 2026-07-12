@@ -8,7 +8,7 @@ namespace Repository
     public class DapperTransactionManager : ITransactionManager
     {
         private readonly RepositoryContext _context;
-        private SqlTransaction _transaction;
+        private SqlTransaction? _transaction;
 
         public DapperTransactionManager(RepositoryContext context)
         {
@@ -24,17 +24,24 @@ namespace Repository
 
         public async Task CommitAsync()
         {
+            if (_transaction is null)
+                throw new InvalidOperationException("Transaction has not been started.");
+
             await _transaction.CommitAsync();
             Cleanup();
         }
 
         public async Task RollbackAsync()
         {
+            if (_transaction is null)
+                throw new InvalidOperationException("Transaction has not been started.");
+
             await _transaction.RollbackAsync();
             Cleanup();
         }
 
-        public IDbTransaction GetTransaction() => _transaction;
+        public IDbTransaction GetTransaction() =>
+            _transaction ?? throw new InvalidOperationException("Transaction has not been started.");
 
         private void Cleanup()
         {

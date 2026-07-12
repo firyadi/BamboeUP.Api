@@ -57,7 +57,7 @@ namespace Repository
             return await connection.QueryAsync<City>(sql, new { provinceGuid });
         }
 
-        public async Task CreateCityAsync(City city, IDbTransaction transaction = null)
+        public async Task CreateCityAsync(City city, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(city);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -76,7 +76,7 @@ namespace Repository
                 newEntity: city);
         }
 
-        public async Task UpdateCityAsync(City city, IDbTransaction transaction = null)
+        public async Task UpdateCityAsync(City city, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(city);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -101,7 +101,7 @@ namespace Repository
                 newEntity: city);
         }
 
-        public async Task SoftDeleteCityAsync(City city, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteCityAsync(City city, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(city, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -125,7 +125,7 @@ namespace Repository
                 newEntity: city);
         }
 
-        public async Task DeleteCityAsync(Guid cityGuid, IDbTransaction transaction = null)
+        public async Task DeleteCityAsync(Guid cityGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[City] WHERE CityGuid = @CityGuid";

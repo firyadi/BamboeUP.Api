@@ -55,8 +55,7 @@
               "RelativeToolTip": "Entities\\Models\\OrganizationUnit.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAiwB0AAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-06T07:06:24.83Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-06T07:06:24.83Z"
             },
             {
               "$type": "Document",
@@ -68,8 +67,7 @@
               "RelativeToolTip": "Repository\\OrganizationUnitRepository.cs",
               "ViewState": "AgIAAAoAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-06T04:25:49.337Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-06T04:25:49.337Z"
             }
           ]
         }

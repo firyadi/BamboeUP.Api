@@ -8,8 +8,8 @@ namespace Shared.DataTransferObjects
     {
         public long CostCenterId { get; set; }
         public Guid CostCenterGuid { get; init; }
-        public string CostCenterCode { get; set; }
-        public string CostCenterName { get; set; }
+        public string CostCenterCode { get; set; } = string.Empty;
+        public string CostCenterName { get; set; } = string.Empty;
         public string? CostCenterDescription { get; set; }
         public long? ParentCostCenterId { get; set; }
         public int LevelDepth { get; set; }
@@ -19,7 +19,7 @@ namespace Shared.DataTransferObjects
         // ##HeaderDetailCollections##
         public IEnumerable<CostCenterAssignmentDto>? CostCenterAssignments { get; set; }
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -30,8 +30,8 @@ namespace Shared.DataTransferObjects
 
     public record CostCenterForCreationDto
     {
-        public string CostCenterCode { get; set; }
-        public string CostCenterName { get; set; }
+        public string CostCenterCode { get; set; } = string.Empty;
+        public string CostCenterName { get; set; } = string.Empty;
         public string? CostCenterDescription { get; set; }
         public long? ParentCostCenterId { get; set; }
         public int LevelDepth { get; set; }
@@ -44,8 +44,8 @@ namespace Shared.DataTransferObjects
 
     public record CostCenterForUpdateDto
     {
-        public string CostCenterCode { get; set; }
-        public string CostCenterName { get; set; }
+        public string CostCenterCode { get; set; } = string.Empty;
+        public string CostCenterName { get; set; } = string.Empty;
         public string? CostCenterDescription { get; set; }
         public long? ParentCostCenterId { get; set; }
         public int LevelDepth { get; set; }

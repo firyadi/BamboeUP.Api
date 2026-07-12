@@ -53,7 +53,7 @@ namespace Repository
             return await connection.QueryAsync<UserGroupProgram>(sql, new { userGroupGuid });
         }
 
-        public async Task CreateUserGroupProgramAsync(UserGroupProgram userGroupProgram, IDbTransaction transaction = null)
+        public async Task CreateUserGroupProgramAsync(UserGroupProgram userGroupProgram, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(userGroupProgram);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -76,7 +76,7 @@ namespace Repository
                 newEntity: userGroupProgram);
         }
 
-        public async Task UpdateUserGroupProgramAsync(UserGroupProgram userGroupProgram, IDbTransaction transaction = null)
+        public async Task UpdateUserGroupProgramAsync(UserGroupProgram userGroupProgram, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(userGroupProgram);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -111,7 +111,7 @@ namespace Repository
                 newEntity: userGroupProgram);
         }
 
-        public async Task SoftDeleteUserGroupProgramAsync(UserGroupProgram userGroupProgram, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteUserGroupProgramAsync(UserGroupProgram userGroupProgram, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(userGroupProgram, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -133,7 +133,7 @@ namespace Repository
                 newEntity: userGroupProgram);
         }
 
-        public async Task DeleteUserGroupProgramAsync(Guid userGroupProgramGuid, IDbTransaction transaction = null)
+        public async Task DeleteUserGroupProgramAsync(Guid userGroupProgramGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupProgramAsync(userGroupProgramGuid, false);

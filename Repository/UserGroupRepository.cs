@@ -39,7 +39,7 @@ namespace Repository
             return await connection.QueryAsync<UserGroup>(sql);
         }
 
-        public async Task CreateUserGroupAsync(UserGroup userGroup, IDbTransaction transaction = null)
+        public async Task CreateUserGroupAsync(UserGroup userGroup, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(userGroup);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -58,7 +58,7 @@ namespace Repository
                 newEntity: userGroup);
         }
 
-        public async Task UpdateUserGroupAsync(UserGroup userGroup, IDbTransaction transaction = null)
+        public async Task UpdateUserGroupAsync(UserGroup userGroup, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(userGroup);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -84,7 +84,7 @@ namespace Repository
                 newEntity: userGroup);
         }
 
-        public async Task SoftDeleteUserGroupAsync(UserGroup userGroup, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteUserGroupAsync(UserGroup userGroup, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(userGroup, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -106,7 +106,7 @@ namespace Repository
                 newEntity: userGroup);
         }
 
-        public async Task DeleteUserGroupAsync(Guid userGroupGuid, IDbTransaction transaction = null)
+        public async Task DeleteUserGroupAsync(Guid userGroupGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupAsync(userGroupGuid, false);

@@ -91,5 +91,17 @@ namespace Presentation.Shell.Controllers
                 return NotFound();
             return Ok(data);
         }
+
+        [HttpGet("execution-logs")]
+        public async Task<IActionResult> GetExecutionLogs([FromQuery] ReportExecutionLogQueryDto query)
+        {
+            var data = await _service.ReportService.GetExecutionLogsAsync(
+                query,
+                _userContext.UserGuid,
+                _userContext.CompanyId?.ToString(),
+                _userContext.OfficeId?.ToString(),
+                _userContext.IsAdmin);
+            return Ok(data);
+        }
     }
 }

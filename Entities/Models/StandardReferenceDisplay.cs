@@ -20,9 +20,9 @@ namespace Entities.Models
         public long? StandardReferenceGroupId { get; set; }
 
         [Column("StandardReferenceInitial")]
-        public string StandardReferenceInitial { get; set; }
+        public string StandardReferenceInitial { get; set; } = string.Empty;
 
         [Column("StandardReferenceItemName")]
-        public string StandardReferenceItemName { get; set; }
+        public string StandardReferenceItemName { get; set; } = string.Empty;
     }
 }

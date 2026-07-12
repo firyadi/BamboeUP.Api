@@ -9,5 +9,19 @@ namespace Service.Contracts.Shell
         Task<IEnumerable<ReportLookupItemDto>> LookupAsync(string lookupType, string? query, long? companyId, long? officeId, string? lookupConfig, int take);
         Task<ReportRunResultDto> RunReportAsync(ReportRunRequestDto request, Guid userGuid, long userId, string? companyId, string? officeId, bool isAdmin);
         Task<ReportExecutionLogDto?> GetExecutionByPrintIdAsync(string reportPrintId, bool includeFullPrintId);
+        Task<PagedResult<ReportExecutionLogDto>> GetExecutionLogsAsync(
+            ReportExecutionLogQueryDto query,
+            Guid userGuid,
+            string? companyId,
+            string? officeId,
+            bool isAdmin);
+
+        Task<IEnumerable<PrintSlipDto>> GetAllowedPrintsAsync(
+            string sourceProgramCode,
+            Guid userGuid,
+            string? companyId,
+            string? officeId,
+            bool isAdmin,
+            string? entityId = null);
     }
 }

@@ -43,7 +43,7 @@ namespace Repository
             return await connection.QueryAsync<District>(sql, new { cityGuid });
         }
 
-        public async Task CreateDistrictAsync(District district, IDbTransaction transaction = null)
+        public async Task CreateDistrictAsync(District district, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(district);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -62,7 +62,7 @@ namespace Repository
                 newEntity: district);
         }
 
-        public async Task UpdateDistrictAsync(District district, IDbTransaction transaction = null)
+        public async Task UpdateDistrictAsync(District district, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(district);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -87,7 +87,7 @@ namespace Repository
                 newEntity: district);
         }
 
-        public async Task SoftDeleteDistrictAsync(District district, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteDistrictAsync(District district, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(district, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -125,7 +125,7 @@ namespace Repository
             return await connection.QuerySingleOrDefaultAsync<long?>(sql, new { districtGuid });
         }
 
-        public async Task DeleteDistrictAsync(Guid districtGuid, IDbTransaction transaction = null)
+        public async Task DeleteDistrictAsync(Guid districtGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[District] WHERE DistrictGuid = @DistrictGuid";

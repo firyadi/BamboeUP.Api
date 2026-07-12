@@ -18,10 +18,10 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(50)]
-        public string TemplateName { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
 
         [MaxLength(200)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [Required]
         public DateTime EffectiveDate { get; set; }

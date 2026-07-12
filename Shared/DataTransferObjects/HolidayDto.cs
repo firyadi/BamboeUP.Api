@@ -6,12 +6,12 @@ namespace Shared.DataTransferObjects
     {
         public long HolidayId { get; set; }
         public Guid HolidayGuid { get; init; }
-        public string YearPeriode { get; set; }
+        public string YearPeriode { get; set; } = string.Empty;
         public DateTime HolidayDates { get; set; }
-        public string Note { get; set; }
+        public string Note { get; set; } = string.Empty;
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -22,17 +22,17 @@ namespace Shared.DataTransferObjects
 
     public record HolidayForCreationDto
     {
-        public string YearPeriode { get; set; }
+        public string YearPeriode { get; set; } = string.Empty;
         public DateTime HolidayDates { get; set; }
-        public string Note { get; set; }
+        public string Note { get; set; } = string.Empty;
         public long CreatedById { get; set; } = 0;
     }
 
     public record HolidayForUpdateDto
     {
-        public string YearPeriode { get; set; }
+        public string YearPeriode { get; set; } = string.Empty;
         public DateTime HolidayDates { get; set; }
-        public string Note { get; set; }
+        public string Note { get; set; } = string.Empty;
         public long? UpdatedById { get; set; }
     }
 

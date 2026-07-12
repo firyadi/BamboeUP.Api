@@ -24,7 +24,7 @@ namespace Entities.Models
         public long? CompanyOfficeId { get; set; }
 
         [Required]
-        public string ScopeType { get; set; }
+        public string ScopeType { get; set; } = string.Empty;
 
 
 

@@ -10,15 +10,15 @@ namespace Shared.DataTransferObjects
         public string? AutoNumberTemplateName { get; set; }
 
         public short SeqNo { get; set; }
-        public string ComponentType { get; set; }
-        public string StaticValue { get; set; }
-        public string Format { get; set; }
+        public string ComponentType { get; set; } = string.Empty;
+        public string StaticValue { get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty;
         public short? CounterLength { get; set; }
         public bool IsResetKey { get; set; }
 
         // Audit
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -31,9 +31,9 @@ namespace Shared.DataTransferObjects
     {
         public long AutoNumberTemplateId { get; set; }
         public short SeqNo { get; set; }
-        public string ComponentType { get; set; }
-        public string StaticValue { get; set; }
-        public string Format { get; set; }
+        public string ComponentType { get; set; } = string.Empty;
+        public string StaticValue { get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty;
         public short? CounterLength { get; set; }
         public bool IsResetKey { get; set; } = false;
 
@@ -44,9 +44,9 @@ namespace Shared.DataTransferObjects
     {
         public long AutoNumberTemplateId { get; set; }
         public short SeqNo { get; set; }
-        public string ComponentType { get; set; }
-        public string StaticValue { get; set; }
-        public string Format { get; set; }
+        public string ComponentType { get; set; } = string.Empty;
+        public string StaticValue { get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty;
         public short? CounterLength { get; set; }
         public bool IsResetKey { get; set; }
 

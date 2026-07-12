@@ -8,7 +8,7 @@ namespace Shared.RequestFeatures
         public long CompanyOfficeId { get; set; } = 0;
         
         [Required]
-        public string StandardReferenceInitial { get; set; }
+        public string StandardReferenceInitial { get; set; } = string.Empty;
         public long? StandardReferenceGroupId { get; set; }
     }
 }

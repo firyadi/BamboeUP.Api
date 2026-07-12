@@ -12,9 +12,9 @@ namespace Shared.DataTransferObjects
         public Guid CompanyOfficeGuid { get; init; }
         public long StandardReferenceId { get; init; }
         public Guid StandardReferenceGuid { get; init; }
-        public string StandardReferenceInitial { get; init; }
-        public string StandardReferenceItemInitial { get; init; }
-        public string StandardReferenceItemName { get; init; }
-        public string Note { get; init; }
+        public string StandardReferenceInitial { get; init; } = string.Empty;
+        public string StandardReferenceItemInitial { get; init; } = string.Empty;
+        public string StandardReferenceItemName { get; init; } = string.Empty;
+        public string Note { get; init; } = string.Empty;
     }
 }

@@ -7,10 +7,10 @@ namespace Shared.DataTransferObjects
         public long PostalCodeId { get; set; }
         public Guid PostalCodeGuid { get; init; }
         public long SubDistrictId { get; set; }
-        public string PostalCodeValue { get; set; }
+        public string PostalCodeValue { get; set; } = string.Empty;
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -21,13 +21,13 @@ namespace Shared.DataTransferObjects
 
     public record PostalCodeForCreationDto
     {
-        public string PostalCodeValue { get; set; }
+        public string PostalCodeValue { get; set; } = string.Empty;
         public long CreatedById { get; set; }
     }
 
     public record PostalCodeForUpdateDto
     {
-        public string PostalCodeValue { get; set; }
+        public string PostalCodeValue { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 

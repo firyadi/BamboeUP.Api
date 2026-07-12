@@ -31,7 +31,7 @@ namespace Service.Shell.Approval
         public async Task<ApprovalDelegationDto> GetAsync(Guid guid, bool trackChanges)
         {
             var delegation = await _repository.ApprovalDelegation.GetAsync(guid, trackChanges);
-            return delegation.Adapt<ApprovalDelegationDto>();
+            return delegation.Adapt<ApprovalDelegationDto>()!;
         }
 
         public async Task<ApprovalDelegationDto> CreateAsync(ApprovalDelegationForCreationDto input)

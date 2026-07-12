@@ -186,7 +186,7 @@ namespace Service.Shell
                     var parent = await _repository.OrganizationUnit.GetOrganizationUnitByIdAsync(model.ParentOrganizationUnitId.Value, false);
                     if (parent != null)
                     {
-                        if (!string.IsNullOrEmpty(oldOrganizationUnit.HierarchyPath) && parent.HierarchyPath.StartsWith(oldOrganizationUnit.HierarchyPath))
+                        if (!string.IsNullOrEmpty(oldOrganizationUnit.HierarchyPath) && parent.HierarchyPath?.StartsWith(oldOrganizationUnit.HierarchyPath) == true)
                         {
                             throw new InvalidOperationException("Cannot set parent to a descendant node.");
                         }
@@ -212,7 +212,7 @@ namespace Service.Shell
 
                     foreach (var descendant in descendants)
                     {
-                        descendant.HierarchyPath = model.HierarchyPath + descendant.HierarchyPath.Substring(oldOrganizationUnit.HierarchyPath.Length);
+                        descendant.HierarchyPath = model.HierarchyPath + descendant.HierarchyPath!.Substring(oldOrganizationUnit.HierarchyPath.Length);
                         descendant.LevelDepth += depthDiff;
                         await _repository.OrganizationUnit.UpdateOrganizationUnitAsync(descendant, transaction);
                     }

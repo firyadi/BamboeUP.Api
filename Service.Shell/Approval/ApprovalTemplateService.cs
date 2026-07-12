@@ -36,7 +36,7 @@ namespace Service.Shell.Approval
         public async Task<ApprovalTemplateDto> GetAsync(Guid guid, bool trackChanges)
         {
             var template = await _repository.ApprovalTemplate.GetAsync(guid, trackChanges);
-            if (template == null) return null;
+            if (template == null) return null!;
 
             var dto = template.Adapt<ApprovalTemplateDto>();
 

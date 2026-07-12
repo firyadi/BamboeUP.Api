@@ -4,6 +4,13 @@
 > Contoh: Company → CompanyOffice, PurchaseOrder → PurchaseOrderLine, dll.
 > **PENTING:** Template ini menghasilkan 2 controller, 2 service, repository terpisah untuk Header dan Detail, berdasarkan implementasi nyata Company & CompanyOffice.
 > **V2:** Ditambahkan sistem FK Auto-Join (lihat `TemplateApi1Table_V2.md` untuk dokumentasi lengkap FK Join Configuration).
+> **Canonical V3:** `BamboeUP.SchemaStudio/SchemaStudio.Generator/Templates/Api/TemplateApiHeaderDetail.md` — diselaraskan untuk nullable CS8601–CS8604, CS8618, CS8625.
+
+---
+
+## Nullable reference types (CS8601–CS8604, CS8618, CS8625)
+
+Lihat template canonical V3. Ringkas: `Task<T?>` di repository/service Get, `NotFound()` di controller, `TryGetValue` untuk detail diff, string NOT NULL `= string.Empty`, transaksi `IDbTransaction? transaction = null`.
 
 ---
 
@@ -705,7 +712,7 @@ namespace Service.Contracts.{TargetLayer}
     public interface I{Header}Service
     {
         Task<IEnumerable<{Header}Dto>> GetAll{HeaderPlural}Async(bool trackChanges);
-        Task<{Header}Dto> Get{Header}ByGuidAsync(Guid {header}Guid, bool trackChanges);
+        Task<{Header}Dto?> Get{Header}ByGuidAsync(Guid {header}Guid, bool trackChanges);
         Task<{Header}Dto> Create{Header}Async({Header}ForCreationDto input);
         Task Update{Header}Async(Guid {header}Guid, {Header}ForUpdateDto input, bool trackChanges);
         Task Delete{Header}Async(Guid {header}Guid, {Header}ForDeleteDto input, bool trackChanges);
@@ -733,7 +740,7 @@ namespace Service.Contracts.{TargetLayer}
     {
         Task<IEnumerable<{Detail}Dto>> GetAllBy{Header}GuidAsync(Guid {header}Guid);
         Task<{Detail}Dto> Get{Detail}ByGuidAsync(Guid {detail}Guid, bool trackChanges);
-        Task<{Detail}Dto> GetBy{Header}GuidAnd{Detail}GuidAsync(Guid {header}Guid, Guid {detail}Guid);
+        Task<{Detail}Dto?> GetBy{Header}GuidAnd{Detail}GuidAsync(Guid {header}Guid, Guid {detail}Guid);
         
         Task<{Detail}Dto> Create{Detail}Async({Detail}ForCreationDto input);
         Task Update{Detail}Async(Guid {detail}Guid, {Detail}ForUpdateDto input, bool trackChanges);
@@ -785,9 +792,10 @@ namespace Service.{TargetLayer}
             return entities.Adapt<IEnumerable<{Header}Dto>>();
         }
 
-        public async Task<{Header}Dto> Get{Header}ByGuidAsync(Guid {header}Guid, bool trackChanges)
+        public async Task<{Header}Dto?> Get{Header}ByGuidAsync(Guid {header}Guid, bool trackChanges)
         {
             var entity = await _repository.{Header}.Get{Header}Async({header}Guid, trackChanges);
+            if (entity == null) return null;
             return entity.Adapt<{Header}Dto>();
         }
 
@@ -884,15 +892,17 @@ namespace Service.{TargetLayer}
             return entities.Adapt<IEnumerable<{Detail}Dto>>();
         }
 
-        public async Task<{Detail}Dto> Get{Detail}ByGuidAsync(Guid {detail}Guid, bool trackChanges)
+        public async Task<{Detail}Dto?> Get{Detail}ByGuidAsync(Guid {detail}Guid, bool trackChanges)
         {
             var entity = await _repository.{Detail}.Get{Detail}Async({detail}Guid, trackChanges);
+            if (entity == null) return null;
             return entity.Adapt<{Detail}Dto>();
         }
 
-        public async Task<{Detail}Dto> GetBy{Header}GuidAnd{Detail}GuidAsync(Guid {header}Guid, Guid {detail}Guid)
+        public async Task<{Detail}Dto?> GetBy{Header}GuidAnd{Detail}GuidAsync(Guid {header}Guid, Guid {detail}Guid)
         {
             var entity = await _repository.{Detail}.GetBy{Header}GuidAnd{Detail}GuidAsync({header}Guid, {detail}Guid);
+            if (entity == null) return null;
             return entity.Adapt<{Detail}Dto>();
         }
 
@@ -1045,6 +1055,7 @@ namespace Presentation.{TargetLayer}.Controllers
         public async Task<IActionResult> AdminGetByHeaderAndItem(Guid headerGuid, Guid guid)
         {
             var data = await _service.{Detail}Service.GetBy{Header}GuidAnd{Detail}GuidAsync(headerGuid, guid);
+            if (data is null) return NotFound();
             return Ok(data);
         }
 

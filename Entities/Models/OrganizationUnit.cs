@@ -17,10 +17,10 @@ namespace Entities.Models
         public Guid OrganizationUnitGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string OrganizationUnitCode { get; set; }
+        public string OrganizationUnitCode { get; set; } = string.Empty;
 
         [Required]
-        public string OrganizationUnitName { get; set; }
+        public string OrganizationUnitName { get; set; } = string.Empty;
 
         public int? ParentOrganizationUnitId { get; set; }
 

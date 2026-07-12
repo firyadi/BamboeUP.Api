@@ -6,18 +6,18 @@ namespace Shared.DataTransferObjects
     {
         public long CompanyId { get; set; }
         public Guid CompanyGuid { get; init; }
-        public string CompanyName { get; set; }
-        public string InitialName { get; set; }
-        public string TaxCompulsionNo { get; set; }
-        public string RegistrationNo { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string InitialName { get; set; } = string.Empty;
+        public string TaxCompulsionNo { get; set; } = string.Empty;
+        public string RegistrationNo { get; set; } = string.Empty;
         public long? ParentCompanyId { get; set; }
 
         public string? ParentProgramName { get; set; }
         public string? ParentCompanyName { get; set; }
-        public string DefaultCurrency { get; set; }
-        public byte[] CompanyLogo { get; set; }
+        public string DefaultCurrency { get; set; } = string.Empty;
+        public byte[]? CompanyLogo { get; set; }
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -28,26 +28,26 @@ namespace Shared.DataTransferObjects
 
     public record CompanyForCreationDto
     {
-        public string CompanyName { get; set; }
-        public string InitialName { get; set; }
-        public string TaxCompulsionNo { get; set; }
-        public string RegistrationNo { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string InitialName { get; set; } = string.Empty;
+        public string TaxCompulsionNo { get; set; } = string.Empty;
+        public string RegistrationNo { get; set; } = string.Empty;
         public long? ParentCompanyId { get; set; }
-        public string DefaultCurrency { get; set; }
-        public byte[] CompanyLogo { get; set; }
+        public string DefaultCurrency { get; set; } = string.Empty;
+        public byte[]? CompanyLogo { get; set; }
         public long CreatedById { get; set; } = 0;
         public IEnumerable<CompanyOfficeForCreationDto>? Offices { get; set; }
     }
 
     public record CompanyForUpdateDto
     {
-        public string CompanyName { get; set; }
-        public string InitialName { get; set; }
-        public string TaxCompulsionNo { get; set; }
-        public string RegistrationNo { get; set; }
+        public string CompanyName { get; set; } = string.Empty;
+        public string InitialName { get; set; } = string.Empty;
+        public string TaxCompulsionNo { get; set; } = string.Empty;
+        public string RegistrationNo { get; set; } = string.Empty;
         public long? ParentCompanyId { get; set; }
-        public string DefaultCurrency { get; set; }
-        public byte[] CompanyLogo { get; set; }
+        public string DefaultCurrency { get; set; } = string.Empty;
+        public byte[]? CompanyLogo { get; set; }
         public long UpdatedById { get; set; }
         public IEnumerable<CompanyOfficeForUpdateDto>? Offices { get; set; }
     }

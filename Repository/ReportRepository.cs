@@ -1,6 +1,7 @@
 using Contracts;
 using Dapper;
 using Shared.DataTransferObjects;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
@@ -52,6 +53,7 @@ namespace Repository
                     p.StoreProcedureName,
                     ISNULL(p.IsProgramPrintAble, 0) AS IsProgramPrintAble,
                     rd.ReportScope,
+                    ISNULL(rd.IsTracked, 0) AS IsTracked,
                     ISNULL(rd.RequiresPrintId, 0) AS RequiresPrintId,
                     rd.ReportDefinitionId
                 FROM [core].[Programs] p");
@@ -87,6 +89,7 @@ namespace Repository
                     ORDER BY CASE WHEN rd.CompanyId IS NULL THEN 1 ELSE 0 END
                 ) rd
                 WHERE p.ProgramType = @ReportType
+                  AND p.ProgramType IN (N'RPT', N'PVT')
                   AND p.StatusId > 0
                   AND p.DeletedTime IS NULL
                   AND p.IsActive = 1");
@@ -201,55 +204,6 @@ namespace Repository
             return await connection.QueryAsync<ReportParameterDefinitionDto>(sql, new { reportDefinitionId }, transaction);
         }
 
-        public async Task<long> InsertExecutionLogAsync(ReportExecutionLogInsert row, IDbTransaction? transaction = null)
-        {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [core].[ReportExecutionLog]
-                (ReportExecutionGuid, ProgramId, ReportDefinitionId, UserId, CompanyId, CompanyOfficeId,
-                 ReportKind, ParametersJson, ReportPrintId, ReportPrintIdMasked, IsReprint, ReprintOfPrintId,
-                 ReprintReason, SubjectKey, Status, OutputFormat)
-                VALUES
-                (@ReportExecutionGuid, @ProgramId, @ReportDefinitionId, @UserId, @CompanyId, @CompanyOfficeId,
-                 @ReportKind, @ParametersJson, @ReportPrintId, @ReportPrintIdMasked, @IsReprint, @ReprintOfPrintId,
-                 @ReprintReason, @SubjectKey, @Status, @OutputFormat);
-                SELECT CAST(SCOPE_IDENTITY() AS BIGINT);";
-            return await conn.QuerySingleAsync<long>(sql, row, transaction);
-        }
-
-        public async Task UpdateExecutionLogAsync(ReportExecutionLogUpdate row, IDbTransaction? transaction = null)
-        {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [core].[ReportExecutionLog]
-                SET Status = @Status,
-                    DurationMs = @DurationMs,
-                    ErrorMessage = @ErrorMessage
-                WHERE ReportExecutionGuid = @ReportExecutionGuid";
-            await conn.ExecuteAsync(sql, row, transaction);
-        }
-
-        public async Task<ReportExecutionLogDto?> GetExecutionByPrintIdAsync(
-            string reportPrintId,
-            bool includeFullPrintId,
-            IDbTransaction? transaction = null)
-        {
-            using var connection = _context.CreateConnection();
-            var sql = includeFullPrintId
-                ? @"SELECT l.ReportExecutionLogId, l.ReportExecutionGuid, l.ProgramId, p.ProgramCode, p.ProgramName,
-                           l.ReportKind, l.ReportPrintId, l.ReportPrintIdMasked, l.Status, l.CreatedTime
-                    FROM [core].[ReportExecutionLog] l
-                    INNER JOIN [core].[Programs] p ON p.ProgramId = l.ProgramId
-                    WHERE l.ReportPrintId = @ReportPrintId"
-                : @"SELECT l.ReportExecutionLogId, l.ReportExecutionGuid, l.ProgramId, p.ProgramCode, p.ProgramName,
-                           l.ReportKind, NULL AS ReportPrintId, l.ReportPrintIdMasked, l.Status, l.CreatedTime
-                    FROM [core].[ReportExecutionLog] l
-                    INNER JOIN [core].[Programs] p ON p.ProgramId = l.ProgramId
-                    WHERE l.ReportPrintId = @ReportPrintId";
-
-            return await connection.QuerySingleOrDefaultAsync<ReportExecutionLogDto>(sql, new { reportPrintId }, transaction);
-        }
-
         public async Task<IEnumerable<ReportLookupItemDto>> LookupAsync(
             string lookupType,
             string? query,
@@ -312,6 +266,152 @@ namespace Repository
                 ORDER BY ou.OrganizationUnitName, ou.OrganizationUnitCode";
 
             return connection.QueryAsync<ReportLookupItemDto>(sql, new { Take = take, Q = q }, transaction);
+        }
+
+        public Task<IEnumerable<PrintSlipDto>> GetAllowedPrintsAsync(
+            Guid userGuid,
+            string? companyId,
+            string? officeId,
+            string sourceProgramCode,
+            IDbTransaction? transaction = null)
+            => QueryPrintSlipsAsync(userGuid, companyId, officeId, sourceProgramCode, scoped: true, transaction);
+
+        public Task<IEnumerable<PrintSlipDto>> GetAllPrintSlipsBySourceAsync(
+            string sourceProgramCode,
+            IDbTransaction? transaction = null)
+            => QueryPrintSlipsAsync(null, companyId: null, officeId: null, sourceProgramCode, scoped: false, transaction);
+
+        private async Task<IEnumerable<PrintSlipDto>> QueryPrintSlipsAsync(
+            Guid? userGuid,
+            string? companyId,
+            string? officeId,
+            string sourceProgramCode,
+            bool scoped,
+            IDbTransaction? transaction)
+        {
+            using var connection = _context.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("SourceProgramCode", sourceProgramCode.Trim());
+
+            var sql = new StringBuilder(@"
+                SELECT DISTINCT
+                    p.ProgramId,
+                    p.ProgramGuid,
+                    p.ProgramCode,
+                    p.ProgramName,
+                    p.RowIndex AS SortOrder,
+                    rd.DefinitionKey,
+                    ISNULL(rd.IsTracked, 0) AS IsTracked,
+                    ISNULL(rd.RequiresPrintId, 0) AS RequiresPrintId,
+                    rd.ReportDefinitionId
+                FROM [core].[Programs] parent
+                INNER JOIN [core].[Programs] p ON p.ParentId = parent.ProgramId");
+
+            if (scoped)
+            {
+                sql.Append(@"
+                INNER JOIN [core].[UserGroupProgram] ugp ON ugp.ProgramsId = p.ProgramId
+                INNER JOIN [core].[UserGroupScope] ugs ON ugs.UserGroupId = ugp.UserGroupId
+                INNER JOIN [core].[Users] u ON u.UserId = ugs.UserId");
+            }
+
+            sql.Append(@"
+                OUTER APPLY (
+                    SELECT TOP 1 rd.ReportDefinitionId, rd.DefinitionKey, rd.IsTracked, rd.RequiresPrintId
+                    FROM [core].[ReportDefinition] rd
+                    WHERE rd.ProgramId = p.ProgramId
+                      AND rd.ReportKind = N'DOC'
+                      AND rd.IsActive = 1
+                      AND rd.StatusId > 0");
+
+            if (long.TryParse(companyId, out var companyIdLong))
+            {
+                sql.Append(" AND (rd.CompanyId IS NULL OR rd.CompanyId = @CompanyIdLong)");
+                parameters.Add("CompanyIdLong", companyIdLong);
+            }
+            else
+            {
+                sql.Append(" AND rd.CompanyId IS NULL");
+            }
+
+            sql.Append(@"
+                    ORDER BY CASE WHEN rd.CompanyId IS NULL THEN 1 ELSE 0 END
+                ) rd
+                WHERE parent.ProgramCode = @SourceProgramCode
+                  AND parent.StatusId > 0 AND parent.DeletedTime IS NULL AND parent.IsActive = 1
+                  AND p.ProgramType = N'DOC'
+                  AND p.StatusId > 0 AND p.DeletedTime IS NULL AND p.IsActive = 1");
+
+            if (scoped)
+            {
+                parameters.Add("UserGuid", userGuid);
+                sql.Append(@"
+                  AND u.UserGuid = @UserGuid
+                  AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
+                  AND ugp.StatusId > 0 AND ugp.DeletedTime IS NULL
+                  AND ugp.IsUserGroupViewAble = 1");
+
+                if (!string.IsNullOrEmpty(companyId))
+                {
+                    if (Guid.TryParse(companyId, out var companyGuid))
+                    {
+                        sql.Append(" AND ugs.CompanyGuid = @CompanyGuid");
+                        parameters.Add("CompanyGuid", companyGuid);
+                    }
+                    else if (long.TryParse(companyId, out companyIdLong))
+                    {
+                        sql.Append(" AND ugs.CompanyId = @CompanyIdLong");
+                        if (!parameters.ParameterNames.Contains("CompanyIdLong"))
+                            parameters.Add("CompanyIdLong", companyIdLong);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(officeId))
+                {
+                    if (Guid.TryParse(officeId, out var officeGuid))
+                    {
+                        sql.Append(" AND (ugs.CompanyOfficeGuid = @OfficeGuid OR ugs.CompanyOfficeGuid IS NULL)");
+                        parameters.Add("OfficeGuid", officeGuid);
+                    }
+                    else if (long.TryParse(officeId, out var officeIdLong))
+                    {
+                        sql.Append(" AND (ugs.CompanyOfficeId = @OfficeIdLong OR ugs.CompanyOfficeId IS NULL)");
+                        parameters.Add("OfficeIdLong", officeIdLong);
+                    }
+                }
+                else
+                {
+                    sql.Append(" AND ugs.CompanyOfficeId IS NULL");
+                }
+            }
+
+            sql.Append(" ORDER BY p.RowIndex, p.ProgramCode, p.ProgramId ASC");
+
+            return await connection.QueryAsync<PrintSlipDto>(sql.ToString(), parameters, transaction);
+        }
+
+        public async Task<DataTable> ExecuteReportDataAsync(
+            string storedProcedureName,
+            IReadOnlyDictionary<string, object?> parameters,
+            IDbTransaction? transaction = null)
+        {
+            if (string.IsNullOrWhiteSpace(storedProcedureName))
+                throw new ArgumentException("Stored procedure name is required.", nameof(storedProcedureName));
+
+            using var connection = _context.CreateConnection();
+            var dynamicParams = new DynamicParameters();
+            foreach (var kv in parameters)
+                dynamicParams.Add(kv.Key, kv.Value);
+
+            using var reader = await connection.ExecuteReaderAsync(
+                storedProcedureName.Trim(),
+                dynamicParams,
+                transaction,
+                commandType: CommandType.StoredProcedure);
+
+            var table = new DataTable();
+            table.Load(reader);
+            return table;
         }
     }
 }

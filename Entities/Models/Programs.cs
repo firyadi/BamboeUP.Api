@@ -18,7 +18,7 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(30)]
-        public string ProgramCode { get; set; }
+        public string ProgramCode { get; set; } = string.Empty;
 
         public long? ParentId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(100)]
-        public string ProgramName { get; set; }
+        public string ProgramName { get; set; } = string.Empty;
 
         public long? TopLevelProgramId { get; set; }
 

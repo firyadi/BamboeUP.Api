@@ -43,7 +43,7 @@ namespace Repository
             return await connection.QueryAsync<SubDistrict>(sql, new { districtGuid });
         }
 
-        public async Task CreateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction transaction = null)
+        public async Task CreateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(subDistrict);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -62,7 +62,7 @@ namespace Repository
                 newEntity: subDistrict);
         }
 
-        public async Task UpdateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction transaction = null)
+        public async Task UpdateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(subDistrict);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -87,7 +87,7 @@ namespace Repository
                 newEntity: subDistrict);
         }
 
-        public async Task SoftDeleteSubDistrictAsync(SubDistrict subDistrict, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteSubDistrictAsync(SubDistrict subDistrict, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(subDistrict, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -125,7 +125,7 @@ namespace Repository
             return await connection.QuerySingleOrDefaultAsync<long?>(sql, new { subDistrictGuid });
         }
 
-        public async Task DeleteSubDistrictAsync(Guid subDistrictGuid, IDbTransaction transaction = null)
+        public async Task DeleteSubDistrictAsync(Guid subDistrictGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[SubDistrict] WHERE SubDistrictGuid = @SubDistrictGuid";

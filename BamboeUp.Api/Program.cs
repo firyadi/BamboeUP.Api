@@ -2,10 +2,9 @@ using System;
 using Mapster;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Caching.Hybrid;
 using NLog;
-using BamboeUp.Audit.Contracts;
-using BamboeUp.Audit.Services;
 using BamboeUp.Api;
 using BamboeUp.Api.Extensions;
 using Contracts;
@@ -16,23 +15,19 @@ using Service.Shell.Extensions;
 using Service.Modules.Extensions;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-// using Hangfire;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging config (harus sebelum builder.Build)
 LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
 
-// 1. Konfigurasi dasar dan environment
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// 2. Registrasi konfigurasi custom & DI
-builder.Services.ConfigureCors();
+builder.Services.ConfigureCors(builder.Configuration);
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureLoggerService();
-
 
 builder.Services.ConfigureDapperServices(builder.Configuration);
 builder.Services.ConfigureRepositoryManager();
@@ -45,18 +40,37 @@ builder.Services.Configure<Shared.AdminRegistry.AdminRegistrySettings>(
 MapsterConfig.RegisterMappings();
 builder.Services.AddMapster();
 
-
-
-// 3. Audit
 AuditConfig.Configure(builder.Services, builder.Configuration);
 
-// 4. Middleware & Tools tambahan
-builder.Services.AddMemoryCache();
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = System.IO.Compression.CompressionLevel.Fastest;
+});
+
+builder.Services.AddHybridCache(options =>
+{
+    options.DefaultEntryOptions = new HybridCacheEntryOptions
+    {
+        Expiration = TimeSpan.FromMinutes(5),
+        LocalCacheExpiration = TimeSpan.FromMinutes(1)
+    };
+});
+
 builder.Services.AddScoped<ValidationFilterAttribute>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.ConfigureVersioning();
 builder.Services.AddAuthentication();
-builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureJWT(builder.Configuration, builder.Environment);
 builder.Services.AddJwtConfiguration(builder.Configuration);
 
 builder.Services.AddRateLimiter(options =>
@@ -71,8 +85,6 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
-// builder.Services.ConfigureHangfire(builder.Configuration);
-
 builder.Services.AddControllers(config =>
 {
     config.RespectBrowserAcceptHeader = true;
@@ -81,69 +93,44 @@ builder.Services.AddControllers(config =>
 .AddApplicationPart(typeof(Presentation.Shell.Controllers.AuthController).Assembly)
 .AddApplicationPart(typeof(BamboeUp.Api.Controllers.BanksController).Assembly);
 
-// 5. Swagger
 builder.Services.ConfigureSwagger();
 
 var app = builder.Build();
 
-var logger = app.Services.GetRequiredService<ILoggerManager>();
-
-// 1. Error Handling
-// app.ConfigureExceptionHandler(logger);
-app.UseExceptionHandler(opt => { });
+app.UseExceptionHandler(_ => { });
 
 if (app.Environment.IsProduction())
     app.UseHsts();
 
-// 2. HTTP pipeline dasar
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
-app.UseStaticFiles();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = ForwardedHeaders.All
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-// 3. CORS & Routing
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
+
+app.UseResponseCompression();
+app.UseApiSecurityHeaders();
+app.UseStaticFiles();
 app.UseCors("CorsPolicy");
-
 app.UseRateLimiter();
-
-// 4. Security
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<Presentation.Shell.ActionFilters.ParameterContextMiddleware>();
-// app.UseHangfireDashboard("/hangfire");
 
-// 5. Swagger (pindahkan ini ke setelah MapControllers)
 app.UseSwagger();
-
-// 6. Endpoint mapping
 app.MapControllers();
 
-// 7. Swagger UI (dipindah ke sini, setelah MapControllers)
-app.UseSwaggerUI(s =>
+if (app.Environment.IsDevelopment())
 {
-    s.SwaggerEndpoint("/swagger/v1/swagger.json", "BamboeUP.API v1");
-    s.SwaggerEndpoint("/swagger/v2/swagger.json", "Custom API v2");
-});
+    app.UseSwaggerUI(s =>
+    {
+        s.SwaggerEndpoint("/swagger/v1/swagger.json", "BamboeUP.API v1");
+        s.SwaggerEndpoint("/swagger/v2/swagger.json", "Custom API v2");
+    });
 
-// (opsional debug)
-SwaggerDiagnostics.RunDiagnostics(app);
-foreach (var endpoint in app.Services.GetRequiredService<EndpointDataSource>().Endpoints)
-{
-    Console.WriteLine($"Endpoint: {endpoint.DisplayName}");
+    SwaggerDiagnostics.RunDiagnostics(app);
 }
-
-
-// 8. Run Local background jobs via Hangfire
-//RecurringJob.AddOrUpdate<Service.Contracts.Approval.IApprovalService>(
-//    "approval-sla-check",
-//    approvalService => approvalService.CheckAndProcessSlaAsync(),
-//    Cron.Hourly // Cek SLA setiap jam
-//);
 
 app.Run();

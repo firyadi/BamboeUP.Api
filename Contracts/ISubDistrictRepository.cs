@@ -9,10 +9,10 @@ namespace Contracts
         Task<long?> GetSubDistrictIdByGuidAsync(Guid subDistrictGuid);
         Task<SubDistrict> GetSubDistrictAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges);
         Task<IEnumerable<SubDistrict>> GetAllSubDistrictsAsync(Guid districtGuid, bool trackChanges);
-        Task CreateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction transaction = null);
-        Task UpdateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction transaction = null);
-        Task DeleteSubDistrictAsync(Guid subDistrictGuid, IDbTransaction transaction = null);
-        Task SoftDeleteSubDistrictAsync(SubDistrict subDistrict, long deletedBy, IDbTransaction transaction = null);
+        Task CreateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction? transaction = null);
+        Task UpdateSubDistrictAsync(SubDistrict subDistrict, IDbTransaction? transaction = null);
+        Task DeleteSubDistrictAsync(Guid subDistrictGuid, IDbTransaction? transaction = null);
+        Task SoftDeleteSubDistrictAsync(SubDistrict subDistrict, long deletedBy, IDbTransaction? transaction = null);
 
         Task<IEnumerable<SubDistrict>> SearchSubDistrictAsync(
             Guid districtGuid,

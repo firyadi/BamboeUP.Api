@@ -43,7 +43,7 @@ namespace Service.Shell
         public async Task<StandardReferenceScopeDto> GetStandardReferenceScopeByGuidAsync(Guid standardReferenceScopeGuid, bool trackChanges)
         {
             var entity = await _repository.StandardReferenceScope.GetStandardReferenceScopeAsync(standardReferenceScopeGuid, trackChanges);
-            if (entity == null) return null;
+            if (entity == null) return null!;
 
             var dto = entity.Adapt<StandardReferenceScopeDto>();
             var items = await _repository.StandardReferenceScopeItem.GetAllByStandardReferenceScopeGuidAsync(standardReferenceScopeGuid);
@@ -248,7 +248,7 @@ namespace Service.Shell
                 RootTableName = "StandardReferenceScope",
                 RootEntityKey = model.StandardReferenceScopeGuid.ToString(),
                 RootDisplayName = model.CompanyName ?? "Scope",
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : input.UpdatedById.ToString(),
+                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : (input.UpdatedById ?? 0).ToString(),
                 Entries = entries
             });
         }

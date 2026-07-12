@@ -8,8 +8,8 @@ namespace Shared.DataTransferObjects
         public long AwardId { get; set; }
         public Guid AwardGuid { get; init; }
         
-        public string AwardCode { get; set; }
-        public string AwardName { get; set; }
+        public string AwardCode { get; set; } = string.Empty;
+        public string AwardName { get; set; } = string.Empty;
         public long SrAwardCriteria { get; set; }
         public long SrAwardType { get; set; }
         public DateTime ValidFrom { get; set; }
@@ -18,7 +18,7 @@ namespace Shared.DataTransferObjects
         public string? Note { get; set; }
 
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -29,8 +29,8 @@ namespace Shared.DataTransferObjects
 
     public record AwardForCreationDto
     {
-        public string AwardCode { get; set; }
-        public string AwardName { get; set; }
+        public string AwardCode { get; set; } = string.Empty;
+        public string AwardName { get; set; } = string.Empty;
         public long SrAwardCriteria { get; set; }
         public long SrAwardType { get; set; }
         public DateTime ValidFrom { get; set; }
@@ -42,8 +42,8 @@ namespace Shared.DataTransferObjects
 
     public record AwardForUpdateDto
     {
-        public string AwardCode { get; set; }
-        public string AwardName { get; set; }
+        public string AwardCode { get; set; } = string.Empty;
+        public string AwardName { get; set; } = string.Empty;
         public long SrAwardCriteria { get; set; }
         public long SrAwardType { get; set; }
         public DateTime ValidFrom { get; set; }

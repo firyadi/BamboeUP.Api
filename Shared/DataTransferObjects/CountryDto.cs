@@ -6,14 +6,14 @@ namespace Shared.DataTransferObjects
     {
         public long CountryId { get; set; }
         public Guid CountryGuid { get; init; }
-        public string CountryIso { get; set; }
-        public string CountryName { get; set; }
+        public string CountryIso { get; set; } = string.Empty;
+        public string CountryName { get; set; } = string.Empty;
         public string? CountryIso3 { get; set; }
         public int PhoneCode { get; set; }
-        public string CurrencyCode { get; set; }
+        public string CurrencyCode { get; set; } = string.Empty;
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -24,22 +24,22 @@ namespace Shared.DataTransferObjects
 
     public record CountryForCreationDto
     {
-        public string CountryIso { get; set; }
-        public string CountryName { get; set; }
+        public string CountryIso { get; set; } = string.Empty;
+        public string CountryName { get; set; } = string.Empty;
         public string? CountryIso3 { get; set; }
         public int PhoneCode { get; set; }
-        public string CurrencyCode { get; set; }
+        public string CurrencyCode { get; set; } = string.Empty;
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
     }
 
     public record CountryForUpdateDto
     {
-        public string CountryIso { get; set; }
-        public string CountryName { get; set; }
+        public string CountryIso { get; set; } = string.Empty;
+        public string CountryName { get; set; } = string.Empty;
         public string? CountryIso3 { get; set; }
         public int PhoneCode { get; set; }
-        public string CurrencyCode { get; set; }
+        public string CurrencyCode { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 

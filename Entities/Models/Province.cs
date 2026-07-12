@@ -19,7 +19,7 @@ namespace Entities.Models
         [Required]
         [MaxLength(255)]
         [Column(TypeName = "nvarchar(255)")]
-        public string ProvinceName { get; set; }
+        public string ProvinceName { get; set; } = string.Empty;
 
         [Required]
         public long CountryId { get; set; }

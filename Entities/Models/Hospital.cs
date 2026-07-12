@@ -17,23 +17,23 @@ namespace Entities.Models
         public Guid HospitalGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string HospitalName { get; set; }
+        public string HospitalName { get; set; } = string.Empty;
 
-        public string HospitalCode { get; set; }
+        public string HospitalCode { get; set; } = string.Empty;
 
-        public string ShortName { get; set; }
+        public string ShortName { get; set; } = string.Empty;
 
-        public string LicenseNo { get; set; }
+        public string LicenseNo { get; set; } = string.Empty;
 
-        public string HospitalType { get; set; }
+        public string HospitalType { get; set; } = string.Empty;
 
-        public string HospitalClass { get; set; }
+        public string HospitalClass { get; set; } = string.Empty;
 
-        public string PhoneNo { get; set; }
+        public string PhoneNo { get; set; } = string.Empty;
 
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        public string Website { get; set; }
+        public string Website { get; set; } = string.Empty;
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;

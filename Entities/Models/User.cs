@@ -18,20 +18,20 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(100)]
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         [Required]
-        public string PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(128)]
-        public string PasswordSalt { get; set; }
+        public string PasswordSalt { get; set; } = string.Empty;
 
         [MaxLength(200)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [MaxLength(200)]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         public bool IsAdmin { get; set; }
 

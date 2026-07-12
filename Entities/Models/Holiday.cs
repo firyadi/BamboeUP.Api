@@ -18,14 +18,14 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(4)]
-        public string YearPeriode { get; set; }
+        public string YearPeriode { get; set; } = string.Empty;
 
         [Required]
         public DateTime HolidayDates { get; set; }
 
         [Required]
         [MaxLength(500)]
-        public string Note { get; set; }
+        public string Note { get; set; } = string.Empty;
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;

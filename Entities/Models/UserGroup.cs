@@ -18,7 +18,7 @@ namespace Entities.Models
 
         [Required]
         [MaxLength(100)]
-        public string UserGroupName { get; set; }
+        public string UserGroupName { get; set; } = string.Empty;
 
         public bool IsEditAble { get; set; }
 

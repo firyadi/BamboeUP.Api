@@ -17,44 +17,44 @@ namespace Entities.Models
         public Guid AutoNumberGuid { get; set; } = Guid.NewGuid();
 
         [MaxLength(7)]
-        public string Prefik { get; set; }
+        public string Prefik { get; set; } = string.Empty;
 
         [MaxLength(1)]
-        public string SeparatorAfterPrefik { get; set; }
+        public string SeparatorAfterPrefik { get; set; } = string.Empty;
 
         public bool? IsUsedDepartment { get; set; }
 
         [MaxLength(1)]
-        public string SeparatorAfterDept { get; set; }
+        public string SeparatorAfterDept { get; set; } = string.Empty;
 
         public bool? IsUsedYear { get; set; }
 
         public byte? YearDigit { get; set; }
 
         [MaxLength(1)]
-        public string SeparatorAfterYear { get; set; }
+        public string SeparatorAfterYear { get; set; } = string.Empty;
 
         public bool? IsUsedMonth { get; set; }
 
         public bool? IsMonthInRomawi { get; set; }
 
         [MaxLength(1)]
-        public string SeparatorAfterMonth { get; set; }
+        public string SeparatorAfterMonth { get; set; } = string.Empty;
 
         public bool? IsUsedDay { get; set; }
 
         [MaxLength(1)]
-        public string SeparatorAfterDay { get; set; }
+        public string SeparatorAfterDay { get; set; } = string.Empty;
 
         public byte? NumberLength { get; set; }
 
         public byte? NumberGroupLength { get; set; }
 
         [MaxLength(1)]
-        public string NumberGroupSeparator { get; set; }
+        public string NumberGroupSeparator { get; set; } = string.Empty;
 
         [MaxLength(20)]
-        public string NumberFormat { get; set; }
+        public string NumberFormat { get; set; } = string.Empty;
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;

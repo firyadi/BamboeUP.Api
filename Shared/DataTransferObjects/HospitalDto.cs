@@ -8,7 +8,7 @@ namespace Shared.DataTransferObjects
         public long HospitalId { get; set; }
         public Guid HospitalGuid { get; init; }
         
-        public string HospitalName { get; set; }
+        public string HospitalName { get; set; } = string.Empty;
         public string? HospitalCode { get; set; }
         public string? ShortName { get; set; }
         public string? LicenseNo { get; set; }
@@ -18,7 +18,7 @@ namespace Shared.DataTransferObjects
         public string? Email { get; set; }
         public string? Website { get; set; }
         public int StatusId { get; set; }
-        public byte[] RowVersion { get; set; }
+        public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -29,7 +29,7 @@ namespace Shared.DataTransferObjects
 
     public record HospitalForCreationDto
     {
-        public string HospitalName { get; set; }
+        public string HospitalName { get; set; } = string.Empty;
         public string? HospitalCode { get; set; }
         public string? ShortName { get; set; }
         public string? LicenseNo { get; set; }
@@ -43,7 +43,7 @@ namespace Shared.DataTransferObjects
 
     public record HospitalForUpdateDto
     {
-        public string HospitalName { get; set; }
+        public string HospitalName { get; set; } = string.Empty;
         public string? HospitalCode { get; set; }
         public string? ShortName { get; set; }
         public string? LicenseNo { get; set; }

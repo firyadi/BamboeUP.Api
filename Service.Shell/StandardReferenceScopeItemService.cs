@@ -103,7 +103,7 @@ namespace Service.Shell
                 RootTableName = "StandardReferenceScopeItem",
                 RootEntityKey = model.StandardReferenceScopeItemGuid.ToString(),
                 RootDisplayName = model.StandardReferenceScopeItemName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : model.UpdatedById.ToString(),
+                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : (model.UpdatedById ?? 0).ToString(),
                 Entries = new()
                 {
                     new AuditLogEntry

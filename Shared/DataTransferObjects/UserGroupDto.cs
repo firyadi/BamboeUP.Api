@@ -7,7 +7,7 @@ namespace Shared.DataTransferObjects
     {
         public long UserGroupId { get; set; }
         public Guid UserGroupGuid { get; init; }
-        public string UserGroupName { get; set; }
+        public string UserGroupName { get; set; } = string.Empty;
         public bool IsEditAble { get; set; }
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
@@ -22,14 +22,14 @@ namespace Shared.DataTransferObjects
 
     public record UserGroupForCreationDto
     {
-        public string UserGroupName { get; set; }
+        public string UserGroupName { get; set; } = string.Empty;
         public bool IsEditAble { get; set; }
         public long CreatedById { get; set; }
     }
 
     public record UserGroupForUpdateDto
     {
-        public string UserGroupName { get; set; }
+        public string UserGroupName { get; set; } = string.Empty;
         public bool IsEditAble { get; set; }
         public long? UpdatedById { get; set; }
     }
@@ -41,7 +41,7 @@ namespace Shared.DataTransferObjects
 
     public class UserGroupSearchDto
     {
-        public string UserGroupName { get; set; }
+        public string UserGroupName { get; set; } = string.Empty;
         public SearchType UserGroupNameSearchType { get; set; } = SearchType.Contains;
     }
 }

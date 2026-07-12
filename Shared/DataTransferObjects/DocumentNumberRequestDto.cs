@@ -7,12 +7,12 @@ namespace Shared.DataTransferObjects
     {
         public long DocumentNumberRequestId { get; set; }
         public Guid DocumentNumberRequestGuid { get; init; }
-        public string DocumentType { get; set; }
-        public string DocumentNo { get; set; }
+        public string DocumentType { get; set; } = string.Empty;
+        public string DocumentNo { get; set; } = string.Empty;
         public long AutoNumberLogId { get; set; }
         public string? ExternalReference { get; set; }
         public string? Description { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public long? CompanyId { get; set; }
         public long? OfficeId { get; set; }
         public long? OrgUnitId { get; set; }
@@ -24,8 +24,8 @@ namespace Shared.DataTransferObjects
 
     public record DocumentNumberRequestForCreationDto
     {
-        public string DocumentType { get; set; }
-        public string DocumentNo { get; set; }
+        public string DocumentType { get; set; } = string.Empty;
+        public string DocumentNo { get; set; } = string.Empty;
         public long AutoNumberLogId { get; set; }
         public string? ExternalReference { get; set; }
         public string? Description { get; set; }
@@ -38,12 +38,12 @@ namespace Shared.DataTransferObjects
 
     public record DocumentNumberRequestForUpdateDto
     {
-        public string DocumentType { get; set; }
-        public string DocumentNo { get; set; }
+        public string DocumentType { get; set; } = string.Empty;
+        public string DocumentNo { get; set; } = string.Empty;
         public long AutoNumberLogId { get; set; }
         public string? ExternalReference { get; set; }
         public string? Description { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         public long? CompanyId { get; set; }
         public long? OfficeId { get; set; }
         public long? OrgUnitId { get; set; }

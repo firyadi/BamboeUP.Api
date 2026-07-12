@@ -43,7 +43,7 @@ namespace Repository
             return await connection.QueryAsync<Province>(sql, new { countryGuid });
         }
 
-        public async Task CreateProvinceAsync(Province province, IDbTransaction transaction = null)
+        public async Task CreateProvinceAsync(Province province, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(province);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -62,7 +62,7 @@ namespace Repository
                 newEntity: province);
         }
 
-        public async Task UpdateProvinceAsync(Province province, IDbTransaction transaction = null)
+        public async Task UpdateProvinceAsync(Province province, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(province);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -87,7 +87,7 @@ namespace Repository
                 newEntity: province);
         }
 
-        public async Task SoftDeleteProvinceAsync(Province province, long deletedBy, IDbTransaction transaction = null)
+        public async Task SoftDeleteProvinceAsync(Province province, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(province, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
@@ -111,7 +111,7 @@ namespace Repository
                 newEntity: province);
         }
 
-        public async Task DeleteProvinceAsync(Guid provinceGuid, IDbTransaction transaction = null)
+        public async Task DeleteProvinceAsync(Guid provinceGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Province] WHERE ProvinceGuid = @ProvinceGuid";

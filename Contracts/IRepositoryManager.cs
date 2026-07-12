@@ -42,6 +42,8 @@ namespace Contracts
         IProvinceRepository Province { get; }
         IProgramRepository Program { get; }
         IReportRepository Report { get; }
+        IReportDefinitionRepository ReportDefinition { get; }
+        IReportExecutionLogRepository ReportExecutionLog { get; }
         IStandardReferenceRepository StandardReference { get; }
         IStandardReferenceItemRepository StandardReferenceItem { get; }
         IStandardReferenceScopeRepository StandardReferenceScope { get; }

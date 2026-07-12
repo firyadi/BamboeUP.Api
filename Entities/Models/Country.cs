@@ -19,12 +19,12 @@ namespace Entities.Models
         [Required]
         [MaxLength(2)]
         [Column(TypeName = "char(2)")]
-        public string CountryIso { get; set; }
+        public string CountryIso { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(200)]
         [Column(TypeName = "varchar(200)")]
-        public string CountryName { get; set; }
+        public string CountryName { get; set; } = string.Empty;
 
         [MaxLength(3)]
         [Column(TypeName = "char(3)")]
@@ -36,7 +36,7 @@ namespace Entities.Models
         [Required]
         [MaxLength(3)]
         [Column(TypeName = "char(3)")]
-        public string CurrencyCode { get; set; }
+        public string CurrencyCode { get; set; } = string.Empty;
 
         [Required]
         public int StatusId { get; set; }  = 1;

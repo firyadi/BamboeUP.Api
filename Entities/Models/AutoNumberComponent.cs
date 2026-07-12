@@ -26,17 +26,17 @@ namespace Entities.Models
         [Required]
         [MaxLength(20)]
         [Column("ComponentType")]
-        public string ComponentType { get; set; }
+        public string ComponentType { get; set; } = string.Empty;
         // STATIC / COUNTER / YEAR / MONTH / DAY / COMPANY / OFFICE / DEPT
 
         [MaxLength(50)]
         [Column("StaticValue")]
-        public string StaticValue { get; set; }
+        public string StaticValue { get; set; } = string.Empty;
 
         /// <summary>Format for date/number components (e.g. yyyy, MM, dd)</summary>
         [MaxLength(20)]
         [Column("Format")]
-        public string Format { get; set; }
+        public string Format { get; set; } = string.Empty;
 
         [Column("CounterLength")]
         public short? CounterLength { get; set; }

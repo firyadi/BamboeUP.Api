@@ -208,7 +208,7 @@ namespace Service.Shell
                     var parent = await _repository.CostCenter.GetCostCenterByIdAsync(model.ParentCostCenterId.Value, false);
                     if (parent != null)
                     {
-                        if (!string.IsNullOrEmpty(oldCostCenter.HierarchyPath) && parent.HierarchyPath.StartsWith(oldCostCenter.HierarchyPath))
+                        if (!string.IsNullOrEmpty(oldCostCenter.HierarchyPath) && parent.HierarchyPath?.StartsWith(oldCostCenter.HierarchyPath) == true)
                         {
                             throw new InvalidOperationException("Cannot set parent to a descendant node.");
                         }
@@ -233,7 +233,7 @@ namespace Service.Shell
 
                     foreach (var descendant in descendants)
                     {
-                        descendant.HierarchyPath = model.HierarchyPath + descendant.HierarchyPath.Substring(oldCostCenter.HierarchyPath.Length);
+                        descendant.HierarchyPath = model.HierarchyPath + descendant.HierarchyPath!.Substring(oldCostCenter.HierarchyPath.Length);
                         descendant.LevelDepth += depthDiff;
                         await _repository.CostCenter.UpdateCostCenterAsync(descendant, transaction);
                     }
