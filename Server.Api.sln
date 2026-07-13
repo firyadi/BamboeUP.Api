@@ -31,15 +31,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report", "..\Bambo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Api.Tests", "BamboeUp.Api.Tests\BamboeUp.Api.Tests.csproj", "{E1724CFC-C620-4C65-A988-B39FC7701485}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.QuestPdf", "..\BamboeUp.Report.QuestPdf\BamboeUp.Report.QuestPdf.csproj", "{D3F4209C-6623-4286-9D19-08747B9E9B3B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.QuestPdf", "..\BamboeUp.Report\engines\BamboeUp.Report.QuestPdf\BamboeUp.Report.QuestPdf.csproj", "{D3F4209C-6623-4286-9D19-08747B9E9B3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.FastReport", "..\BamboeUp.Report.FastReport\BamboeUp.Report.FastReport.csproj", "{BFF0BBDC-7597-472C-9D8E-D8236F96353A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.FastReport", "..\BamboeUp.Report\engines\BamboeUp.Report.FastReport\BamboeUp.Report.FastReport.csproj", "{BFF0BBDC-7597-472C-9D8E-D8236F96353A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.Telerik", "..\BamboeUp.Report.Telerik\BamboeUp.Report.Telerik.csproj", "{0F4D3456-BB11-4F12-BDA4-815860E04F10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.Telerik", "..\BamboeUp.Report\engines\BamboeUp.Report.Telerik\BamboeUp.Report.Telerik.csproj", "{0F4D3456-BB11-4F12-BDA4-815860E04F10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.DevExpress", "..\BamboeUp.Report.DevExpress\BamboeUp.Report.DevExpress.csproj", "{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.DevExpress", "..\BamboeUp.Report\engines\BamboeUp.Report.DevExpress\BamboeUp.Report.DevExpress.csproj", "{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.Engines", "..\BamboeUp.Report.Engines\BamboeUp.Report.Engines.csproj", "{FCF1AF0E-8012-4F75-BEB1-C8C98E03242F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.Engines", "..\BamboeUp.Report\engines\BamboeUp.Report.Engines\BamboeUp.Report.Engines.csproj", "{FCF1AF0E-8012-4F75-BEB1-C8C98E03242F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Audit", "..\BamboeUp.Audit\BamboeUp.Audit.csproj", "{4CBBD1E4-04B5-40BB-9A41-37CDDD00C353}"
 EndProject
