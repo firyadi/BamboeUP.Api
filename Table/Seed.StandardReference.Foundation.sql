@@ -1129,5 +1129,439 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
     VALUES (NEWID(), @RefId, @RefGuid, 'IN_APP', 'In App', 'In App', 5, 1, 0, GETUTCDATE());
 
+
+-- --------------------------------------------------
+-- 36. Education Level
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EducationLevel')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Education Level', 'EducationLevel', 'Education Level reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EducationLevel';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SD')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SD', 'SD', 'SD', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SMP')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SMP', 'SMP', 'SMP', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SMA')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SMA', 'SMA/SMK', 'SMA/SMK', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'D3')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'D3', 'Diploma 3', 'Diploma 3', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'S1')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'S1', 'Bachelor / Sarjana', 'Bachelor / Sarjana', 5, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'S2')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'S2', 'Master / Magister', 'Master / Magister', 6, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'S3')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'S3', 'Doctorate / Doktor', 'Doctorate / Doktor', 7, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 37. Major
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Major')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Major', 'Major', 'Major / Field of study reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Major';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CS')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'CS', 'Computer Science', 'Computer Science', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ACC')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'ACC', 'Accounting', 'Accounting', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MGT')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'MGT', 'Management', 'Management', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ENG')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'ENG', 'Engineering', 'Engineering', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'LAW')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'LAW', 'Law', 'Law', 5, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'PSY')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'PSY', 'Psychology', 'Psychology', 6, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 38. Termination Reason
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'TerminationReason')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Termination Reason', 'TerminationReason', 'Termination Reason reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'TerminationReason';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'RESIGN')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'RESIGN', 'Resignation', 'Resignation', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CONTRACT_END')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'CONTRACT_END', 'End of Contract', 'End of Contract', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'RETIRE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'RETIRE', 'Retirement', 'Retirement', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'LAYOFF')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'LAYOFF', 'Layoff / Redundancy', 'Layoff / Redundancy', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'DISMISS')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'DISMISS', 'Dismissal', 'Dismissal', 5, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'DECEASED')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'DECEASED', 'Deceased', 'Deceased', 6, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 39. Career Action Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CareerActionType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Career Action Type', 'CareerActionType', 'Career Action Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CareerActionType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'PROMOTION')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'PROMOTION', 'Promotion', 'Promotion', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'DEMOTION')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'DEMOTION', 'Demotion', 'Demotion', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'TRANSFER')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'TRANSFER', 'Transfer / Mutation', 'Transfer / Mutation', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ROTATION')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'ROTATION', 'Rotation', 'Rotation', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'REHIRE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'REHIRE', 'Rehire', 'Rehire', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 40. Leave Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'LeaveType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Leave Type', 'LeaveType', 'Leave Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'LeaveType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ANNUAL')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'ANNUAL', 'Annual Leave', 'Annual Leave', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SICK')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SICK', 'Sick Leave', 'Sick Leave', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MATERNITY')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'MATERNITY', 'Maternity Leave', 'Maternity Leave', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'PATERNITY')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'PATERNITY', 'Paternity Leave', 'Paternity Leave', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'UNPAID')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'UNPAID', 'Unpaid Leave', 'Unpaid Leave', 5, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SPECIAL')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SPECIAL', 'Special Leave', 'Special Leave', 6, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 41. Shift Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ShiftType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Shift Type', 'ShiftType', 'Shift Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ShiftType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'OFFICE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'OFFICE', 'Office Hours', 'Office Hours', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SHIFT_1')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SHIFT_1', 'Shift 1 (Morning)', 'Shift 1 (Morning)', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SHIFT_2')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SHIFT_2', 'Shift 2 (Afternoon)', 'Shift 2 (Afternoon)', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SHIFT_3')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SHIFT_3', 'Shift 3 (Night)', 'Shift 3 (Night)', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'FLEXIBLE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'FLEXIBLE', 'Flexible Hours', 'Flexible Hours', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 42. Overtime Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'OvertimeType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Overtime Type', 'OvertimeType', 'Overtime Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'OvertimeType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'WORKDAY')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'WORKDAY', 'Workday Overtime', 'Workday Overtime', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'HOLIDAY')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'HOLIDAY', 'Holiday Overtime', 'Holiday Overtime', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'NATIONAL_HOLIDAY')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'NATIONAL_HOLIDAY', 'National Holiday Overtime', 'National Holiday Overtime', 3, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 43. Allowance Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AllowanceType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Allowance Type', 'AllowanceType', 'Allowance Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AllowanceType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MEAL')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'MEAL', 'Meal Allowance', 'Meal Allowance', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'TRANSPORT')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'TRANSPORT', 'Transport Allowance', 'Transport Allowance', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'POSITION')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'POSITION', 'Position Allowance', 'Position Allowance', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MEDICAL')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'MEDICAL', 'Medical Allowance', 'Medical Allowance', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'THR')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'THR', 'Religious Festive Allowance (THR)', 'Religious Festive Allowance (THR)', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 44. Deduction Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'DeductionType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Deduction Type', 'DeductionType', 'Deduction Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'DeductionType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'LATE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'LATE', 'Late Arrival Deduction', 'Late Arrival Deduction', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'UNPAID_LEAVE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'UNPAID_LEAVE', 'Unpaid Leave Deduction', 'Unpaid Leave Deduction', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BPJS_TK')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'BPJS_TK', 'BPJS Ketenagakerjaan Deduction', 'BPJS Ketenagakerjaan Deduction', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BPJS_KS')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'BPJS_KS', 'BPJS Kesehatan Deduction', 'BPJS Kesehatan Deduction', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'LOAN')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'LOAN', 'Loan Installment', 'Loan Installment', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 45. Bank
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Bank')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Bank', 'Bank', 'Bank reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Bank';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BCA')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'BCA', 'Bank Central Asia', 'Bank Central Asia', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MANDIRI')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'MANDIRI', 'Bank Mandiri', 'Bank Mandiri', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BNI')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'BNI', 'Bank Negara Indonesia', 'Bank Negara Indonesia', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BRI')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'BRI', 'Bank Rakyat Indonesia', 'Bank Rakyat Indonesia', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CIMB')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'CIMB', 'Bank CIMB Niaga', 'Bank CIMB Niaga', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 46. Asset Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AssetType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Asset Type', 'AssetType', 'Asset Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AssetType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'LAPTOP')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'LAPTOP', 'Laptop', 'Laptop', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MOBILE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'MOBILE', 'Mobile Phone / SIM Card', 'Mobile Phone / SIM Card', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'VEHICLE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'VEHICLE', 'Operational Vehicle', 'Operational Vehicle', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ACCESS_CARD')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'ACCESS_CARD', 'Office Access Card', 'Office Access Card', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'UNIFORM')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'UNIFORM', 'Uniform', 'Uniform', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 47. Asset Status
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AssetStatus')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Asset Status', 'AssetStatus', 'Asset Status reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AssetStatus';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'AVAILABLE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'AVAILABLE', 'Available', 'Available', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ASSIGNED')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'ASSIGNED', 'Assigned', 'Assigned', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'DAMAGED')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'DAMAGED', 'Damaged', 'Damaged', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'UNDER_REPAIR')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'UNDER_REPAIR', 'Under Repair', 'Under Repair', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'WRITTEN_OFF')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'WRITTEN_OFF', 'Written Off', 'Written Off', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 48. Document Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'DocumentType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Document Type', 'DocumentType', 'Document Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'DocumentType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CV')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'CV', 'Curriculum Vitae', 'Curriculum Vitae', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'KTP')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'KTP', 'National Identity Card (KTP)', 'National Identity Card (KTP)', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'NPWP')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'NPWP', 'Taxpayer Identification Number (NPWP)', 'Taxpayer Identification Number (NPWP)', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CERTIFICATE')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'CERTIFICATE', 'Professional Certificate', 'Professional Certificate', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CONTRACT_DOC')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'CONTRACT_DOC', 'Employment Contract', 'Employment Contract', 5, 1, 0, GETUTCDATE());
+
+-- --------------------------------------------------
+-- 49. Disciplinary Action Type
+-- --------------------------------------------------
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'DisciplinaryActionType')
+BEGIN
+    INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), 'Disciplinary Action Type', 'DisciplinaryActionType', 'Disciplinary Action Type reference values', 1, 0, GETUTCDATE());
+END
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'DisciplinaryActionType';
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'VERBAL')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'VERBAL', 'Verbal Warning', 'Verbal Warning', 1, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SP_1')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SP_1', 'Warning Letter 1 (SP 1)', 'Warning Letter 1 (SP 1)', 2, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SP_2')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SP_2', 'Warning Letter 2 (SP 2)', 'Warning Letter 2 (SP 2)', 3, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SP_3')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SP_3', 'Warning Letter 3 (SP 3)', 'Warning Letter 3 (SP 3)', 4, 1, 0, GETUTCDATE());
+
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SUSPENSION')
+    INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
+    VALUES (NEWID(), @RefId, @RefGuid, 'SUSPENSION', 'Suspension', 'Suspension', 5, 1, 0, GETUTCDATE());
+
 PRINT '=== Seeding Completed Successfully! ==='
 GO
+
