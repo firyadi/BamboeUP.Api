@@ -18,12 +18,12 @@ DECLARE @RefGuid UNIQUEIDENTIFIER;
 -- --------------------------------------------------
 -- 1. Gender
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'GENDER')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Gender')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Gender', 'GENDER', 'Gender reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Gender', 'Gender', 'Gender reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'GENDER';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Gender';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'M')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -36,12 +36,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 2. Religion
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RELIGION')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Religion')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Religion', 'RELIGION', 'Religion reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Religion', 'Religion', 'Religion reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RELIGION';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Religion';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ISL')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -70,12 +70,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 3. Nationality
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'NATIONALITY')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Nationality')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Nationality', 'NATIONALITY', 'Nationality reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Nationality', 'Nationality', 'Nationality reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'NATIONALITY';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Nationality';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ID')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -88,12 +88,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 4. Language
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'LANGUAGE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Language')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Language', 'LANGUAGE', 'Language reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Language', 'Language', 'Language reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'LANGUAGE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Language';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ID')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -114,12 +114,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 5. Currency
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CURRENCY')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Currency')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Currency', 'CURRENCY', 'Currency reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Currency', 'Currency', 'Currency reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CURRENCY';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Currency';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'IDR')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -136,12 +136,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 6. Identification Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'IDENTIFICATION_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'IdentificationType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Identification Type', 'IDENTIFICATION_TYPE', 'Identification Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Identification Type', 'IdentificationType', 'Identification Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'IDENTIFICATION_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'IdentificationType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'EMPNO')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -194,12 +194,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 7. Blood Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'BLOOD_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'BloodType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Blood Type', 'BLOOD_TYPE', 'Blood Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Blood Type', 'BloodType', 'Blood Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'BLOOD_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'BloodType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'A')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -220,12 +220,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 8. Marital Status
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MARITAL_STATUS')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MaritalStatus')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Marital Status', 'MARITAL_STATUS', 'Marital Status reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Marital Status', 'MaritalStatus', 'Marital Status reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MARITAL_STATUS';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MaritalStatus';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'SINGLE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -246,12 +246,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 9. Physical Characteristic
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PHYSICAL_CHARACTERISTIC')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PhysicalCharacteristic')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Physical Characteristic', 'PHYSICAL_CHARACTERISTIC', 'Physical Characteristic reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Physical Characteristic', 'PhysicalCharacteristic', 'Physical Characteristic reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PHYSICAL_CHARACTERISTIC';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PhysicalCharacteristic';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'HEIGHT')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -261,9 +261,9 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
     VALUES (NEWID(), @RefId, @RefGuid, 'WEIGHT', 'Weight', 'Weight', 2, 1, 0, GETUTCDATE());
 
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BLOOD_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BloodType')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), @RefId, @RefGuid, 'BLOOD_TYPE', 'Blood Type', 'Blood Type', 3, 1, 0, GETUTCDATE());
+    VALUES (NEWID(), @RefId, @RefGuid, 'BloodType', 'Blood Type', 'Blood Type', 3, 1, 0, GETUTCDATE());
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'EYE_COLOR')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -292,12 +292,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 10. Measurement Unit
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MEASUREMENT_UNIT')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MeasurementUnit')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Measurement Unit', 'MEASUREMENT_UNIT', 'Measurement Unit reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Measurement Unit', 'MeasurementUnit', 'Measurement Unit reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MEASUREMENT_UNIT';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'MeasurementUnit';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'CM')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -322,12 +322,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 11. Address Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ADDRESS_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AddressType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Address Type', 'ADDRESS_TYPE', 'Address Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Address Type', 'AddressType', 'Address Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ADDRESS_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'AddressType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'HOME')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -348,12 +348,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 12. Contact Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CONTACT_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ContactType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Contact Type', 'CONTACT_TYPE', 'Contact Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Contact Type', 'ContactType', 'Contact Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CONTACT_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ContactType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MOBILE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -374,12 +374,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 13. Relationship
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RELATIONSHIP')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Relationship')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Relationship', 'RELATIONSHIP', 'Relationship reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Relationship', 'Relationship', 'Relationship reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RELATIONSHIP';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Relationship';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'FATHER')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -416,12 +416,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 14. Employment Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EMPLOYMENT_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EmploymentType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Employment Type', 'EMPLOYMENT_TYPE', 'Employment Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Employment Type', 'EmploymentType', 'Employment Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EMPLOYMENT_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EmploymentType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'PERMANENT')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -454,12 +454,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 15. Employment Status
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EMPLOYMENT_STATUS')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EmploymentStatus')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Employment Status', 'EMPLOYMENT_STATUS', 'Employment Status reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Employment Status', 'EmploymentStatus', 'Employment Status reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EMPLOYMENT_STATUS';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'EmploymentStatus';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ACTIVE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -492,12 +492,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 16. Industry
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'INDUSTRY')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Industry')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Industry', 'INDUSTRY', 'Industry reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Industry', 'Industry', 'Industry reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'INDUSTRY';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Industry';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'MANUFACTURING')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -542,12 +542,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 17. Job Level
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'JOB_LEVEL')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'JobLevel')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Job Level', 'JOB_LEVEL', 'Job Level reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Job Level', 'JobLevel', 'Job Level reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'JOB_LEVEL';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'JobLevel';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'STAFF')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -588,12 +588,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 18. Grade
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'GRADE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Grade')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Grade', 'GRADE', 'Grade reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Grade', 'Grade', 'Grade reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'GRADE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'Grade';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'G01')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -638,12 +638,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 19. Position Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'POSITION_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PositionType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Position Type', 'POSITION_TYPE', 'Position Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Position Type', 'PositionType', 'Position Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'POSITION_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PositionType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'STRUCTURAL')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -664,12 +664,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 20. Company Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COMPANY_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CompanyType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Company Type', 'COMPANY_TYPE', 'Company Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Company Type', 'CompanyType', 'Company Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COMPANY_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CompanyType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'HEAD_OFFICE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -690,12 +690,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 21. Cost Center Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COST_CENTER_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CostCenterType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Cost Center Type', 'COST_CENTER_TYPE', 'Cost Center Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Cost Center Type', 'CostCenterType', 'Cost Center Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COST_CENTER_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CostCenterType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'REVENUE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -716,12 +716,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 22. Organization Unit Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ORGANIZATION_UNIT_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'OrganizationUnitType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Organization Unit Type', 'ORGANIZATION_UNIT_TYPE', 'Organization Unit Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Organization Unit Type', 'OrganizationUnitType', 'Organization Unit Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ORGANIZATION_UNIT_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'OrganizationUnitType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'COMPANY')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -746,12 +746,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 23. Payroll Frequency
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PAYROLL_FREQUENCY')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PayrollFrequency')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Payroll Frequency', 'PAYROLL_FREQUENCY', 'Payroll Frequency reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Payroll Frequency', 'PayrollFrequency', 'Payroll Frequency reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PAYROLL_FREQUENCY';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'PayrollFrequency';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'WEEKLY')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -768,12 +768,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 24. Tax Status
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'TAX_STATUS')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'TaxStatus')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Tax Status', 'TAX_STATUS', 'Tax Status reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Tax Status', 'TaxStatus', 'Tax Status reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'TAX_STATUS';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'TaxStatus';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'TK0')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -810,12 +810,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 25. Applicant Status
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'APPLICANT_STATUS')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ApplicantStatus')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Applicant Status', 'APPLICANT_STATUS', 'Applicant Status reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Applicant Status', 'ApplicantStatus', 'Applicant Status reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'APPLICANT_STATUS';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ApplicantStatus';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'APPLIED')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -844,12 +844,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 26. Source of Hire
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'SOURCE_OF_HIRE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'SourceOfHire')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Source of Hire', 'SOURCE_OF_HIRE', 'Source of Hire reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Source of Hire', 'SourceOfHire', 'Source of Hire reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'SOURCE_OF_HIRE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'SourceOfHire';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'JOB_PORTAL')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -882,12 +882,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 27. Interview Result
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'INTERVIEW_RESULT')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'InterviewResult')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Interview Result', 'INTERVIEW_RESULT', 'Interview Result reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Interview Result', 'InterviewResult', 'Interview Result reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'INTERVIEW_RESULT';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'InterviewResult';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'STRONG_HIRE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -908,12 +908,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 28. KPI Category
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'KPI_CATEGORY')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'KpiCategory')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'KPI Category', 'KPI_CATEGORY', 'KPI Category reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'KPI Category', 'KpiCategory', 'KPI Category reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'KPI_CATEGORY';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'KpiCategory';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'FINANCIAL')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -934,12 +934,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 29. Competency Level
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COMPETENCY_LEVEL')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CompetencyLevel')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Competency Level', 'COMPETENCY_LEVEL', 'Competency Level reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Competency Level', 'CompetencyLevel', 'Competency Level reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COMPETENCY_LEVEL';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CompetencyLevel';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'BEGINNER')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -960,12 +960,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 30. Rating Scale
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RATING_SCALE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RatingScale')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Rating Scale', 'RATING_SCALE', 'Rating Scale reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Rating Scale', 'RatingScale', 'Rating Scale reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RATING_SCALE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'RatingScale';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = '1')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -990,12 +990,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 31. Course Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COURSE_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CourseType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Course Type', 'COURSE_TYPE', 'Course Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Course Type', 'CourseType', 'Course Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'COURSE_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CourseType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'ONLINE')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -1020,12 +1020,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 32. Certificate Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CERTIFICATE_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CertificateType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Certificate Type', 'CERTIFICATE_TYPE', 'Certificate Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Certificate Type', 'CertificateType', 'Certificate Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CERTIFICATE_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'CertificateType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'INTERNAL')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -1042,12 +1042,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 33. Approval Status
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'APPROVAL_STATUS')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ApprovalStatus')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Approval Status', 'APPROVAL_STATUS', 'Approval Status reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Approval Status', 'ApprovalStatus', 'Approval Status reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'APPROVAL_STATUS';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'ApprovalStatus';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'DRAFT')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -1072,12 +1072,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 34. Workflow Status
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'WORKFLOW_STATUS')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'WorkflowStatus')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Workflow Status', 'WORKFLOW_STATUS', 'Workflow Status reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Workflow Status', 'WorkflowStatus', 'Workflow Status reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'WORKFLOW_STATUS';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'WorkflowStatus';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'NEW')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
@@ -1102,12 +1102,12 @@ IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardRefere
 -- --------------------------------------------------
 -- 35. Notification Type
 -- --------------------------------------------------
-IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'NOTIFICATION_TYPE')
+IF NOT EXISTS (SELECT 1 FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'NotificationType')
 BEGIN
     INSERT INTO [app].[StandardReference] ([StandardReferenceGuid], [StandardReferenceName], [StandardReferenceInitial], [Description], [StatusId], [CreatedById], [CreatedTime])
-    VALUES (NEWID(), 'Notification Type', 'NOTIFICATION_TYPE', 'Notification Type reference values', 1, 0, GETUTCDATE());
+    VALUES (NEWID(), 'Notification Type', 'NotificationType', 'Notification Type reference values', 1, 0, GETUTCDATE());
 END
-SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'NOTIFICATION_TYPE';
+SELECT @RefId = [StandardReferenceId], @RefGuid = [StandardReferenceGuid] FROM [app].[StandardReference] WHERE [StandardReferenceInitial] = 'NotificationType';
 
 IF NOT EXISTS (SELECT 1 FROM [app].[StandardReferenceItem] WHERE [StandardReferenceId] = @RefId AND [StandardReferenceItemInitial] = 'EMAIL')
     INSERT INTO [app].[StandardReferenceItem] ([StandardReferenceItemGuid], [StandardReferenceId], [StandardReferenceGuid], [StandardReferenceItemInitial], [StandardReferenceItemName], [StandardReferenceItemValue], [DisplayOrder], [StatusId], [CreatedById], [CreatedTime])
