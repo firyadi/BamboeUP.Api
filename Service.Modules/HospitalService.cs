@@ -11,55 +11,47 @@ using System.Threading.Tasks;
 
 namespace Service.Modules
 {
-    public partial class HospitalService : IHospitalService
+    public partial class HospitalService(
+        IRepositoryManager repository,
+        ILoggerManager logger,
+        ITransactionManager transactionManager,
+        IAuditService audit,
+        IUserContext userContext) : IHospitalService
     {
-        private readonly IRepositoryManager _repository;
-        private readonly ILoggerManager _logger;
-        private readonly ITransactionManager _transactionManager;
-        private readonly IAuditService _audit;
-        private readonly IUserContext _userContext;
-
-        public HospitalService(
-            IRepositoryManager repository,
-            ILoggerManager logger,
-            ITransactionManager transactionManager,
-            IAuditService audit,
-            IUserContext userContext)
-        {
-            _repository = repository;
-            _logger = logger;
-            _transactionManager = transactionManager;
-            _audit = audit;
-            _userContext = userContext;
-        }
-
         public async Task<IEnumerable<HospitalDto>> GetAllHospitalsAsync(bool trackChanges)
         {
-            var entities = await _repository.Hospital.GetAllHospitalsAsync(trackChanges);
+            var entities = await repository.Hospital.GetAllHospitalsAsync(trackChanges);
             return entities.Adapt<IEnumerable<HospitalDto>>();
         }
 
         public async Task<HospitalDto?> GetHospitalByGuidAsync(Guid hospitalGuid, bool trackChanges)
         {
-            var entity = await _repository.Hospital.GetHospitalAsync(hospitalGuid, trackChanges);
+            var entity = await repository.Hospital.GetHospitalAsync(hospitalGuid, trackChanges);
+            if (entity == null) return null;
             return entity.Adapt<HospitalDto>();
         }
 
         public async Task<HospitalDto> CreateHospitalAsync(HospitalForCreationDto input)
         {
             var model = input.Adapt<Hospital>();
-            model.StatusId = 1;
-            await _repository.Hospital.CreateHospitalAsync(model);
 
-            await _audit.LogSessionAsync(new AuditSessionInput
+            if (model.HospitalGuid == Guid.Empty)
+                model.HospitalGuid = Guid.NewGuid();
+
+            model.StatusId = 1;
+            model.CreatedTime = DateTime.UtcNow;
+            await repository.Hospital.CreateHospitalAsync(model);
+
+
+            await audit.LogSessionAsync(new AuditSessionInput
             {
                 SessionType = "CREATE",
                 RootTableName = "Hospital",
                 RootEntityKey = model.HospitalGuid.ToString(),
                 RootDisplayName = model.HospitalName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : model.CreatedById.ToString(),
-                Entries = new()
-                {
+                UserId = userContext.UserGuid != Guid.Empty ? userContext.UserGuid.ToString() : model.CreatedById.ToString(),
+                Entries =
+                [
                     new AuditLogEntry
                     {
                         TableName = "Hospital",
@@ -69,7 +61,7 @@ namespace Service.Modules
                         OldEntity = null,
                         NewEntity = model
                     }
-                }
+                ]
             });
 
             return model.Adapt<HospitalDto>();
@@ -77,23 +69,25 @@ namespace Service.Modules
 
         public async Task UpdateHospitalAsync(Guid hospitalGuid, HospitalForUpdateDto input, bool trackChanges)
         {
-            var oldEntity = await _repository.Hospital.GetHospitalAsync(hospitalGuid, false);
+            var oldEntity = await repository.Hospital.GetHospitalAsync(hospitalGuid, false)
+                ?? throw new KeyNotFoundException($"Hospital '{{hospitalGuid}}' was not found.");
 
             var model = input.Adapt<Hospital>();
             model.HospitalGuid = hospitalGuid;
+
             model.StatusId = 2;
             model.UpdatedTime = DateTime.UtcNow;
-            await _repository.Hospital.UpdateHospitalAsync(model);
+            await repository.Hospital.UpdateHospitalAsync(model);
 
-            await _audit.LogSessionAsync(new AuditSessionInput
+            await audit.LogSessionAsync(new AuditSessionInput
             {
                 SessionType = "UPDATE",
                 RootTableName = "Hospital",
                 RootEntityKey = model.HospitalGuid.ToString(),
                 RootDisplayName = model.HospitalName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : model.UpdatedById.ToString(),
-                Entries = new()
-                {
+                UserId = userContext.UserGuid != Guid.Empty ? userContext.UserGuid.ToString() : model.UpdatedById.ToString(),
+                Entries =
+                [
                     new AuditLogEntry
                     {
                         TableName = "Hospital",
@@ -103,25 +97,30 @@ namespace Service.Modules
                         OldEntity = oldEntity,
                         NewEntity = model
                     }
-                }
+                ]
             });
         }
 
         public async Task DeleteHospitalAsync(Guid hospitalGuid, HospitalForDeleteDto input, bool trackChanges)
         {
-            var oldEntity = await _repository.Hospital.GetHospitalAsync(hospitalGuid, false);
-            var model = new Hospital { HospitalGuid = hospitalGuid };
-            await _repository.Hospital.SoftDeleteHospitalAsync(model, input.DeletedById);
+            var oldEntity = await repository.Hospital.GetHospitalAsync(hospitalGuid, false);
+            var model = new Hospital
+            {
+                HospitalGuid = hospitalGuid,
+                DeletedById = input.DeletedById,
+                DeletedTime = DateTime.UtcNow
+            };
+            await repository.Hospital.SoftDeleteHospitalAsync(model, input.DeletedById);
 
-            await _audit.LogSessionAsync(new AuditSessionInput
+            await audit.LogSessionAsync(new AuditSessionInput
             {
                 SessionType = "DELETE",
                 RootTableName = "Hospital",
                 RootEntityKey = hospitalGuid.ToString(),
                 RootDisplayName = oldEntity?.HospitalName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : input.DeletedById.ToString(),
-                Entries = new()
-                {
+                UserId = userContext.UserGuid != Guid.Empty ? userContext.UserGuid.ToString() : input.DeletedById.ToString(),
+                Entries =
+                [
                     new AuditLogEntry
                     {
                         TableName = "Hospital",
@@ -131,21 +130,23 @@ namespace Service.Modules
                         OldEntity = oldEntity,
                         NewEntity = null
                     }
-                }
+                ]
             });
         }
 
         public async Task DeleteHospitalByAdminAsync(Guid hospitalGuid, bool trackChanges)
         {
-            await _repository.Hospital.DeleteHospitalAsync(hospitalGuid);
+            await repository.Hospital.DeleteHospitalAsync(hospitalGuid);
         }
 
         public async Task<IEnumerable<HospitalDto>> SearchHospitalAsync(
             string? hospitalName, string? hospitalNameSearchType, string? hospitalCode, string? hospitalCodeSearchType, string? shortName, string? shortNameSearchType, string? licenseNo, string? licenseNoSearchType, string? hospitalType, string? hospitalTypeSearchType, string? hospitalClass, string? hospitalClassSearchType, string? phoneNo, string? phoneNoSearchType, string? email, string? emailSearchType, string? website, string? websiteSearchType
+
             )
         {
-            var data = await _repository.Hospital.SearchHospitalAsync(
+            var data = await repository.Hospital.SearchHospitalAsync(
                 hospitalName, hospitalNameSearchType, hospitalCode, hospitalCodeSearchType, shortName, shortNameSearchType, licenseNo, licenseNoSearchType, hospitalType, hospitalTypeSearchType, hospitalClass, hospitalClassSearchType, phoneNo, phoneNoSearchType, email, emailSearchType, website, websiteSearchType
+
                 );
             return data.Adapt<IEnumerable<HospitalDto>>();
         }

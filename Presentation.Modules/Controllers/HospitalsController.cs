@@ -9,20 +9,13 @@ namespace BamboeUp.Api.Controllers
 {
     [Route("api/hospitals")]
     [ApiController]
-    public partial class HospitalsController : ControllerBase
+    public partial class HospitalsController(IServiceModulesManager service) : ControllerBase
     {
-        private readonly IServiceModulesManager _service;
-
-        public HospitalsController(IServiceModulesManager service)
-        {
-            _service = service;
-        }
-
         [HttpGet]
         [SwaggerOperation(Summary = "Get All")]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _service.HospitalService.GetAllHospitalsAsync(trackChanges: false);
+            var data = await service.HospitalService.GetAllHospitalsAsync(trackChanges: false);
             return Ok(data);
         }
 
@@ -30,7 +23,8 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Get By Guid")]
         public async Task<IActionResult> GetByGuid(Guid guid)
         {
-            var data = await _service.HospitalService.GetHospitalByGuidAsync(guid, trackChanges: false);
+            var data = await service.HospitalService.GetHospitalByGuidAsync(guid, trackChanges: false);
+            if (data is null) return NotFound();
             return Ok(data);
         }
 
@@ -38,7 +32,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Create")]
         public async Task<IActionResult> Create([FromBody] HospitalForCreationDto input)
         {
-            var created = await _service.HospitalService.CreateHospitalAsync(input);
+            var created = await service.HospitalService.CreateHospitalAsync(input);
             return CreatedAtAction(nameof(GetByGuid), new { guid = created.HospitalGuid }, created);
         }
 
@@ -46,7 +40,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Update")]
         public async Task<IActionResult> Update(Guid guid, [FromBody] HospitalForUpdateDto input)
         {
-            await _service.HospitalService.UpdateHospitalAsync(guid, input, trackChanges: true);
+            await service.HospitalService.UpdateHospitalAsync(guid, input, trackChanges: true);
             return NoContent();
         }
 
@@ -54,7 +48,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Soft Delete")]
         public async Task<IActionResult> SoftDelete(Guid guid, [FromBody] HospitalForDeleteDto input)
         {
-            await _service.HospitalService.DeleteHospitalAsync(guid, input, trackChanges: true);
+            await service.HospitalService.DeleteHospitalAsync(guid, input, trackChanges: true);
             return NoContent();
         }
 
@@ -62,7 +56,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Hard Delete (Admin)")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {
-            await _service.HospitalService.DeleteHospitalByAdminAsync(guid, trackChanges: false);
+            await service.HospitalService.DeleteHospitalByAdminAsync(guid, trackChanges: false);
             return NoContent();
         }
 
@@ -70,7 +64,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Search")]
         public async Task<IActionResult> Search([FromQuery] HospitalSearchDto input)
         {
-            var result = await _service.HospitalService.SearchHospitalAsync(
+            var result = await service.HospitalService.SearchHospitalAsync(
                 input.HospitalName, input.HospitalNameSearchType.ToString(),
                 input.HospitalCode, input.HospitalCodeSearchType.ToString(),
                 input.ShortName, input.ShortNameSearchType.ToString(),
@@ -80,6 +74,7 @@ namespace BamboeUp.Api.Controllers
                 input.PhoneNo, input.PhoneNoSearchType.ToString(),
                 input.Email, input.EmailSearchType.ToString(),
                 input.Website, input.WebsiteSearchType.ToString()
+
             );
             return Ok(result);
         }

@@ -6,22 +6,17 @@ using System.Data;
 
 namespace Repository
 {
-    public partial class HospitalRepository : IHospitalRepository
+    public partial class HospitalRepository(RepositoryContext context) : IHospitalRepository
     {
-        private readonly RepositoryContext _context;
-
-        public HospitalRepository(RepositoryContext context)
-        {
-            _context = context;
-        }
-
         public async Task<Hospital?> GetHospitalAsync(Guid hospitalGuid, bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 
+
                 FROM [app].[Hospital] a
+
 
                 WHERE a.HospitalGuid = @hospitalGuid
                   AND a.StatusId > 0
@@ -31,11 +26,13 @@ namespace Repository
 
         public async Task<IEnumerable<Hospital>> GetAllHospitalsAsync(bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 
+
                 FROM [app].[Hospital] a
+
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
                 ORDER BY a.HospitalId DESC";
@@ -44,8 +41,7 @@ namespace Repository
 
         public async Task CreateHospitalAsync(Hospital hospital, IDbTransaction? transaction = null)
         {
-            AuditTimestampHelper.StampCreate(hospital);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[Hospital]
                 (HospitalGuid, CreatedById, StatusId, CreatedTime, HospitalName, HospitalCode, ShortName, LicenseNo, HospitalType, HospitalClass, PhoneNo, Email, Website
@@ -59,8 +55,7 @@ namespace Repository
 
         public async Task UpdateHospitalAsync(Hospital hospital, IDbTransaction? transaction = null)
         {
-            AuditTimestampHelper.StampUpdate(hospital);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[Hospital]
                 SET                     HospitalName = @HospitalName,
@@ -81,8 +76,7 @@ namespace Repository
 
         public async Task SoftDeleteHospitalAsync(Hospital hospital, long deletedBy, IDbTransaction? transaction = null)
         {
-            AuditTimestampHelper.StampSoftDelete(hospital, deletedBy);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[Hospital]
                 SET StatusId = 0,
@@ -95,7 +89,7 @@ namespace Repository
 
         public async Task DeleteHospitalAsync(Guid hospitalGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"DELETE FROM [app].[Hospital] WHERE HospitalGuid = @hospitalGuid";
             await conn.ExecuteAsync(sql, new { hospitalGuid }, transaction);
         }
@@ -119,10 +113,11 @@ namespace Repository
             string? emailSearchType,
             string? website,
             string? websiteSearchType,
+
             IDbTransaction? transaction = null)
         {
-            using var connection = _context.CreateConnection();
-            var whereClauses = new List<string> { "a.StatusId > 0", "a.DeletedTime IS NULL" };
+            var connection = transaction?.Connection ?? context.CreateConnection();
+            List<string> whereClauses = [ "a.StatusId > 0", "a.DeletedTime IS NULL" ];
             var parameters = new DynamicParameters();
 
             if (!string.IsNullOrWhiteSpace(hospitalName))
@@ -179,10 +174,13 @@ namespace Repository
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
+
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 
+
                 FROM [app].[Hospital] a
+
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.HospitalId DESC";

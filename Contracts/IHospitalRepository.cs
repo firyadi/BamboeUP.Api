@@ -35,6 +35,7 @@ namespace Contracts
             string? emailSearchType,
             string? website,
             string? websiteSearchType,
+
             IDbTransaction? transaction = null);
     }
 }

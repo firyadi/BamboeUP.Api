@@ -16,6 +16,7 @@ namespace Service.Contracts.Modules
 
         Task<IEnumerable<HospitalDto>> SearchHospitalAsync(
             string? hospitalName, string? hospitalNameSearchType, string? hospitalCode, string? hospitalCodeSearchType, string? shortName, string? shortNameSearchType, string? licenseNo, string? licenseNoSearchType, string? hospitalType, string? hospitalTypeSearchType, string? hospitalClass, string? hospitalClassSearchType, string? phoneNo, string? phoneNoSearchType, string? email, string? emailSearchType, string? website, string? websiteSearchType
+
         );
     }
 }

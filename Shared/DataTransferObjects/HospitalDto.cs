@@ -17,6 +17,7 @@ namespace Shared.DataTransferObjects
         public string? PhoneNo { get; set; }
         public string? Email { get; set; }
         public string? Website { get; set; }
+
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
@@ -88,5 +89,6 @@ namespace Shared.DataTransferObjects
 
         public string? Website { get; set; }
         public SearchType WebsiteSearchType { get; set; } = SearchType.Contains;
+
     }
 }
