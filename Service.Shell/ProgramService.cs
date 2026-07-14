@@ -30,7 +30,8 @@ namespace Service.Shell
 
         public async Task<ProgramDto> GetProgramByGuidAsync(Guid programGuid, bool trackChanges)
         {
-            var entity = await _repository.Program.GetProgramAsync(programGuid, trackChanges);
+            var entity = await _repository.Program.GetProgramAsync(programGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"Program with Guid '{programGuid}' not found.");
             return entity.Adapt<ProgramDto>();
         }
 

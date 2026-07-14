@@ -22,6 +22,7 @@ namespace Shared.DataTransferObjects
         public bool RequiresPrintId { get; set; }
         public string? PrintIdPolicy { get; set; }
         public string? PrintIdPrefix { get; set; }
+        public string? LayoutJson { get; set; }
         public int Version { get; set; } = 1;
         public bool IsActive { get; set; } = true;
         public DateTime? EffectiveFrom { get; set; }
@@ -47,6 +48,7 @@ namespace Shared.DataTransferObjects
         public bool RequiresPrintId { get; set; }
         public string? PrintIdPolicy { get; set; }
         public string? PrintIdPrefix { get; set; }
+        public string? LayoutJson { get; set; }
         public int Version { get; set; } = 1;
         public bool IsActive { get; set; } = true;
         public DateTime? EffectiveFrom { get; set; }
@@ -68,6 +70,7 @@ namespace Shared.DataTransferObjects
         public bool RequiresPrintId { get; set; }
         public string? PrintIdPolicy { get; set; }
         public string? PrintIdPrefix { get; set; }
+        public string? LayoutJson { get; set; }
         public int Version { get; set; } = 1;
         public bool IsActive { get; set; } = true;
         public DateTime? EffectiveFrom { get; set; }
@@ -93,5 +96,29 @@ namespace Shared.DataTransferObjects
         public bool? IsTracked { get; set; }
         public bool? RequiresPrintId { get; set; }
         public bool? IsActive { get; set; }
+    }
+
+    public record ReportParameterForUpsertDto
+    {
+        public string ParameterName { get; set; } = string.Empty;
+        public string DisplayLabel { get; set; } = string.Empty;
+        public string ControlType { get; set; } = "TextBox";
+        public string DataType { get; set; } = "string";
+        public bool IsRequired { get; set; }
+        public string? DefaultValue { get; set; }
+        public int SortOrder { get; set; }
+        public byte ColumnGroup { get; set; } = 1;
+        public byte ColumnSpan { get; set; } = 12;
+        public string? RowGroup { get; set; }
+        public string? FieldKey { get; set; }
+        public string? LookupType { get; set; }
+        public string? VisibleWhen { get; set; }
+        public bool IsSensitive { get; set; }
+    }
+
+    public record ReportParameterBatchReplaceDto
+    {
+        public IReadOnlyList<ReportParameterForUpsertDto> Parameters { get; init; } = Array.Empty<ReportParameterForUpsertDto>();
+        public long UpdatedById { get; set; }
     }
 }

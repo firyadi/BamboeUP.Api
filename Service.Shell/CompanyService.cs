@@ -41,6 +41,8 @@ namespace Service.Shell
         public async Task<CompanyDto> GetCompanyByGuidAsync(Guid companyGuid, bool trackChanges)
         {
             var entity = await _repository.Company.GetCompanyAsync(companyGuid, trackChanges);
+            if (entity is null)
+                throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(entity.CompanyId);
             return entity.Adapt<CompanyDto>();
         }
@@ -106,9 +108,11 @@ namespace Service.Shell
         public async Task UpdateCompanyAsync(Guid companyGuid, CompanyForUpdateDto input, bool trackChanges)
         {
             var existing = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            if (existing is null)
+                throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(existing.CompanyId);
             // Fetch old data for audit diff
-            var oldCompany = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            var oldCompany = existing;
             var oldOffices = (await _repository.CompanyOffice.GetAllByCompanyGuidAsync(companyGuid)).ToList();
 
             // Update Company header
@@ -226,6 +230,8 @@ namespace Service.Shell
         public async Task DeleteCompanyAsync(Guid companyGuid, CompanyForDeleteDto input, bool trackChanges)
         {
             var oldCompany = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            if (oldCompany is null)
+                throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(oldCompany.CompanyId);
             var model = new Company { CompanyGuid = companyGuid };
             await _repository.Company.SoftDeleteCompanyAsync(model, input.DeletedById ?? 0);

@@ -55,6 +55,8 @@ namespace Service.Shell
         public async Task<OrganizationUnitDto> GetOrganizationUnitByGuidAsync(Guid organizationUnitGuid, bool trackChanges)
         {
             var entity = await _repository.OrganizationUnit.GetOrganizationUnitAsync(organizationUnitGuid, trackChanges);
+            if (entity is null)
+                throw new KeyNotFoundException($"OrganizationUnit with GUID {organizationUnitGuid} not found.");
             await _userScope.EnsureCanAccessOrganizationUnitAsync(entity.OrganizationUnitId);
             return entity.Adapt<OrganizationUnitDto>();
         }

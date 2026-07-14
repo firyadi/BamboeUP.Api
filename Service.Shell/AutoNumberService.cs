@@ -30,7 +30,8 @@ namespace Service.Shell
 
         public async Task<AutoNumberDto> GetAutoNumberByGuidAsync(Guid autoNumberGuid, bool trackChanges)
         {
-            var entity = await _repository.AutoNumber.GetAutoNumberAsync(autoNumberGuid, trackChanges);
+            var entity = await _repository.AutoNumber.GetAutoNumberAsync(autoNumberGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"AutoNumber with Guid '{autoNumberGuid}' not found.");
             return entity.Adapt<AutoNumberDto>();
         }
 

@@ -29,7 +29,8 @@ namespace Service.Shell;
 
         public async Task<AutoNumberComponentDto> GetAutoNumberComponentByGuidAsync(Guid autoNumberComponentGuid, bool trackChanges)
         {
-            var entity = await _repository.AutoNumberComponent.GetAutoNumberComponentAsync(autoNumberComponentGuid, trackChanges);
+            var entity = await _repository.AutoNumberComponent.GetAutoNumberComponentAsync(autoNumberComponentGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"AutoNumberComponent with Guid '{autoNumberComponentGuid}' not found.");
             return entity.Adapt<AutoNumberComponentDto>();
         }
 

@@ -42,6 +42,8 @@ namespace Service.Shell
         public async Task<CompanyOfficeDto> GetCompanyOfficeByGuidAsync(Guid companyOfficeGuid, bool trackChanges)
         {
             var entity = await _repository.CompanyOffice.GetCompanyOfficeAsync(companyOfficeGuid, trackChanges);
+            if (entity is null)
+                throw new KeyNotFoundException($"CompanyOffice with GUID {companyOfficeGuid} not found.");
             await _userScope.EnsureCanAccessOfficeAsync(entity.CompanyId, entity.CompanyOfficeId);
             return entity.Adapt<CompanyOfficeDto>();
         }
@@ -82,6 +84,8 @@ namespace Service.Shell
         public async Task UpdateCompanyOfficeAsync(Guid companyOfficeGuid, CompanyOfficeForUpdateDto input, bool trackChanges)
         {
             var oldOffice = await _repository.CompanyOffice.GetCompanyOfficeAsync(companyOfficeGuid, false);
+            if (oldOffice is null)
+                throw new KeyNotFoundException($"CompanyOffice with GUID {companyOfficeGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(oldOffice.CompanyId);
 
             var model = input.Adapt<CompanyOffice>();
@@ -118,6 +122,8 @@ namespace Service.Shell
         public async Task DeleteCompanyOfficeAsync(Guid companyOfficeGuid, CompanyOfficeForDeleteDto input, bool trackChanges)
         {
             var oldOffice = await _repository.CompanyOffice.GetCompanyOfficeAsync(companyOfficeGuid, false);
+            if (oldOffice is null)
+                throw new KeyNotFoundException($"CompanyOffice with GUID {companyOfficeGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(oldOffice.CompanyId);
             var model = new CompanyOffice { CompanyOfficeGuid = companyOfficeGuid };
             await _repository.CompanyOffice.SoftDeleteCompanyOfficeAsync(model, input.DeletedById ?? 0);
@@ -167,6 +173,8 @@ namespace Service.Shell
             if (companyGuid != Guid.Empty)
             {
                 var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+                if (company is null)
+                    throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
                 await _userScope.EnsureCanAccessCompanyAsync(company.CompanyId);
                 return data.Adapt<IEnumerable<CompanyOfficeDto>>();
             }
@@ -180,6 +188,8 @@ namespace Service.Shell
         public async Task<IEnumerable<CompanyOfficeDto>> GetAllByCompanyGuidAsync(Guid companyGuid)
         {
             var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            if (company is null)
+                throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(company.CompanyId);
             var result = await _repository.CompanyOffice.GetAllByCompanyGuidAsync(companyGuid);
             return result.Adapt<IEnumerable<CompanyOfficeDto>>();
@@ -187,9 +197,11 @@ namespace Service.Shell
 
         public async Task<CompanyOfficeDto> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid)
         {
-            var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+            var company = await _repository.Company.GetCompanyAsync(companyGuid, false)
+                ?? throw new KeyNotFoundException($"Company with Guid '{companyGuid}' not found.");
             await _userScope.EnsureCanAccessCompanyAsync(company.CompanyId);
-            var result = await _repository.CompanyOffice.GetByCompanyGuidAndCompanyOfficeGuidAsync(companyGuid, companyOfficeGuid);
+            var result = await _repository.CompanyOffice.GetByCompanyGuidAndCompanyOfficeGuidAsync(companyGuid, companyOfficeGuid)
+                ?? throw new KeyNotFoundException($"CompanyOffice with Guid '{companyOfficeGuid}' for Company Guid '{companyGuid}' not found.");
             return result.Adapt<CompanyOfficeDto>();
         }
     }

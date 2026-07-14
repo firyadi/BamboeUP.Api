@@ -11,7 +11,7 @@ internal static class ReportParameterValidator
         bool isDocPrint = false)
     {
         if (schemaFields.Count == 0)
-            return isDocPrint ? NormalizeContextualPrint(request) : NormalizeLegacy(request);
+            return isDocPrint ? NormalizeContextualPrint(request) : NormalizeNoParameters(request);
 
         var allowed = schemaFields
             .ToDictionary(f => f.ParameterName, f => f, StringComparer.OrdinalIgnoreCase);
@@ -87,6 +87,19 @@ internal static class ReportParameterValidator
 
     private static string? GetRaw(ReportRunRequestDto request, string parameterName)
         => request.Parameters.TryGetValue(parameterName, out var value) ? value : null;
+
+    private static Dictionary<string, string?> NormalizeNoParameters(ReportRunRequestDto request)
+    {
+        var result = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var kv in request.Parameters)
+        {
+            if (!string.IsNullOrWhiteSpace(kv.Value))
+                result[kv.Key] = kv.Value.Trim();
+        }
+
+        return result;
+    }
 
     private static Dictionary<string, string?> NormalizeContextualPrint(ReportRunRequestDto request)
     {

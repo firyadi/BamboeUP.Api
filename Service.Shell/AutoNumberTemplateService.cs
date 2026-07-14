@@ -29,7 +29,8 @@ namespace Service.Shell;
 
         public async Task<AutoNumberTemplateDto> GetAutoNumberTemplateByGuidAsync(Guid autoNumberTemplateGuid, bool trackChanges)
         {
-            var entity = await _repository.AutoNumberTemplate.GetAutoNumberTemplateAsync(autoNumberTemplateGuid, trackChanges);
+            var entity = await _repository.AutoNumberTemplate.GetAutoNumberTemplateAsync(autoNumberTemplateGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"AutoNumberTemplate with Guid '{autoNumberTemplateGuid}' not found.");
             return entity.Adapt<AutoNumberTemplateDto>();
         }
 

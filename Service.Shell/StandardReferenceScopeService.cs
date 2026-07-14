@@ -131,6 +131,8 @@ namespace Service.Shell
         public async Task UpdateStandardReferenceScopeAsync(Guid standardReferenceScopeGuid, StandardReferenceScopeForUpdateDto input, bool trackChanges)
         {
             var oldScope = await _repository.StandardReferenceScope.GetStandardReferenceScopeAsync(standardReferenceScopeGuid, false);
+            if (oldScope is null)
+                throw new KeyNotFoundException($"StandardReferenceScope with GUID {standardReferenceScopeGuid} not found.");
             var oldItems = (await _repository.StandardReferenceScopeItem.GetAllByStandardReferenceScopeGuidAsync(standardReferenceScopeGuid)).ToList();
 
             var model = input.Adapt<StandardReferenceScope>();
@@ -302,7 +304,8 @@ namespace Service.Shell
 
         public async Task<StandardReferenceScopeDto> GetByStandardReferenceGuidAndScopeGuidAsync(Guid standardReferenceGuid, Guid standardReferenceScopeGuid)
         {
-            var data = await _repository.StandardReferenceScope.GetByStandardReferenceGuidAndScopeGuidAsync(standardReferenceGuid, standardReferenceScopeGuid);
+            var data = await _repository.StandardReferenceScope.GetByStandardReferenceGuidAndScopeGuidAsync(standardReferenceGuid, standardReferenceScopeGuid)
+                ?? throw new KeyNotFoundException($"StandardReferenceScope with Guid '{standardReferenceScopeGuid}' for StandardReference Guid '{standardReferenceGuid}' not found.");
             return data.Adapt<StandardReferenceScopeDto>();
         }
     }

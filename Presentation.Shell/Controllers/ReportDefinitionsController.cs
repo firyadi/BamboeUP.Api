@@ -56,5 +56,19 @@ namespace Presentation.Shell.Controllers
             await _service.ReportDefinitionService.DeleteAsync(guid, input);
             return NoContent();
         }
+
+        [HttpGet("{guid:guid}/parameters")]
+        public async Task<IActionResult> GetParameters(Guid guid)
+        {
+            var data = await _service.ReportDefinitionService.GetParametersAsync(guid);
+            return Ok(data);
+        }
+
+        [HttpPut("{guid:guid}/parameters")]
+        public async Task<IActionResult> ReplaceParameters(Guid guid, [FromBody] ReportParameterBatchReplaceDto input)
+        {
+            await _service.ReportDefinitionService.ReplaceParametersAsync(guid, input);
+            return NoContent();
+        }
     }
 }

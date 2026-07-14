@@ -103,7 +103,7 @@ namespace Service.Shell
             _organizationUnitScopeService = new Lazy<IOrganizationUnitScopeService>(() => new OrganizationUnitScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _parameterService = new Lazy<IParameterService>(() => new ParameterService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _programService = new Lazy<IProgramService>(() => new ProgramService(_repositoryManager, _logger, _transactionManager));
-            _reportService = new Lazy<IReportService>(() => new ReportService(_repositoryManager, _logger));
+            _reportService = new Lazy<IReportService>(() => new ReportService(_repositoryManager, _logger, _configuration));
             _reportDefinitionService = new Lazy<IReportDefinitionService>(() => new ReportDefinitionService(_repositoryManager));
             _standardReferenceService = new Lazy<IStandardReferenceService>(() => new StandardReferenceService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _standardReferenceItemService = new Lazy<IStandardReferenceItemService>(() => new StandardReferenceItemService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));

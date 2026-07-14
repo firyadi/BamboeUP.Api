@@ -10,5 +10,7 @@ namespace Service.Contracts.Shell
         Task<ReportDefinitionDto> CreateAsync(ReportDefinitionForCreationDto input);
         Task UpdateAsync(Guid reportDefinitionGuid, ReportDefinitionForUpdateDto input);
         Task DeleteAsync(Guid reportDefinitionGuid, ReportDefinitionForDeleteDto input);
+        Task<IReadOnlyList<ReportParameterDefinitionDto>> GetParametersAsync(Guid reportDefinitionGuid);
+        Task ReplaceParametersAsync(Guid reportDefinitionGuid, ReportParameterBatchReplaceDto input);
     }
 }

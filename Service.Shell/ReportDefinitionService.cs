@@ -38,5 +38,23 @@ namespace Service.Shell
 
         public Task DeleteAsync(Guid reportDefinitionGuid, ReportDefinitionForDeleteDto input)
             => _repository.ReportDefinition.SoftDeleteAsync(reportDefinitionGuid, input.DeletedById);
+
+        public async Task<IReadOnlyList<ReportParameterDefinitionDto>> GetParametersAsync(Guid reportDefinitionGuid)
+        {
+            var definition = await GetByGuidAsync(reportDefinitionGuid);
+            var rows = await _repository.Report.GetParametersAsync(definition.ReportDefinitionId);
+            return rows.ToList();
+        }
+
+        public async Task ReplaceParametersAsync(Guid reportDefinitionGuid, ReportParameterBatchReplaceDto input)
+        {
+            ReportParameterAdminValidator.ValidateReplaceBatch(input.Parameters);
+
+            var definition = await GetByGuidAsync(reportDefinitionGuid);
+            await _repository.ReportDefinition.ReplaceParametersAsync(
+                definition.ReportDefinitionId,
+                input.Parameters,
+                input.UpdatedById);
+        }
     }
 }

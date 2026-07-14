@@ -50,7 +50,8 @@ namespace Service.Shell
 
         public async Task<CostCenterScopeDto> GetCostCenterScopeByGuidAsync(Guid costCenterScopeGuid, bool trackChanges)
         {
-            var entity = await _repository.CostCenterScope.GetCostCenterScopeAsync(costCenterScopeGuid, trackChanges);
+            var entity = await _repository.CostCenterScope.GetCostCenterScopeAsync(costCenterScopeGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"CostCenterScope with Guid '{costCenterScopeGuid}' not found.");
             return entity.Adapt<CostCenterScopeDto>();
         }
 
@@ -179,7 +180,8 @@ namespace Service.Shell
 
         public async Task<CostCenterScopeDto> GetByCostCenterGuidAndCostCenterScopeGuidAsync(Guid costCenterGuid, Guid costCenterScopeGuid)
         {
-            var result = await _repository.CostCenterScope.GetByCostCenterGuidAndCostCenterScopeGuidAsync(costCenterGuid, costCenterScopeGuid);
+            var result = await _repository.CostCenterScope.GetByCostCenterGuidAndCostCenterScopeGuidAsync(costCenterGuid, costCenterScopeGuid)
+                ?? throw new KeyNotFoundException($"CostCenterScope with Guid '{costCenterScopeGuid}' for CostCenter Guid '{costCenterGuid}' not found.");
             return result.Adapt<CostCenterScopeDto>();
         }
     }

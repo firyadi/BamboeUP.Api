@@ -50,7 +50,8 @@ namespace Service.Shell
 
         public async Task<CostCenterAssignmentDto> GetCostCenterAssignmentByGuidAsync(Guid costCenterAssignmentGuid, bool trackChanges)
         {
-            var entity = await _repository.CostCenterAssignment.GetCostCenterAssignmentAsync(costCenterAssignmentGuid, trackChanges);
+            var entity = await _repository.CostCenterAssignment.GetCostCenterAssignmentAsync(costCenterAssignmentGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"CostCenterAssignment with Guid '{costCenterAssignmentGuid}' not found.");
             return entity.Adapt<CostCenterAssignmentDto>();
         }
 
@@ -179,7 +180,8 @@ namespace Service.Shell
 
         public async Task<CostCenterAssignmentDto> GetByCostCenterGuidAndCostCenterAssignmentGuidAsync(Guid costCenterGuid, Guid costCenterAssignmentGuid)
         {
-            var result = await _repository.CostCenterAssignment.GetByCostCenterGuidAndCostCenterAssignmentGuidAsync(costCenterGuid, costCenterAssignmentGuid);
+            var result = await _repository.CostCenterAssignment.GetByCostCenterGuidAndCostCenterAssignmentGuidAsync(costCenterGuid, costCenterAssignmentGuid)
+                ?? throw new KeyNotFoundException($"CostCenterAssignment with Guid '{costCenterAssignmentGuid}' for CostCenter Guid '{costCenterGuid}' not found.");
             return result.Adapt<CostCenterAssignmentDto>();
         }
     }

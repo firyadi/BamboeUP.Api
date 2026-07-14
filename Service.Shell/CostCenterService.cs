@@ -51,7 +51,8 @@ namespace Service.Shell
 
         public async Task<CostCenterDto> GetCostCenterByGuidAsync(Guid costCenterGuid, bool trackChanges)
         {
-            var entity = await _repository.CostCenter.GetCostCenterAsync(costCenterGuid, trackChanges);
+            var entity = await _repository.CostCenter.GetCostCenterAsync(costCenterGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"CostCenter with Guid '{costCenterGuid}' not found.");
             return entity.Adapt<CostCenterDto>();
         }
 

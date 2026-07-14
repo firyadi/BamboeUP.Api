@@ -75,6 +75,8 @@ public class UserScopeService : IUserScopeService
     public async Task<IEnumerable<CompanyOfficeDto>> GetAccessibleOfficesByCompanyGuidAsync(Guid companyGuid)
     {
         var company = await _repository.Company.GetCompanyAsync(companyGuid, false);
+        if (company is null)
+            throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
         await EnsureCanAccessCompanyAsync(company.CompanyId);
         return await GetAccessibleOfficesAsync(company.CompanyId);
     }
@@ -158,6 +160,8 @@ public class UserScopeService : IUserScopeService
             return;
 
         var entity = await _repository.OrganizationUnit.GetOrganizationUnitAsync(organizationUnitGuid, false);
+        if (entity is null)
+            throw new KeyNotFoundException($"Organization unit with GUID {organizationUnitGuid} not found.");
         await EnsureCanAccessOrganizationUnitAsync(entity.OrganizationUnitId);
     }
 

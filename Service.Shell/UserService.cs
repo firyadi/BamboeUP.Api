@@ -36,6 +36,8 @@ namespace Service.Shell
         public async Task<UserDto> GetUserByGuidAsync(Guid userGuid, bool trackChanges)
         {
             var entity = await _repository.User.GetUserAsync(userGuid, trackChanges);
+            if (entity == null)
+                throw new KeyNotFoundException($"User with GUID {userGuid} not found.");
             return MapToDto(entity);
         }
 

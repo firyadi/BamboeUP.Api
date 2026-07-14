@@ -41,7 +41,8 @@ namespace Service.Shell
 
         public async Task<StandardReferenceItemDto> GetStandardReferenceItemByGuidAsync(Guid standardReferenceItemGuid, bool trackChanges)
         {
-            var entity = await _repository.StandardReferenceItem.GetStandardReferenceItemAsync(standardReferenceItemGuid, trackChanges);
+            var entity = await _repository.StandardReferenceItem.GetStandardReferenceItemAsync(standardReferenceItemGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"StandardReferenceItem with Guid '{standardReferenceItemGuid}' not found.");
             return entity.Adapt<StandardReferenceItemDto>();
         }
 
@@ -84,6 +85,8 @@ namespace Service.Shell
         public async Task UpdateStandardReferenceItemAsync(Guid standardReferenceItemGuid, StandardReferenceItemForUpdateDto input, bool trackChanges)
         {
             var oldItem = await _repository.StandardReferenceItem.GetStandardReferenceItemAsync(standardReferenceItemGuid, false);
+            if (oldItem is null)
+                throw new KeyNotFoundException($"StandardReferenceItem with GUID {standardReferenceItemGuid} not found.");
 
             var model = input.Adapt<StandardReferenceItem>();
             model.StandardReferenceItemGuid = standardReferenceItemGuid;
@@ -171,7 +174,8 @@ namespace Service.Shell
 
         public async Task<StandardReferenceItemDto> GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(Guid standardReferenceGuid, Guid standardReferenceItemGuid)
         {
-            var result = await _repository.StandardReferenceItem.GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(standardReferenceGuid, standardReferenceItemGuid);
+            var result = await _repository.StandardReferenceItem.GetByStandardReferenceGuidAndStandardReferenceItemGuidAsync(standardReferenceGuid, standardReferenceItemGuid)
+                ?? throw new KeyNotFoundException($"StandardReferenceItem with Guid '{standardReferenceItemGuid}' for StandardReference Guid '{standardReferenceGuid}' not found.");
             return result.Adapt<StandardReferenceItemDto>();
         }
     }

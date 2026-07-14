@@ -60,6 +60,7 @@ namespace Contracts
         public bool IsTracked { get; set; }
         public string? PrintIdPolicy { get; set; }
         public string? PrintIdPrefix { get; set; }
+        public string? LayoutJson { get; set; }
     }
 
     public sealed class ReportExecutionLogInsert

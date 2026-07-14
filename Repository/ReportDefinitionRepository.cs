@@ -16,7 +16,7 @@ namespace Repository
                 p.ProgramCode, p.ProgramName,
                 rd.ReportScope, rd.CompanyId, c.CompanyName,
                 rd.ReportKind, rd.DefinitionKey, rd.RendererType, rd.FilePath, rd.StoreProcedureName,
-                rd.IsTracked, rd.RequiresPrintId, rd.PrintIdPolicy, rd.PrintIdPrefix,
+                rd.IsTracked, rd.RequiresPrintId, rd.PrintIdPolicy, rd.PrintIdPrefix, rd.LayoutJson,
                 rd.[Version], rd.IsActive, rd.EffectiveFrom, rd.EffectiveTo,
                 rd.StatusId, rd.CreatedById, rd.CreatedTime, rd.UpdatedById, rd.UpdatedTime";
 
@@ -134,12 +134,12 @@ namespace Repository
             const string sql = @"
                 INSERT INTO [core].[ReportDefinition]
                 (ReportDefinitionGuid, ProgramId, ReportScope, CompanyId, ReportKind, DefinitionKey, RendererType,
-                 FilePath, StoreProcedureName, IsTracked, RequiresPrintId, PrintIdPolicy, PrintIdPrefix,
+                 FilePath, StoreProcedureName, LayoutJson, IsTracked, RequiresPrintId, PrintIdPolicy, PrintIdPrefix,
                  [Version], IsActive, EffectiveFrom, EffectiveTo, StatusId, CreatedById, CreatedTime)
                 OUTPUT INSERTED.ReportDefinitionGuid
                 VALUES
                 (NEWID(), @ProgramId, @ReportScope, @CompanyId, @ReportKind, @DefinitionKey, @RendererType,
-                 @FilePath, @StoreProcedureName, @IsTracked, @RequiresPrintId, @PrintIdPolicy, @PrintIdPrefix,
+                 @FilePath, @StoreProcedureName, @LayoutJson, @IsTracked, @RequiresPrintId, @PrintIdPolicy, @PrintIdPrefix,
                  @Version, @IsActive, @EffectiveFrom, @EffectiveTo, 1, @CreatedById, SYSDATETIME())";
 
             return await conn.QuerySingleAsync<Guid>(sql, NormalizeInput(input), transaction);
@@ -163,6 +163,7 @@ namespace Repository
                     RendererType = @RendererType,
                     FilePath = @FilePath,
                     StoreProcedureName = @StoreProcedureName,
+                    LayoutJson = @LayoutJson,
                     IsTracked = @IsTracked,
                     RequiresPrintId = @RequiresPrintId,
                     PrintIdPolicy = @PrintIdPolicy,
@@ -186,6 +187,7 @@ namespace Repository
                 RendererType = string.IsNullOrWhiteSpace(input.RendererType) ? null : input.RendererType.Trim(),
                 input.FilePath,
                 input.StoreProcedureName,
+                input.LayoutJson,
                 input.IsTracked,
                 RequiresPrintId = input.IsTracked && input.RequiresPrintId,
                 input.PrintIdPolicy,
@@ -217,6 +219,52 @@ namespace Repository
                 throw new KeyNotFoundException($"ReportDefinition {reportDefinitionGuid} not found.");
         }
 
+        public async Task ReplaceParametersAsync(
+            long reportDefinitionId,
+            IReadOnlyList<ReportParameterForUpsertDto> parameters,
+            long updatedById,
+            IDbTransaction? transaction = null)
+        {
+            var conn = transaction?.Connection ?? _context.CreateConnection();
+
+            const string deleteSql = @"DELETE FROM [core].[ReportParameter] WHERE ReportDefinitionId = @ReportDefinitionId";
+            await conn.ExecuteAsync(deleteSql, new { ReportDefinitionId = reportDefinitionId }, transaction);
+
+            if (parameters.Count == 0)
+                return;
+
+            const string insertSql = @"
+                INSERT INTO [core].[ReportParameter]
+                (ReportDefinitionId, ParameterName, DisplayLabel, DataType, IsRequired, SortOrder,
+                 LookupType, IsSensitive, StatusId, CreatedById, CreatedTime,
+                 FieldKey, ControlType, ColumnGroup, ColumnSpan, RowGroup)
+                VALUES
+                (@ReportDefinitionId, @ParameterName, @DisplayLabel, @DataType, @IsRequired, @SortOrder,
+                 @LookupType, @IsSensitive, 1, @UpdatedById, SYSDATETIME(),
+                 @FieldKey, @ControlType, @ColumnGroup, @ColumnSpan, @RowGroup)";
+
+            foreach (var row in parameters)
+            {
+                await conn.ExecuteAsync(insertSql, new
+                {
+                    ReportDefinitionId = reportDefinitionId,
+                    ParameterName = row.ParameterName.Trim(),
+                    DisplayLabel = row.DisplayLabel.Trim(),
+                    DataType = row.DataType.Trim(),
+                    row.IsRequired,
+                    row.SortOrder,
+                    LookupType = string.IsNullOrWhiteSpace(row.LookupType) ? null : row.LookupType.Trim(),
+                    row.IsSensitive,
+                    UpdatedById = updatedById,
+                    FieldKey = string.IsNullOrWhiteSpace(row.FieldKey) ? null : row.FieldKey.Trim(),
+                    ControlType = row.ControlType.Trim(),
+                    row.ColumnGroup,
+                    row.ColumnSpan,
+                    RowGroup = string.IsNullOrWhiteSpace(row.RowGroup) ? null : row.RowGroup.Trim()
+                }, transaction);
+            }
+        }
+
         private static object NormalizeInput(ReportDefinitionForCreationDto input) => new
         {
             input.ProgramId,
@@ -227,6 +275,7 @@ namespace Repository
             RendererType = string.IsNullOrWhiteSpace(input.RendererType) ? null : input.RendererType.Trim(),
             input.FilePath,
             input.StoreProcedureName,
+            input.LayoutJson,
             input.IsTracked,
             RequiresPrintId = input.IsTracked && input.RequiresPrintId,
             input.PrintIdPolicy,

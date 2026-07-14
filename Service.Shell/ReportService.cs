@@ -2,6 +2,7 @@ using BamboeUp.Report.Abstractions;
 using BamboeUp.Report.Engines;
 using BamboeUp.Report.Services;
 using Contracts;
+using Microsoft.Extensions.Configuration;
 using Service.Contracts.Shell;
 using Service.Shell.Reporting;
 using Shared.DataTransferObjects;
@@ -16,12 +17,14 @@ namespace Service.Shell
         private readonly ILoggerManager _logger;
         private readonly ReportHandlerSet _handlers;
 
-        public ReportService(IRepositoryManager repository, ILoggerManager logger)
+        public ReportService(IRepositoryManager repository, ILoggerManager logger, IConfiguration? configuration = null)
         {
             _repository = repository;
             _logger = logger;
             var dataProvider = new RepositoryReportDataProvider(repository);
-            _handlers = ReportEngineBootstrap.CreateHandlers(dataProvider);
+            var templateRoot = configuration?["ReportTemplateSettings:TemplateRoot"];
+            var options = ReportEngineBootstrap.CreateDefaultOptions(templateRoot);
+            _handlers = ReportEngineBootstrap.CreateHandlers(dataProvider, options);
         }
 
         public async Task<IEnumerable<ReportProgramDto>> GetAllowedReportsAsync(
@@ -288,6 +291,8 @@ namespace Service.Shell
 
             try
             {
+                var branding = await ResolveReportBrandingAsync(companyIdLong, officeIdLong);
+
                 var context = new ReportRunContext
                 {
                     ProgramId = request.ProgramId,
@@ -299,9 +304,13 @@ namespace Service.Shell
                     FilePath = definition?.FilePath,
                     RendererType = definition?.RendererType,
                     StoreProcedureName = definition?.StoreProcedureName,
+                    LayoutJson = definition?.LayoutJson,
                     UserId = userId,
                     CompanyId = companyIdLong,
                     CompanyOfficeId = officeIdLong,
+                    CompanyName = branding.CompanyName,
+                    CompanyOfficeName = branding.OfficeName,
+                    CompanyLogo = branding.CompanyLogo,
                     Parameters = BuildRunParameters(request, normalizedParameters),
                     Print = new ReportPrintContext
                     {
@@ -434,6 +443,30 @@ namespace Service.Shell
 
         private static long? ParseLong(string? value)
             => long.TryParse(value, out var id) ? id : null;
+
+        private async Task<(string? CompanyName, string? OfficeName, byte[]? CompanyLogo)> ResolveReportBrandingAsync(
+            long? companyId,
+            long? officeId)
+        {
+            string? companyName = null;
+            byte[]? companyLogo = null;
+            string? officeName = null;
+
+            if (companyId.HasValue)
+            {
+                var company = await _repository.Company.GetCompanyByIdAsync(companyId.Value, trackChanges: false);
+                companyName = company?.CompanyName;
+                companyLogo = company?.CompanyLogo;
+            }
+
+            if (officeId.HasValue)
+            {
+                var office = await _repository.CompanyOffice.GetCompanyOfficeByIdAsync(officeId.Value, trackChanges: false);
+                officeName = office?.CompanyOfficeName;
+            }
+
+            return (companyName, officeName, companyLogo);
+        }
 
         private static Dictionary<string, object?> BuildRunParameters(
             ReportRunRequestDto request,

@@ -42,7 +42,8 @@ namespace Service.Shell
 
         public async Task<StandardReferenceScopeItemDto> GetStandardReferenceScopeItemByGuidAsync(Guid scopeItemGuid, bool trackChanges)
         {
-            var entity = await _repository.StandardReferenceScopeItem.GetStandardReferenceScopeItemAsync(scopeItemGuid, trackChanges);
+            var entity = await _repository.StandardReferenceScopeItem.GetStandardReferenceScopeItemAsync(scopeItemGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"StandardReferenceScopeItem with Guid '{scopeItemGuid}' not found.");
             return entity.Adapt<StandardReferenceScopeItemDto>();
         }
 
@@ -85,6 +86,8 @@ namespace Service.Shell
         public async Task UpdateStandardReferenceScopeItemAsync(Guid scopeItemGuid, StandardReferenceScopeItemForUpdateDto input, bool trackChanges)
         {
             var oldItem = await _repository.StandardReferenceScopeItem.GetStandardReferenceScopeItemAsync(scopeItemGuid, false);
+            if (oldItem is null)
+                throw new KeyNotFoundException($"StandardReferenceScopeItem with GUID {scopeItemGuid} not found.");
 
             var model = input.Adapt<StandardReferenceScopeItem>();
             model.StandardReferenceScopeItemGuid = scopeItemGuid;
@@ -172,7 +175,8 @@ namespace Service.Shell
 
         public async Task<StandardReferenceScopeItemDto> GetByScopeGuidAndItemGuidAsync(Guid standardReferenceScopeGuid, Guid standardReferenceScopeItemGuid)
         {
-            var data = await _repository.StandardReferenceScopeItem.GetByScopeGuidAndItemGuidAsync(standardReferenceScopeGuid, standardReferenceScopeItemGuid);
+            var data = await _repository.StandardReferenceScopeItem.GetByScopeGuidAndItemGuidAsync(standardReferenceScopeGuid, standardReferenceScopeItemGuid)
+                ?? throw new KeyNotFoundException($"StandardReferenceScopeItem with Guid '{standardReferenceScopeItemGuid}' for StandardReferenceScope Guid '{standardReferenceScopeGuid}' not found.");
             return data.Adapt<StandardReferenceScopeItemDto>();
         }
     }

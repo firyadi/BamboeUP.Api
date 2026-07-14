@@ -50,7 +50,8 @@ namespace Service.Shell
 
         public async Task<OrganizationUnitScopeDto> GetOrganizationUnitScopeByGuidAsync(Guid organizationUnitScopeGuid, bool trackChanges)
         {
-            var entity = await _repository.OrganizationUnitScope.GetOrganizationUnitScopeAsync(organizationUnitScopeGuid, trackChanges);
+            var entity = await _repository.OrganizationUnitScope.GetOrganizationUnitScopeAsync(organizationUnitScopeGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"OrganizationUnitScope with Guid '{organizationUnitScopeGuid}' not found.");
             return entity.Adapt<OrganizationUnitScopeDto>();
         }
 
@@ -179,7 +180,8 @@ namespace Service.Shell
 
         public async Task<OrganizationUnitScopeDto> GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(Guid organizationUnitGuid, Guid organizationUnitScopeGuid)
         {
-            var result = await _repository.OrganizationUnitScope.GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(organizationUnitGuid, organizationUnitScopeGuid);
+            var result = await _repository.OrganizationUnitScope.GetByOrganizationUnitGuidAndOrganizationUnitScopeGuidAsync(organizationUnitGuid, organizationUnitScopeGuid)
+                ?? throw new KeyNotFoundException($"OrganizationUnitScope with Guid '{organizationUnitScopeGuid}' for OrganizationUnit Guid '{organizationUnitGuid}' not found.");
             return result.Adapt<OrganizationUnitScopeDto>();
         }
     }

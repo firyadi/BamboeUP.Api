@@ -43,6 +43,8 @@ namespace Service.Shell
         public async Task<ParameterDto> GetParameterByGuidAsync(Guid parameterGuid, bool trackChanges)
         {
             var entity = await _repository.Parameter.GetParameterAsync(parameterGuid, trackChanges);
+            if (entity is null)
+                throw new KeyNotFoundException($"Parameter with GUID {parameterGuid} not found.");
             var dto = entity.Adapt<ParameterDto>();
 
             var scopes = await _repository.ParameterScope.GetAllByParameterGuidAsync(parameterGuid);
@@ -134,6 +136,8 @@ namespace Service.Shell
         {
             // 1. Fetch old data for audit diff
             var oldParameter = await _repository.Parameter.GetParameterAsync(parameterGuid, false);
+            if (oldParameter is null)
+                throw new KeyNotFoundException($"Parameter with GUID {parameterGuid} not found.");
             var oldParameterscopes = (await _repository.ParameterScope.GetAllByParameterGuidAsync(parameterGuid)).ToList();
 
             // 2. Update Header

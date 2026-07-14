@@ -201,6 +201,8 @@ namespace Service.Shell
         public async Task UpdateStandardReferenceAsync(Guid standardReferenceGuid, StandardReferenceForUpdateDto input, bool trackChanges)
         {
             var oldHeader = await _repository.StandardReference.GetStandardReferenceAsync(standardReferenceGuid, false);
+            if (oldHeader is null)
+                throw new KeyNotFoundException($"StandardReference with GUID {standardReferenceGuid} not found.");
             var oldItems = (await _repository.StandardReferenceItem.GetAllByStandardReferenceGuidAsync(standardReferenceGuid)).ToList();
             var oldScopes = (await _repository.StandardReferenceScope.GetAllByStandardReferenceGuidAsync(standardReferenceGuid)).ToList();
 

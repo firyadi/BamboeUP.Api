@@ -36,7 +36,8 @@ namespace Service.Shell
 
         public async Task<UserGroupProgramDto> GetUserGroupProgramAsync(Guid userGroupProgramGuid, bool trackChanges)
         {
-            var entity = await _repository.UserGroupProgram.GetUserGroupProgramAsync(userGroupProgramGuid, trackChanges);
+            var entity = await _repository.UserGroupProgram.GetUserGroupProgramAsync(userGroupProgramGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"UserGroupProgram with Guid '{userGroupProgramGuid}' not found.");
             return entity.Adapt<UserGroupProgramDto>();
         }
 

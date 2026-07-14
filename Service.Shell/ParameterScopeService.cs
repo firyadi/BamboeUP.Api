@@ -41,7 +41,8 @@ namespace Service.Shell
 
         public async Task<ParameterscopeDto> GetParameterscopeByGuidAsync(Guid parameterscopeGuid, bool trackChanges)
         {
-            var entity = await _repository.ParameterScope.GetParameterscopeAsync(parameterscopeGuid, trackChanges);
+            var entity = await _repository.ParameterScope.GetParameterscopeAsync(parameterscopeGuid, trackChanges)
+                ?? throw new KeyNotFoundException($"Parameterscope with Guid '{parameterscopeGuid}' not found.");
             return entity.Adapt<ParameterscopeDto>();
         }
 
@@ -163,7 +164,8 @@ namespace Service.Shell
 
         public async Task<ParameterscopeDto> GetByParameterGuidAndParameterscopeGuidAsync(Guid parameterGuid, Guid parameterscopeGuid)
         {
-            var result = await _repository.ParameterScope.GetByParameterGuidAndParameterscopeGuidAsync(parameterGuid, parameterscopeGuid);
+            var result = await _repository.ParameterScope.GetByParameterGuidAndParameterscopeGuidAsync(parameterGuid, parameterscopeGuid)
+                ?? throw new KeyNotFoundException($"Parameterscope with Guid '{parameterscopeGuid}' for Parameter Guid '{parameterGuid}' not found.");
             return result.Adapt<ParameterscopeDto>();
         }
         public async Task<string?> GetEffectiveParameterValueAsync(string parameterName, long? companyId, long? officeId)

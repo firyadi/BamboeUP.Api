@@ -16,5 +16,11 @@ namespace Contracts
         Task UpdateAsync(Guid reportDefinitionGuid, ReportDefinitionForUpdateDto input, IDbTransaction? transaction = null);
 
         Task SoftDeleteAsync(Guid reportDefinitionGuid, long deletedById, IDbTransaction? transaction = null);
+
+        Task ReplaceParametersAsync(
+            long reportDefinitionId,
+            IReadOnlyList<ReportParameterForUpsertDto> parameters,
+            long updatedById,
+            IDbTransaction? transaction = null);
     }
 }
