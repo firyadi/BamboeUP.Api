@@ -6,6 +6,11 @@ namespace Contracts
     public interface IRepositoryManager
     {
         // ##IRepositoryManager##
+        IPersonEmergencyContactRepository PersonEmergencyContact { get; }
+        IPersonEducationRepository PersonEducation { get; }
+        IPersonIdentificationRepository PersonIdentification { get; }
+        IPersonAddressRepository PersonAddress { get; }
+        IPersonRepository Person { get; }
         IAwardRepository Award { get; }
         ICostCenterScopeRepository CostCenterScope { get; }
         ICostCenterAssignmentRepository CostCenterAssignment { get; }

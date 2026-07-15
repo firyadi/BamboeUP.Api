@@ -19,5 +19,10 @@ namespace Service.Contracts.Modules
 		
 		// ##IServiceManager Start##
             IAwardService AwardService { get; }
+        IPersonService PersonService { get; }
+        IPersonAddressService PersonAddressService { get; }
+        IPersonIdentificationService PersonIdentificationService { get; }
+        IPersonEducationService PersonEducationService { get; }
+        IPersonEmergencyContactService PersonEmergencyContactService { get; }
 }        
 }

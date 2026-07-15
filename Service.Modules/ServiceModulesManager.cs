@@ -22,6 +22,16 @@ public sealed class ServiceModulesManager : IServiceModulesManager
 
         private readonly Lazy<IAwardService> _awardService;
 
+        private readonly Lazy<IPersonService> _personService;
+
+        private readonly Lazy<IPersonAddressService> _personAddressService;
+
+        private readonly Lazy<IPersonIdentificationService> _personIdentificationService;
+
+        private readonly Lazy<IPersonEducationService> _personEducationService;
+
+        private readonly Lazy<IPersonEmergencyContactService> _personEmergencyContactService;
+
 public ServiceModulesManager(
         IRepositoryManager repositoryManager,
         ILoggerManager logger,
@@ -29,6 +39,11 @@ public ServiceModulesManager(
         IAuditService auditService,
         IUserContext userContext)
     {
+            _personEmergencyContactService = new Lazy<IPersonEmergencyContactService>(() => new PersonEmergencyContactService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personEducationService = new Lazy<IPersonEducationService>(() => new PersonEducationService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personIdentificationService = new Lazy<IPersonIdentificationService>(() => new PersonIdentificationService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personAddressService = new Lazy<IPersonAddressService>(() => new PersonAddressService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personService = new Lazy<IPersonService>(() => new PersonService(repositoryManager, logger, transactionManager, auditService, userContext));
             _awardService = new Lazy<IAwardService>(() => new AwardService(repositoryManager, logger, transactionManager, auditService, userContext));
             _hospitalService = new Lazy<IHospitalService>(() => new HospitalService(repositoryManager, logger, transactionManager, auditService, userContext));
         _bankService = new Lazy<IBankService>(() =>
@@ -65,4 +80,9 @@ public ServiceModulesManager(
     public IStandardReferenceItemDisplayService StandardReferenceItemDisplayService => _standardReferenceItemDisplayService.Value;
         public IHospitalService HospitalService => _hospitalService.Value;
         public IAwardService AwardService => _awardService.Value;
+        public IPersonService PersonService => _personService.Value;
+        public IPersonAddressService PersonAddressService => _personAddressService.Value;
+        public IPersonIdentificationService PersonIdentificationService => _personIdentificationService.Value;
+        public IPersonEducationService PersonEducationService => _personEducationService.Value;
+        public IPersonEmergencyContactService PersonEmergencyContactService => _personEmergencyContactService.Value;
 }

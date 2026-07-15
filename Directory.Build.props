@@ -8,5 +8,6 @@
     <NuGetAudit>true</NuGetAudit>
     <NuGetAuditLevel>low</NuGetAuditLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);CS9113</NoWarn>
   </PropertyGroup>
 </Project>

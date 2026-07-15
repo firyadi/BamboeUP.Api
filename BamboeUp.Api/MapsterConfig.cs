@@ -9,6 +9,21 @@ namespace BamboeUp.Api
         public static void RegisterMappings()
         {
             // ##MapsterConfig##
+            TypeAdapterConfig<PersonEmergencyContact, PersonEmergencyContactDto>.NewConfig();
+            TypeAdapterConfig<PersonEmergencyContactForCreationDto, PersonEmergencyContact>.NewConfig();
+            TypeAdapterConfig<PersonEmergencyContactForUpdateDto, PersonEmergencyContact>.NewConfig();
+            TypeAdapterConfig<PersonEducation, PersonEducationDto>.NewConfig();
+            TypeAdapterConfig<PersonEducationForCreationDto, PersonEducation>.NewConfig();
+            TypeAdapterConfig<PersonEducationForUpdateDto, PersonEducation>.NewConfig();
+            TypeAdapterConfig<PersonIdentification, PersonIdentificationDto>.NewConfig();
+            TypeAdapterConfig<PersonIdentificationForCreationDto, PersonIdentification>.NewConfig();
+            TypeAdapterConfig<PersonIdentificationForUpdateDto, PersonIdentification>.NewConfig();
+            TypeAdapterConfig<PersonAddress, PersonAddressDto>.NewConfig();
+            TypeAdapterConfig<PersonAddressForCreationDto, PersonAddress>.NewConfig();
+            TypeAdapterConfig<PersonAddressForUpdateDto, PersonAddress>.NewConfig();
+            TypeAdapterConfig<Person, PersonDto>.NewConfig();
+            TypeAdapterConfig<PersonForCreationDto, Person>.NewConfig();
+            TypeAdapterConfig<PersonForUpdateDto, Person>.NewConfig();
             TypeAdapterConfig<Award, AwardDto>.NewConfig();
             TypeAdapterConfig<AwardForCreationDto, Award>.NewConfig();
             TypeAdapterConfig<AwardForUpdateDto, Award>.NewConfig();

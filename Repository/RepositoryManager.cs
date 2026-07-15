@@ -14,6 +14,11 @@ namespace Repository
         private readonly IUserContext _userContext;
 
         // ##RepositoryManagerFields##
+        private readonly Lazy<IPersonEmergencyContactRepository> _personEmergencyContactRepository;
+        private readonly Lazy<IPersonEducationRepository> _personEducationRepository;
+        private readonly Lazy<IPersonIdentificationRepository> _personIdentificationRepository;
+        private readonly Lazy<IPersonAddressRepository> _personAddressRepository;
+        private readonly Lazy<IPersonRepository> _personRepository;
         private readonly Lazy<IAwardRepository> _awardRepository;
         private readonly Lazy<ICostCenterScopeRepository> _costCenterScopeRepository;
         private readonly Lazy<ICostCenterAssignmentRepository> _costCenterAssignmentRepository;
@@ -73,6 +78,11 @@ namespace Repository
             _auditService = auditService;
             _userContext = userContext;
             // ##RepositoryManagerConstructor##
+            _personEmergencyContactRepository = new Lazy<IPersonEmergencyContactRepository>(() => new PersonEmergencyContactRepository(_context, _auditService));
+            _personEducationRepository = new Lazy<IPersonEducationRepository>(() => new PersonEducationRepository(_context, _auditService));
+            _personIdentificationRepository = new Lazy<IPersonIdentificationRepository>(() => new PersonIdentificationRepository(_context, _auditService));
+            _personAddressRepository = new Lazy<IPersonAddressRepository>(() => new PersonAddressRepository(_context, _auditService));
+            _personRepository = new Lazy<IPersonRepository>(() => new PersonRepository(_context, _auditService));
             _awardRepository = new Lazy<IAwardRepository>(() => new AwardRepository(_context));
             _costCenterScopeRepository = new Lazy<ICostCenterScopeRepository>(() => new CostCenterScopeRepository(_context, _auditService));
             _costCenterAssignmentRepository = new Lazy<ICostCenterAssignmentRepository>(() => new CostCenterAssignmentRepository(_context, _auditService));
@@ -127,6 +137,11 @@ namespace Repository
         }
 
         // ##RepositoryManagerAccessors##
+        public IPersonEmergencyContactRepository PersonEmergencyContact => _personEmergencyContactRepository.Value;
+        public IPersonEducationRepository PersonEducation => _personEducationRepository.Value;
+        public IPersonIdentificationRepository PersonIdentification => _personIdentificationRepository.Value;
+        public IPersonAddressRepository PersonAddress => _personAddressRepository.Value;
+        public IPersonRepository Person => _personRepository.Value;
         public IAwardRepository Award => _awardRepository.Value;
         public ICostCenterScopeRepository CostCenterScope => _costCenterScopeRepository.Value;
         public ICostCenterAssignmentRepository CostCenterAssignment => _costCenterAssignmentRepository.Value;
