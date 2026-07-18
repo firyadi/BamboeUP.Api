@@ -17,7 +17,7 @@ namespace Entities.Models
         public Guid FileStorageGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string OriginalFileName { get; set; } = string.Empty;
+        public string FileStorageName { get; set; } = string.Empty;
 
         [Required]
         public string StoredFileName { get; set; } = string.Empty;

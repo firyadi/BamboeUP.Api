@@ -24,7 +24,7 @@ namespace Shared.DataTransferObjects
         public long? SrSalutation { get; set; }
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
-        public string? Photo { get; set; }
+        public long? FileStorageId { get; set; }
 
         // Step 2: Address & Identity
         [Required]

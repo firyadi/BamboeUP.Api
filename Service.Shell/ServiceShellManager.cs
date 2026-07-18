@@ -80,7 +80,16 @@ namespace Service.Shell
             _adminRegistry = adminRegistry;
 
             // ##ServiceManagerConstructor##
-            _fileStorageService = new Lazy<IFileStorageService>(() => new FileStorageService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
+            _fileStorageService = new Lazy<IFileStorageService>(() => new FileStorageService(
+                _repositoryManager,
+                _logger,
+                _transactionManager,
+                _audit,
+                _userContext,
+                Microsoft.Extensions.Options.Options.Create(
+                    _configuration.GetSection(Shared.Settings.FileStorageOptions.SectionName)
+                        .Get<Shared.Settings.FileStorageOptions>()
+                    ?? new Shared.Settings.FileStorageOptions())));
             _costCenterScopeService = new Lazy<ICostCenterScopeService>(() => new CostCenterScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _costCenterAssignmentService = new Lazy<ICostCenterAssignmentService>(() => new CostCenterAssignmentService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _costCenterService = new Lazy<ICostCenterService>(() => new CostCenterService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));

@@ -4,6 +4,7 @@ using Mapster;
 using Contracts;
 using Entities.Models;
 using Service.Contracts.Modules;
+using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,11 @@ namespace Service.Modules
         ILoggerManager logger,
         ITransactionManager transactionManager,
         IAuditService audit,
-        IUserContext userContext) : IPersonService
+        IUserContext userContext,
+        IFileStorageService fileStorageService) : IPersonService
     {
         public PersonService(IRepositoryManager repository, ILoggerManager logger)
-            : this(repository, logger, null!, null!, null!)
+            : this(repository, logger, null!, null!, null!, null!)
         {
         }
 
@@ -34,7 +36,13 @@ namespace Service.Modules
         {
             var entity = await repository.Person.GetPersonAsync(personGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonDto>();
+            var dto = entity.Adapt<PersonDto>();
+            if (entity.FileStorageId is > 0)
+            {
+                var file = await fileStorageService.GetFileStorageByIdAsync(entity.FileStorageId.Value, false);
+                dto.FileStorageGuid = file?.FileStorageGuid;
+            }
+            return dto;
         }
 
         public async Task<PersonDto> CreatePersonAsync(PersonForCreationDto input)
@@ -1019,12 +1027,12 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonDto>> SearchPersonAsync(
-            string? firstName, string? firstNameSearchType, string? middleName, string? middleNameSearchType, string? lastName, string? lastNameSearchType, string? preTitle, string? preTitleSearchType, string? postTitle, string? postTitleSearchType, string? personName, string? personNameSearchType, string? birthName, string? birthNameSearchType, string? placeofBirth, string? placeofBirthSearchType, string? birthDate, string? birthDateSearchType, string? nationalIdNo, string? nationalIdNoSearchType, string? srGender, string? srGenderSearchType, string? srReligion, string? srReligionSearchType, string? srSalutation, string? srSalutationSearchType, string? srBloodType, string? srBloodTypeSearchType, string? srMaritalStatus, string? srMaritalStatusSearchType, string? photo, string? photoSearchType
+            string? firstName, string? firstNameSearchType, string? middleName, string? middleNameSearchType, string? lastName, string? lastNameSearchType, string? preTitle, string? preTitleSearchType, string? postTitle, string? postTitleSearchType, string? personName, string? personNameSearchType, string? birthName, string? birthNameSearchType, string? placeofBirth, string? placeofBirthSearchType, string? birthDate, string? birthDateSearchType, string? nationalIdNo, string? nationalIdNoSearchType, string? srGender, string? srGenderSearchType, string? srReligion, string? srReligionSearchType, string? srSalutation, string? srSalutationSearchType, string? srBloodType, string? srBloodTypeSearchType, string? srMaritalStatus, string? srMaritalStatusSearchType
             // ── FK Virtual Search Params ──
         )
         {
             var data = await repository.Person.SearchPersonAsync(
-firstName, firstNameSearchType, middleName, middleNameSearchType, lastName, lastNameSearchType, preTitle, preTitleSearchType, postTitle, postTitleSearchType, personName, personNameSearchType, birthName, birthNameSearchType, placeofBirth, placeofBirthSearchType, birthDate, birthDateSearchType, nationalIdNo, nationalIdNoSearchType, srGender, srGenderSearchType, srReligion, srReligionSearchType, srSalutation, srSalutationSearchType, srBloodType, srBloodTypeSearchType, srMaritalStatus, srMaritalStatusSearchType, photo, photoSearchType
+firstName, firstNameSearchType, middleName, middleNameSearchType, lastName, lastNameSearchType, preTitle, preTitleSearchType, postTitle, postTitleSearchType, personName, personNameSearchType, birthName, birthNameSearchType, placeofBirth, placeofBirthSearchType, birthDate, birthDateSearchType, nationalIdNo, nationalIdNoSearchType, srGender, srGenderSearchType, srReligion, srReligionSearchType, srSalutation, srSalutationSearchType, srBloodType, srBloodTypeSearchType, srMaritalStatus, srMaritalStatusSearchType
                 // ── FK Virtual Search Args ──
             );
             return data.Adapt<IEnumerable<PersonDto>>();

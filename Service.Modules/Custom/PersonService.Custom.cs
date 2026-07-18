@@ -7,12 +7,81 @@ using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Service.Modules
 {
     public partial class PersonService
     {
+        public async Task<FileOperationResult<PersonDto>> UploadPhotoAsync(
+            Guid personGuid,
+            FileUploadRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            var person = await repository.Person.GetPersonAsync(personGuid, trackChanges: false);
+            if (person is null)
+                return FileOperationResult<PersonDto>.Fail("Person not found.", "NOT_FOUND");
+
+            var categoryId = await fileStorageService.ResolveFileCategoryIdAsync("Photo", cancellationToken)
+                             ?? await fileStorageService.ResolveFileCategoryIdAsync("photo", cancellationToken);
+            if (categoryId is null or 0)
+                return FileOperationResult<PersonDto>.Fail(
+                    "FileCategory 'Photo' was not found in Standard Reference.",
+                    "CATEGORY_MISSING");
+
+            var upload = await fileStorageService.UploadAsync(request, categoryId.Value, cancellationToken);
+            if (!upload.Success || upload.Data is null)
+                return FileOperationResult<PersonDto>.Fail(
+                    upload.Message,
+                    upload.ErrorCode,
+                    upload.ValidationErrors);
+
+            var previousFileStorageId = person.FileStorageId;
+            person.FileStorageId = upload.Data.FileStorageId;
+            person.StatusId = 2;
+            person.UpdatedById = userContext.UserId;
+            person.UpdatedTime = DateTime.UtcNow;
+            await repository.Person.UpdatePersonAsync(person);
+
+            if (previousFileStorageId is > 0 && previousFileStorageId != upload.Data.FileStorageId)
+            {
+                var oldMeta = await fileStorageService.GetFileStorageByIdAsync(previousFileStorageId.Value, false);
+                if (oldMeta is not null)
+                    await fileStorageService.DeletePhysicalAsync(oldMeta.FileStorageGuid, userContext.UserId, cancellationToken);
+            }
+
+            var dto = person.Adapt<PersonDto>();
+            dto.FileStorageGuid = upload.Data.FileStorageGuid;
+            return FileOperationResult<PersonDto>.Ok(dto, "Photo uploaded.");
+        }
+
+        public async Task<FileOperationResult<PersonDto>> RemovePhotoAsync(
+            Guid personGuid,
+            bool deletePhysicalFile = true,
+            CancellationToken cancellationToken = default)
+        {
+            var person = await repository.Person.GetPersonAsync(personGuid, trackChanges: false);
+            if (person is null)
+                return FileOperationResult<PersonDto>.Fail("Person not found.", "NOT_FOUND");
+
+            var previousId = person.FileStorageId;
+            person.FileStorageId = null;
+            person.StatusId = 2;
+            person.UpdatedById = userContext.UserId;
+            person.UpdatedTime = DateTime.UtcNow;
+            await repository.Person.UpdatePersonAsync(person);
+
+            if (deletePhysicalFile && previousId is > 0)
+            {
+                var oldMeta = await fileStorageService.GetFileStorageByIdAsync(previousId.Value, false);
+                if (oldMeta is not null)
+                    await fileStorageService.DeletePhysicalAsync(oldMeta.FileStorageGuid, userContext.UserId, cancellationToken);
+            }
+
+            return FileOperationResult<PersonDto>.Ok(person.Adapt<PersonDto>(), "Photo removed.");
+        }
+
         public async Task<PersonDto> OnboardPersonAsync(PersonQuickOnboardDto input)
         {
             await transactionManager.BeginTransactionAsync();

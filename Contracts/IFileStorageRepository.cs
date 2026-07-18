@@ -15,10 +15,14 @@ namespace Contracts
         Task UpdateFileStorageAsync(FileStorage fileStorage, IDbTransaction? transaction = null);
         Task DeleteFileStorageAsync(Guid fileStorageGuid, IDbTransaction? transaction = null);
         Task SoftDeleteFileStorageAsync(FileStorage fileStorage, long deletedBy, IDbTransaction? transaction = null);
+
+        Task<FileStorage?> GetFileStorageByIdAsync(long fileStorageId, bool trackChanges);
+
+        Task RecordAccessAsync(Guid fileStorageGuid, CancellationToken cancellationToken = default);
         
         Task<IEnumerable<FileStorage>> SearchFileStorageAsync(
-            string? originalFileName,
-            string? originalFileNameSearchType,
+            string? fileStorageName,
+            string? fileStorageNameSearchType,
             string? storedFileName,
             string? storedFileNameSearchType,
             string? extension,
@@ -47,6 +51,7 @@ namespace Contracts
             string? isTemporarySearchType,
             string? description,
             string? descriptionSearchType,
+string? fileCategoryName, string? fileCategoryNameSearchType,
 
             IDbTransaction? transaction = null);
     }

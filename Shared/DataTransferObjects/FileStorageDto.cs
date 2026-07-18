@@ -8,7 +8,7 @@ namespace Shared.DataTransferObjects
         public long FileStorageId { get; set; }
         public Guid FileStorageGuid { get; init; }
         
-        public string OriginalFileName { get; set; } = string.Empty;
+        public string FileStorageName { get; set; } = string.Empty;
         public string StoredFileName { get; set; } = string.Empty;
         public string Extension { get; set; } = string.Empty;
         public string MimeType { get; set; } = string.Empty;
@@ -38,7 +38,7 @@ public string? FileCategoryName { get; set; }
 
     public partial record FileStorageForCreationDto
     {
-        public string OriginalFileName { get; set; } = string.Empty;
+        public string FileStorageName { get; set; } = string.Empty;
         public string StoredFileName { get; set; } = string.Empty;
         public string Extension { get; set; } = string.Empty;
         public string MimeType { get; set; } = string.Empty;
@@ -59,7 +59,7 @@ public string? FileCategoryName { get; set; }
 
     public partial record FileStorageForUpdateDto
     {
-        public string OriginalFileName { get; set; } = string.Empty;
+        public string FileStorageName { get; set; } = string.Empty;
         public string StoredFileName { get; set; } = string.Empty;
         public string Extension { get; set; } = string.Empty;
         public string MimeType { get; set; } = string.Empty;
@@ -85,8 +85,8 @@ public string? FileCategoryName { get; set; }
 
     public partial class FileStorageSearchDto
     {
-        public string? OriginalFileName { get; set; }
-        public SearchType OriginalFileNameSearchType { get; set; } = SearchType.Contains;
+        public string? FileStorageName { get; set; }
+        public SearchType FileStorageNameSearchType { get; set; } = SearchType.Contains;
 
         public string? StoredFileName { get; set; }
         public SearchType StoredFileNameSearchType { get; set; } = SearchType.Contains;

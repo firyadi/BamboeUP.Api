@@ -13,11 +13,15 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, v_SrFileCategory.StandardReferenceItemName AS FileCategoryName
+, ISNULL(v_SrFileCategory.StandardReferenceItemName, '') AS FileCategoryName
 
 
                 FROM [app].[FileStorage] a
-LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCategory = v_SrFileCategory.StandardReferenceItemId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FileCategory')
+    WHERE StandardReferenceItemId = a.SrFileCategory
+) v_SrFileCategory
 
 
                 WHERE a.FileStorageGuid = @fileStorageGuid
@@ -26,16 +30,55 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
             return await connection.QuerySingleOrDefaultAsync<FileStorage>(sql, new { fileStorageGuid });
         }
 
+        public async Task<FileStorage?> GetFileStorageByIdAsync(long fileStorageId, bool trackChanges)
+        {
+            using var connection = context.CreateConnection();
+            var sql = $@"
+                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+, ISNULL(v_SrFileCategory.StandardReferenceItemName, '') AS FileCategoryName
+
+
+                FROM [app].[FileStorage] a
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FileCategory')
+    WHERE StandardReferenceItemId = a.SrFileCategory
+) v_SrFileCategory
+
+
+                WHERE a.FileStorageId = @fileStorageId
+                  AND a.StatusId > 0
+                  AND a.DeletedTime IS NULL";
+            return await connection.QuerySingleOrDefaultAsync<FileStorage>(sql, new { fileStorageId });
+        }
+
+        public async Task RecordAccessAsync(Guid fileStorageGuid, CancellationToken cancellationToken = default)
+        {
+            using var connection = context.CreateConnection();
+            const string sql = @"
+                UPDATE [app].[FileStorage]
+                SET DownloadCount = DownloadCount + 1,
+                    LastAccessTime = SYSUTCDATETIME()
+                WHERE FileStorageGuid = @fileStorageGuid
+                  AND StatusId > 0
+                  AND DeletedTime IS NULL";
+            await connection.ExecuteAsync(new CommandDefinition(sql, new { fileStorageGuid }, cancellationToken: cancellationToken));
+        }
+
         public async Task<IEnumerable<FileStorage>> GetAllFileStoragesAsync(bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, v_SrFileCategory.StandardReferenceItemName AS FileCategoryName
+, ISNULL(v_SrFileCategory.StandardReferenceItemName, '') AS FileCategoryName
 
 
                 FROM [app].[FileStorage] a
-LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCategory = v_SrFileCategory.StandardReferenceItemId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FileCategory')
+    WHERE StandardReferenceItemId = a.SrFileCategory
+) v_SrFileCategory
 
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
@@ -48,10 +91,10 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[FileStorage]
-                (FileStorageGuid, CreatedById, StatusId, CreatedTime, OriginalFileName, StoredFileName, Extension, MimeType, FileSize, SrFileCategory, StorageProvider, RelativePath, Width, Height, IsImage, FileHash, DownloadCount, LastAccessTime, IsTemporary, Description
+                (FileStorageGuid, CreatedById, StatusId, CreatedTime, FileStorageName, StoredFileName, Extension, MimeType, FileSize, SrFileCategory, StorageProvider, RelativePath, Width, Height, IsImage, FileHash, DownloadCount, LastAccessTime, IsTemporary, Description
                 )
                 VALUES
-                (@FileStorageGuid, @CreatedById, @StatusId, @CreatedTime, @OriginalFileName, @StoredFileName, @Extension, @MimeType, @FileSize, @SrFileCategory, @StorageProvider, @RelativePath, @Width, @Height, @IsImage, @FileHash, @DownloadCount, @LastAccessTime, @IsTemporary, @Description
+                (@FileStorageGuid, @CreatedById, @StatusId, @CreatedTime, @FileStorageName, @StoredFileName, @Extension, @MimeType, @FileSize, @SrFileCategory, @StorageProvider, @RelativePath, @Width, @Height, @IsImage, @FileHash, @DownloadCount, @LastAccessTime, @IsTemporary, @Description
                 );
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
             fileStorage.FileStorageId = await conn.QuerySingleAsync<long>(sql, fileStorage, transaction);
@@ -62,7 +105,7 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[FileStorage]
-                SET                     OriginalFileName = @OriginalFileName,
+                SET                     FileStorageName = @FileStorageName,
                     StoredFileName = @StoredFileName,
                     Extension = @Extension,
                     MimeType = @MimeType,
@@ -106,8 +149,8 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
         }
 
         public async Task<IEnumerable<FileStorage>> SearchFileStorageAsync(
-            string? originalFileName,
-            string? originalFileNameSearchType,
+            string? fileStorageName,
+            string? fileStorageNameSearchType,
             string? storedFileName,
             string? storedFileNameSearchType,
             string? extension,
@@ -136,6 +179,7 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
             string? isTemporarySearchType,
             string? description,
             string? descriptionSearchType,
+string? fileCategoryName, string? fileCategoryNameSearchType,
 
             IDbTransaction? transaction = null)
         {
@@ -143,9 +187,9 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
             List<string> whereClauses = [ "a.StatusId > 0", "a.DeletedTime IS NULL" ];
             var parameters = new DynamicParameters();
 
-            if (!string.IsNullOrWhiteSpace(originalFileName))
+            if (!string.IsNullOrWhiteSpace(fileStorageName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.OriginalFileName", "@originalFileName", originalFileNameSearchType, parameters, "originalFileName", originalFileName);
+                var param = SqlFilterHelper.BuildFilter("a.FileStorageName", "@fileStorageName", fileStorageNameSearchType, parameters, "fileStorageName", fileStorageName);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -232,15 +276,20 @@ LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCateg
                 var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
+if (!string.IsNullOrWhiteSpace(fileCategoryName)) { var param = SqlFilterHelper.BuildFilter("v_SrFileCategory.StandardReferenceItemName", "@fileCategoryName", fileCategoryNameSearchType, parameters, "fileCategoryName", fileCategoryName); if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param); }
 
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, v_SrFileCategory.StandardReferenceItemName AS FileCategoryName
+, ISNULL(v_SrFileCategory.StandardReferenceItemName, '') AS FileCategoryName
 
 
                 FROM [app].[FileStorage] a
-LEFT JOIN [app].[vw_StandardReference_Display] v_SrFileCategory ON a.SrFileCategory = v_SrFileCategory.StandardReferenceItemId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FileCategory')
+    WHERE StandardReferenceItemId = a.SrFileCategory
+) v_SrFileCategory
 
 
                 WHERE {string.Join(" AND ", whereClauses)}

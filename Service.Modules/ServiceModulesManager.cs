@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Mapster;
 using Contracts;
 using Service.Contracts.Modules;
+using Service.Contracts.Shell;
 
 namespace Service.Modules;
 
@@ -45,7 +46,8 @@ public ServiceModulesManager(
         ILoggerManager logger,
         ITransactionManager transactionManager,
         IAuditService auditService,
-        IUserContext userContext)
+        IUserContext userContext,
+        IServiceShellManager shellManager)
     {
             _personWorkExperienceService = new Lazy<IPersonWorkExperienceService>(() => new PersonWorkExperienceService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personPhysicalCharacteristicService = new Lazy<IPersonPhysicalCharacteristicService>(() => new PersonPhysicalCharacteristicService(repositoryManager, logger, transactionManager, auditService, userContext));
@@ -55,7 +57,7 @@ public ServiceModulesManager(
             _personEducationService = new Lazy<IPersonEducationService>(() => new PersonEducationService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personIdentificationService = new Lazy<IPersonIdentificationService>(() => new PersonIdentificationService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personAddressService = new Lazy<IPersonAddressService>(() => new PersonAddressService(repositoryManager, logger, transactionManager, auditService, userContext));
-            _personService = new Lazy<IPersonService>(() => new PersonService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personService = new Lazy<IPersonService>(() => new PersonService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
             _awardService = new Lazy<IAwardService>(() => new AwardService(repositoryManager, logger, transactionManager, auditService, userContext));
             _hospitalService = new Lazy<IHospitalService>(() => new HospitalService(repositoryManager, logger, transactionManager, auditService, userContext));
         _bankService = new Lazy<IBankService>(() =>

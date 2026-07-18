@@ -48,8 +48,6 @@ namespace Contracts
             string? srBloodTypeSearchType,
             string? srMaritalStatus,
             string? srMaritalStatusSearchType,
-            string? photo,
-            string? photoSearchType,
             IDbTransaction? transaction = null);
     }
 }

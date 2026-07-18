@@ -65,7 +65,7 @@ namespace BamboeUp.Api.Controllers
         public async Task<IActionResult> Search([FromQuery] FileStorageSearchDto input)
         {
             var result = await service.FileStorageService.SearchFileStorageAsync(
-                input.OriginalFileName, input.OriginalFileNameSearchType.ToString(),
+                input.FileStorageName, input.FileStorageNameSearchType.ToString(),
                 input.StoredFileName, input.StoredFileNameSearchType.ToString(),
                 input.Extension, input.ExtensionSearchType.ToString(),
                 input.MimeType, input.MimeTypeSearchType.ToString(),

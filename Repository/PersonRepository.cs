@@ -60,9 +60,9 @@ namespace Repository
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[Person]
-                (PersonGuid, CreatedById, StatusId, CreatedTime, FirstName, MiddleName, LastName, PreTitle, PostTitle, BirthName, PlaceofBirth, BirthDate, NationalIdNo, SrGender, SrReligion, SrSalutation, SrBloodType, SrMaritalStatus, Photo)
+                (PersonGuid, CreatedById, StatusId, CreatedTime, FirstName, MiddleName, LastName, PreTitle, PostTitle, BirthName, PlaceofBirth, BirthDate, NationalIdNo, SrGender, SrReligion, SrSalutation, SrBloodType, SrMaritalStatus, FileStorageId)
                 VALUES
-                (@PersonGuid, @CreatedById, @StatusId, @CreatedTime, @FirstName, @MiddleName, @LastName, @PreTitle, @PostTitle, @BirthName, @PlaceofBirth, @BirthDate, @NationalIdNo, @SrGender, @SrReligion, @SrSalutation, @SrBloodType, @SrMaritalStatus, @Photo);
+                (@PersonGuid, @CreatedById, @StatusId, @CreatedTime, @FirstName, @MiddleName, @LastName, @PreTitle, @PostTitle, @BirthName, @PlaceofBirth, @BirthDate, @NationalIdNo, @SrGender, @SrReligion, @SrSalutation, @SrBloodType, @SrMaritalStatus, @FileStorageId);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
             person.PersonId = await conn.QuerySingleAsync<long>(sql, person, transaction);
         }
@@ -87,7 +87,7 @@ namespace Repository
                     SrSalutation = @SrSalutation,
                     SrBloodType = @SrBloodType,
                     SrMaritalStatus = @SrMaritalStatus,
-                    Photo = @Photo,
+                    FileStorageId = @FileStorageId,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -147,8 +147,6 @@ namespace Repository
             string? srBloodTypeSearchType,
             string? srMaritalStatus,
             string? srMaritalStatusSearchType,
-            string? photo,
-            string? photoSearchType,
             IDbTransaction? transaction = null)
         {
             var connection = transaction?.Connection ?? context.CreateConnection();
@@ -242,12 +240,6 @@ namespace Repository
             if (!string.IsNullOrWhiteSpace(srMaritalStatus))
             {
                 var param = SqlFilterHelper.BuildFilter("a.SrMaritalStatus", "@srMaritalStatus", srMaritalStatusSearchType, parameters, "srMaritalStatus", srMaritalStatus);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(photo))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.Photo", "@photo", photoSearchType, parameters, "photo", photo);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 

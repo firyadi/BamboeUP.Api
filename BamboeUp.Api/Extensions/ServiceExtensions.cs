@@ -36,6 +36,7 @@ namespace BamboeUp.Api.Extensions
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IUserContext, BamboeUp.Api.Context.UserContext>();
             services.AddHttpContextAccessor();
+            services.Configure<FileStorageOptions>(config.GetSection(FileStorageOptions.SectionName));
 
         }
 

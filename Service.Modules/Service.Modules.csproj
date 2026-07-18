@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Service.Contracts.Modules\Service.Contracts.Modules.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <ProjectReference Include="..\..\BamboeUp.Audit\BamboeUp.Audit.csproj" />
+    <ProjectReference Include="..\Service.Contracts.Shell\Service.Contracts.Shell.csproj" />
   </ItemGroup>
 
 </Project>

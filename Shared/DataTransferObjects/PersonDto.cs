@@ -22,7 +22,9 @@ namespace Shared.DataTransferObjects
         public long? SrSalutation { get; set; }
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
-        public string? Photo { get; set; }
+        public long? FileStorageId { get; set; }
+        /// <summary>Resolved FileStorageGuid for preview/download (not a table column).</summary>
+        public Guid? FileStorageGuid { get; set; }
 
                 public IEnumerable<PersonIdentificationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationDto>? PersonEducations { get; set; }
@@ -59,7 +61,7 @@ namespace Shared.DataTransferObjects
         public long? SrSalutation { get; set; }
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
-        public string? Photo { get; set; }
+        public long? FileStorageId { get; set; }
                 public IEnumerable<PersonIdentificationForCreationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationForCreationDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactForCreationDto>? PersonEmergencyContacts { get; set; }
@@ -88,7 +90,7 @@ namespace Shared.DataTransferObjects
         public long? SrSalutation { get; set; }
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
-        public string? Photo { get; set; }
+        public long? FileStorageId { get; set; }
                 public IEnumerable<PersonIdentificationForUpdateDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationForUpdateDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactForUpdateDto>? PersonEmergencyContacts { get; set; }
@@ -152,9 +154,6 @@ namespace Shared.DataTransferObjects
 
         public string? SrMaritalStatus { get; set; }
         public SearchType SrMaritalStatusSearchType { get; set; } = SearchType.Contains;
-
-        public string? Photo { get; set; }
-        public SearchType PhotoSearchType { get; set; } = SearchType.Contains;
 
     }
 }

@@ -3,8 +3,10 @@ using BamboeUp.Audit.Models;
 using Mapster;
 using Contracts;
 using Entities.Models;
+using Microsoft.Extensions.Options;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
+using Shared.Settings;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,8 +18,11 @@ namespace Service.Shell
         ILoggerManager logger,
         ITransactionManager transactionManager,
         IAuditService audit,
-        IUserContext userContext) : IFileStorageService
+        IUserContext userContext,
+        IOptions<FileStorageOptions> fileStorageOptions) : IFileStorageService
     {
+        private readonly FileStorageOptions _options = fileStorageOptions.Value;
+
         public async Task<IEnumerable<FileStorageDto>> GetAllFileStoragesAsync(bool trackChanges)
         {
             var entities = await repository.FileStorage.GetAllFileStoragesAsync(trackChanges);
@@ -27,6 +32,13 @@ namespace Service.Shell
         public async Task<FileStorageDto?> GetFileStorageByGuidAsync(Guid fileStorageGuid, bool trackChanges)
         {
             var entity = await repository.FileStorage.GetFileStorageAsync(fileStorageGuid, trackChanges);
+            if (entity == null) return null;
+            return entity.Adapt<FileStorageDto>();
+        }
+
+        public async Task<FileStorageDto?> GetFileStorageByIdAsync(long fileStorageId, bool trackChanges)
+        {
+            var entity = await repository.FileStorage.GetFileStorageByIdAsync(fileStorageId, trackChanges);
             if (entity == null) return null;
             return entity.Adapt<FileStorageDto>();
         }
@@ -48,7 +60,7 @@ namespace Service.Shell
                 SessionType = "CREATE",
                 RootTableName = "FileStorage",
                 RootEntityKey = model.FileStorageGuid.ToString(),
-                RootDisplayName = model.OriginalFileName,
+                RootDisplayName = model.FileStorageName,
                 UserId = userContext.UserGuid != Guid.Empty ? userContext.UserGuid.ToString() : model.CreatedById.ToString(),
                 Entries =
                 [
@@ -56,7 +68,7 @@ namespace Service.Shell
                     {
                         TableName = "FileStorage",
                         EntityKey = model.FileStorageGuid.ToString(),
-                        EntityDisplayName = model.OriginalFileName,
+                        EntityDisplayName = model.FileStorageName,
                         ActionType = "CREATE",
                         OldEntity = null,
                         NewEntity = model
@@ -84,7 +96,7 @@ namespace Service.Shell
                 SessionType = "UPDATE",
                 RootTableName = "FileStorage",
                 RootEntityKey = model.FileStorageGuid.ToString(),
-                RootDisplayName = model.OriginalFileName,
+                RootDisplayName = model.FileStorageName,
                 UserId = userContext.UserGuid != Guid.Empty ? userContext.UserGuid.ToString() : model.UpdatedById.ToString(),
                 Entries =
                 [
@@ -92,7 +104,7 @@ namespace Service.Shell
                     {
                         TableName = "FileStorage",
                         EntityKey = model.FileStorageGuid.ToString(),
-                        EntityDisplayName = model.OriginalFileName,
+                        EntityDisplayName = model.FileStorageName,
                         ActionType = "UPDATE",
                         OldEntity = oldEntity,
                         NewEntity = model
@@ -117,7 +129,7 @@ namespace Service.Shell
                 SessionType = "DELETE",
                 RootTableName = "FileStorage",
                 RootEntityKey = fileStorageGuid.ToString(),
-                RootDisplayName = oldEntity?.OriginalFileName,
+                RootDisplayName = oldEntity?.FileStorageName,
                 UserId = userContext.UserGuid != Guid.Empty ? userContext.UserGuid.ToString() : input.DeletedById.ToString(),
                 Entries =
                 [
@@ -125,7 +137,7 @@ namespace Service.Shell
                     {
                         TableName = "FileStorage",
                         EntityKey = fileStorageGuid.ToString(),
-                        EntityDisplayName = oldEntity?.OriginalFileName,
+                        EntityDisplayName = oldEntity?.FileStorageName,
                         ActionType = "DELETE",
                         OldEntity = oldEntity,
                         NewEntity = null
@@ -140,12 +152,13 @@ namespace Service.Shell
         }
 
         public async Task<IEnumerable<FileStorageDto>> SearchFileStorageAsync(
-            string? originalFileName, string? originalFileNameSearchType, string? storedFileName, string? storedFileNameSearchType, string? extension, string? extensionSearchType, string? mimeType, string? mimeTypeSearchType, string? fileSize, string? fileSizeSearchType, string? storageProvider, string? storageProviderSearchType, string? relativePath, string? relativePathSearchType, string? width, string? widthSearchType, string? height, string? heightSearchType, string? isImage, string? isImageSearchType, string? fileHash, string? fileHashSearchType, string? downloadCount, string? downloadCountSearchType, string? lastAccessTime, string? lastAccessTimeSearchType, string? isTemporary, string? isTemporarySearchType, string? description, string? descriptionSearchType
+            string? fileStorageName, string? fileStorageNameSearchType, string? storedFileName, string? storedFileNameSearchType, string? extension, string? extensionSearchType, string? mimeType, string? mimeTypeSearchType, string? fileSize, string? fileSizeSearchType, string? storageProvider, string? storageProviderSearchType, string? relativePath, string? relativePathSearchType, string? width, string? widthSearchType, string? height, string? heightSearchType, string? isImage, string? isImageSearchType, string? fileHash, string? fileHashSearchType, string? downloadCount, string? downloadCountSearchType, string? lastAccessTime, string? lastAccessTimeSearchType, string? isTemporary, string? isTemporarySearchType, string? description, string? descriptionSearchType
+, string? fileCategoryName, string? fileCategoryNameSearchType
 
             )
         {
             var data = await repository.FileStorage.SearchFileStorageAsync(
-                originalFileName, originalFileNameSearchType, storedFileName, storedFileNameSearchType, extension, extensionSearchType, mimeType, mimeTypeSearchType, fileSize, fileSizeSearchType, storageProvider, storageProviderSearchType, relativePath, relativePathSearchType, width, widthSearchType, height, heightSearchType, isImage, isImageSearchType, fileHash, fileHashSearchType, downloadCount, downloadCountSearchType, lastAccessTime, lastAccessTimeSearchType, isTemporary, isTemporarySearchType, description, descriptionSearchType
+                fileStorageName, fileStorageNameSearchType, storedFileName, storedFileNameSearchType, extension, extensionSearchType, mimeType, mimeTypeSearchType, fileSize, fileSizeSearchType, storageProvider, storageProviderSearchType, relativePath, relativePathSearchType, width, widthSearchType, height, heightSearchType, isImage, isImageSearchType, fileHash, fileHashSearchType, downloadCount, downloadCountSearchType, lastAccessTime, lastAccessTimeSearchType, isTemporary, isTemporarySearchType, description, descriptionSearchType
 , fileCategoryName, fileCategoryNameSearchType
 
                 );

@@ -48,7 +48,7 @@ namespace Entities.Models
 
         public long? SrMaritalStatus { get; set; }
 
-        public string? Photo { get; set; }
+        public long? FileStorageId { get; set; }
 
 
 
