@@ -82,9 +82,6 @@ namespace Presentation.Modules.Controllers
             var result = await _service.PersonAddressService.SearchPersonAddressAsync(
                                 input.SrAddressType, input.SrAddressTypeSearchType.ToString(),
                 input.Address, input.AddressSearchType.ToString(),
-                input.CountryId, input.CountryIdSearchType.ToString(),
-                input.ProvinceId, input.ProvinceIdSearchType.ToString(),
-                input.CityId, input.CityIdSearchType.ToString(),
                 headerGuid, detailGuid);
             return Ok(result);
         }

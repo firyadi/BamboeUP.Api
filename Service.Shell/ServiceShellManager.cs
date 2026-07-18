@@ -21,6 +21,7 @@ namespace Service.Shell
         private readonly IAdminRegistryService _adminRegistry;
 
         // ##ServiceManagerFields##
+        private readonly Lazy<IFileStorageService> _fileStorageService;
         private readonly Lazy<ICostCenterScopeService> _costCenterScopeService;
         private readonly Lazy<ICostCenterAssignmentService> _costCenterAssignmentService;
         private readonly Lazy<ICostCenterService> _costCenterService;
@@ -79,6 +80,7 @@ namespace Service.Shell
             _adminRegistry = adminRegistry;
 
             // ##ServiceManagerConstructor##
+            _fileStorageService = new Lazy<IFileStorageService>(() => new FileStorageService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _costCenterScopeService = new Lazy<ICostCenterScopeService>(() => new CostCenterScopeService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _costCenterAssignmentService = new Lazy<ICostCenterAssignmentService>(() => new CostCenterAssignmentService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
             _costCenterService = new Lazy<ICostCenterService>(() => new CostCenterService(_repositoryManager, _logger, _transactionManager, _audit, _userContext));
@@ -119,6 +121,7 @@ namespace Service.Shell
         }
 
         // ##ServiceManagerAccessors##
+        public IFileStorageService FileStorageService => _fileStorageService.Value;
         public ICostCenterScopeService CostCenterScopeService => _costCenterScopeService.Value;
         public ICostCenterAssignmentService CostCenterAssignmentService => _costCenterAssignmentService.Value;
         public ICostCenterService CostCenterService => _costCenterService.Value;

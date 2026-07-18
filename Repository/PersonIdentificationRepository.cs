@@ -18,7 +18,7 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
@@ -34,7 +34,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
@@ -51,7 +51,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
@@ -69,9 +69,9 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonIdentification]
-                (PersonIdentificationGuid, PersonId, CreatedById, StatusId, CreatedTime, SrIdentificationTypeId, IdentificationValue)
+                (PersonIdentificationGuid, PersonId, CreatedById, StatusId, CreatedTime, SrIdentificationType, IdentificationValue)
                 VALUES
-                (@PersonIdentificationGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrIdentificationTypeId, @IdentificationValue);
+                (@PersonIdentificationGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrIdentificationType, @IdentificationValue);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
             personIdentification.PersonIdentificationId = await conn.QuerySingleAsync<long>(sql, personIdentification, transaction);
         }
@@ -83,7 +83,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             const string sql = @"
                 UPDATE [app].[PersonIdentification]
                 SET                     PersonId = @PersonId,
-                    SrIdentificationTypeId = @SrIdentificationTypeId,
+                    SrIdentificationType = @SrIdentificationType,
                     IdentificationValue = @IdentificationValue,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
@@ -121,8 +121,8 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         }
 
         public async Task<IEnumerable<PersonIdentification>> SearchPersonIdentificationAsync(
-            string? srIdentificationTypeId,
-            string? srIdentificationTypeIdSearchType,
+            string? srIdentificationType,
+            string? srIdentificationTypeSearchType,
             string? identificationValue,
             string? identificationValueSearchType,
             Guid personGuid, Guid personIdentificationGuid,
@@ -143,9 +143,9 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 parameters.Add("@personIdentificationGuid", personIdentificationGuid);
             }
 
-            if (!string.IsNullOrWhiteSpace(srIdentificationTypeId))
+            if (!string.IsNullOrWhiteSpace(srIdentificationType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrIdentificationTypeId", "@srIdentificationTypeId", srIdentificationTypeIdSearchType, parameters, "srIdentificationTypeId", srIdentificationTypeId);
+                var param = SqlFilterHelper.BuildFilter("a.SrIdentificationType", "@srIdentificationType", srIdentificationTypeSearchType, parameters, "srIdentificationType", srIdentificationType);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -157,7 +157,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId

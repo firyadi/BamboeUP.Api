@@ -32,6 +32,14 @@ public sealed class ServiceModulesManager : IServiceModulesManager
 
         private readonly Lazy<IPersonEmergencyContactService> _personEmergencyContactService;
 
+        private readonly Lazy<IPersonContactService> _personContactService;
+
+        private readonly Lazy<IPersonFamilyService> _personFamilyService;
+
+        private readonly Lazy<IPersonPhysicalCharacteristicService> _personPhysicalCharacteristicService;
+
+        private readonly Lazy<IPersonWorkExperienceService> _personWorkExperienceService;
+
 public ServiceModulesManager(
         IRepositoryManager repositoryManager,
         ILoggerManager logger,
@@ -39,6 +47,10 @@ public ServiceModulesManager(
         IAuditService auditService,
         IUserContext userContext)
     {
+            _personWorkExperienceService = new Lazy<IPersonWorkExperienceService>(() => new PersonWorkExperienceService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personPhysicalCharacteristicService = new Lazy<IPersonPhysicalCharacteristicService>(() => new PersonPhysicalCharacteristicService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personFamilyService = new Lazy<IPersonFamilyService>(() => new PersonFamilyService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _personContactService = new Lazy<IPersonContactService>(() => new PersonContactService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personEmergencyContactService = new Lazy<IPersonEmergencyContactService>(() => new PersonEmergencyContactService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personEducationService = new Lazy<IPersonEducationService>(() => new PersonEducationService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personIdentificationService = new Lazy<IPersonIdentificationService>(() => new PersonIdentificationService(repositoryManager, logger, transactionManager, auditService, userContext));
@@ -85,4 +97,8 @@ public ServiceModulesManager(
         public IPersonIdentificationService PersonIdentificationService => _personIdentificationService.Value;
         public IPersonEducationService PersonEducationService => _personEducationService.Value;
         public IPersonEmergencyContactService PersonEmergencyContactService => _personEmergencyContactService.Value;
+        public IPersonContactService PersonContactService => _personContactService.Value;
+        public IPersonFamilyService PersonFamilyService => _personFamilyService.Value;
+        public IPersonPhysicalCharacteristicService PersonPhysicalCharacteristicService => _personPhysicalCharacteristicService.Value;
+        public IPersonWorkExperienceService PersonWorkExperienceService => _personWorkExperienceService.Value;
 }

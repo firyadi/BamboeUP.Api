@@ -24,5 +24,9 @@ namespace Service.Contracts.Modules
         IPersonIdentificationService PersonIdentificationService { get; }
         IPersonEducationService PersonEducationService { get; }
         IPersonEmergencyContactService PersonEmergencyContactService { get; }
+        IPersonContactService PersonContactService { get; }
+        IPersonFamilyService PersonFamilyService { get; }
+        IPersonPhysicalCharacteristicService PersonPhysicalCharacteristicService { get; }
+        IPersonWorkExperienceService PersonWorkExperienceService { get; }
 }        
 }

@@ -28,6 +28,8 @@ namespace Contracts
             string? preTitleSearchType,
             string? postTitle,
             string? postTitleSearchType,
+            string? personName,
+            string? personNameSearchType,
             string? birthName,
             string? birthNameSearchType,
             string? placeofBirth,

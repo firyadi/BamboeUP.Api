@@ -6,6 +6,7 @@ namespace Service.Contracts.Shell
     public interface IServiceShellManager
     {
         // ##IServiceManager##
+        IFileStorageService FileStorageService { get; }
         ICostCenterScopeService CostCenterScopeService { get; }
         ICostCenterAssignmentService CostCenterAssignmentService { get; }
         ICostCenterService CostCenterService { get; }

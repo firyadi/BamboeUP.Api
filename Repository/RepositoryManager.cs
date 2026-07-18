@@ -14,6 +14,11 @@ namespace Repository
         private readonly IUserContext _userContext;
 
         // ##RepositoryManagerFields##
+        private readonly Lazy<IFileStorageRepository> _fileStorageRepository;
+        private readonly Lazy<IPersonWorkExperienceRepository> _personWorkExperienceRepository;
+        private readonly Lazy<IPersonPhysicalCharacteristicRepository> _personPhysicalCharacteristicRepository;
+        private readonly Lazy<IPersonFamilyRepository> _personFamilyRepository;
+        private readonly Lazy<IPersonContactRepository> _personContactRepository;
         private readonly Lazy<IPersonEmergencyContactRepository> _personEmergencyContactRepository;
         private readonly Lazy<IPersonEducationRepository> _personEducationRepository;
         private readonly Lazy<IPersonIdentificationRepository> _personIdentificationRepository;
@@ -78,6 +83,11 @@ namespace Repository
             _auditService = auditService;
             _userContext = userContext;
             // ##RepositoryManagerConstructor##
+            _fileStorageRepository = new Lazy<IFileStorageRepository>(() => new FileStorageRepository(_context));
+            _personWorkExperienceRepository = new Lazy<IPersonWorkExperienceRepository>(() => new PersonWorkExperienceRepository(_context, _auditService));
+            _personPhysicalCharacteristicRepository = new Lazy<IPersonPhysicalCharacteristicRepository>(() => new PersonPhysicalCharacteristicRepository(_context, _auditService));
+            _personFamilyRepository = new Lazy<IPersonFamilyRepository>(() => new PersonFamilyRepository(_context, _auditService));
+            _personContactRepository = new Lazy<IPersonContactRepository>(() => new PersonContactRepository(_context, _auditService));
             _personEmergencyContactRepository = new Lazy<IPersonEmergencyContactRepository>(() => new PersonEmergencyContactRepository(_context, _auditService));
             _personEducationRepository = new Lazy<IPersonEducationRepository>(() => new PersonEducationRepository(_context, _auditService));
             _personIdentificationRepository = new Lazy<IPersonIdentificationRepository>(() => new PersonIdentificationRepository(_context, _auditService));
@@ -137,6 +147,11 @@ namespace Repository
         }
 
         // ##RepositoryManagerAccessors##
+        public IFileStorageRepository FileStorage => _fileStorageRepository.Value;
+        public IPersonWorkExperienceRepository PersonWorkExperience => _personWorkExperienceRepository.Value;
+        public IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic => _personPhysicalCharacteristicRepository.Value;
+        public IPersonFamilyRepository PersonFamily => _personFamilyRepository.Value;
+        public IPersonContactRepository PersonContact => _personContactRepository.Value;
         public IPersonEmergencyContactRepository PersonEmergencyContact => _personEmergencyContactRepository.Value;
         public IPersonEducationRepository PersonEducation => _personEducationRepository.Value;
         public IPersonIdentificationRepository PersonIdentification => _personIdentificationRepository.Value;

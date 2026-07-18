@@ -3,12 +3,12 @@ using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record PersonIdentificationDto
+    public partial record PersonIdentificationDto
     {
         public long PersonIdentificationId { get; set; }
         public Guid PersonIdentificationGuid { get; init; }
         public long PersonId { get; set; }
-        public long SrIdentificationTypeId { get; set; }
+        public long SrIdentificationType { get; set; }
         public string IdentificationValue { get; set; } = string.Empty;
 public string? PersonName { get; set; }
 
@@ -22,32 +22,32 @@ public string? PersonName { get; set; }
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record PersonIdentificationForCreationDto
+    public partial record PersonIdentificationForCreationDto
     {
         public long PersonId { get; set; }
-        public long SrIdentificationTypeId { get; set; }
+        public long SrIdentificationType { get; set; }
         public string IdentificationValue { get; set; } = string.Empty;
         public long CreatedById { get; set; } = 0;
     }
 
-    public record PersonIdentificationForUpdateDto
+    public partial record PersonIdentificationForUpdateDto
     {
         public Guid PersonIdentificationGuid { get; set; }
         public long PersonId { get; set; }
-        public long SrIdentificationTypeId { get; set; }
+        public long SrIdentificationType { get; set; }
         public string IdentificationValue { get; set; } = string.Empty;
         public long UpdatedById { get; set; }
     }
 
-    public record PersonIdentificationForDeleteDto
+    public partial record PersonIdentificationForDeleteDto
     {
         public long DeletedById { get; set; }
     }
 
-    public class PersonIdentificationSearchDto
+    public partial class PersonIdentificationSearchDto
     {
-        public string? SrIdentificationTypeId { get; set; }
-        public SearchType SrIdentificationTypeIdSearchType { get; set; } = SearchType.Contains;
+        public string? SrIdentificationType { get; set; }
+        public SearchType SrIdentificationTypeSearchType { get; set; } = SearchType.Contains;
 
         public string? IdentificationValue { get; set; }
         public SearchType IdentificationValueSearchType { get; set; } = SearchType.Contains;

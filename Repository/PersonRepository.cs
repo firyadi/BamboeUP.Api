@@ -127,6 +127,8 @@ namespace Repository
             string? preTitleSearchType,
             string? postTitle,
             string? postTitleSearchType,
+            string? personName,
+            string? personNameSearchType,
             string? birthName,
             string? birthNameSearchType,
             string? placeofBirth,
@@ -180,6 +182,12 @@ namespace Repository
             if (!string.IsNullOrWhiteSpace(postTitle))
             {
                 var param = SqlFilterHelper.BuildFilter("a.PostTitle", "@postTitle", postTitleSearchType, parameters, "postTitle", postTitle);
+                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
+            }
+
+            if (!string.IsNullOrWhiteSpace(personName))
+            {
+                var param = SqlFilterHelper.BuildFilter("a.PersonName", "@personName", personNameSearchType, parameters, "personName", personName);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 

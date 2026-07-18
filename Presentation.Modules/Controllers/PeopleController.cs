@@ -71,6 +71,7 @@ namespace Presentation.Modules.Controllers
                 input.LastName, input.LastNameSearchType.ToString(),
                 input.PreTitle, input.PreTitleSearchType.ToString(),
                 input.PostTitle, input.PostTitleSearchType.ToString(),
+                input.PersonName, input.PersonNameSearchType.ToString(),
                 input.BirthName, input.BirthNameSearchType.ToString(),
                 input.PlaceofBirth, input.PlaceofBirthSearchType.ToString(),
                 input.BirthDate, input.BirthDateSearchType.ToString(),

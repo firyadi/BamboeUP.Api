@@ -163,11 +163,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonAddressDto>> SearchPersonAddressAsync(
-            string? srAddressType, string? srAddressTypeSearchType, string? address, string? addressSearchType, string? countryId, string? countryIdSearchType, string? provinceId, string? provinceIdSearchType, string? cityId, string? cityIdSearchType,
+            string? srAddressType, string? srAddressTypeSearchType, string? address, string? addressSearchType,
             Guid personGuid, Guid personAddressGuid)
         {
             var data = await _repository.PersonAddress.SearchPersonAddressAsync(
-                srAddressType, srAddressTypeSearchType, address, addressSearchType, countryId, countryIdSearchType, provinceId, provinceIdSearchType, cityId, cityIdSearchType, 
+                srAddressType, srAddressTypeSearchType, address, addressSearchType, 
                 personGuid, personAddressGuid);
             return data.Adapt<IEnumerable<PersonAddressDto>>();
         }

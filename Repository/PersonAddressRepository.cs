@@ -20,7 +20,7 @@ namespace Repository
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
 
                 FROM [app].[PersonAddress] a
@@ -42,7 +42,7 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
 
                 FROM [app].[PersonAddress] a
@@ -65,7 +65,7 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
 
                 FROM [app].[PersonAddress] a
@@ -146,12 +146,6 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
             string? srAddressTypeSearchType,
             string? address,
             string? addressSearchType,
-            string? countryId,
-            string? countryIdSearchType,
-            string? provinceId,
-            string? provinceIdSearchType,
-            string? cityId,
-            string? cityIdSearchType,
             Guid personGuid, Guid personAddressGuid,
             IDbTransaction? transaction = null)
         {
@@ -182,29 +176,11 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-            if (!string.IsNullOrWhiteSpace(countryId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CountryId", "@countryId", countryIdSearchType, parameters, "countryId", countryId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(provinceId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.ProvinceId", "@provinceId", provinceIdSearchType, parameters, "provinceId", provinceId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(cityId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CityId", "@cityId", cityIdSearchType, parameters, "cityId", cityId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.PersonName AS PersonName
+, j_PersonId.FirstName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
 
                 FROM [app].[PersonAddress] a

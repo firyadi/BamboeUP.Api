@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record PersonDto
+    public partial record PersonDto
     {
         public long PersonId { get; set; }
         public Guid PersonGuid { get; init; }
@@ -13,6 +12,7 @@ namespace Shared.DataTransferObjects
         public string? LastName { get; set; }
         public string? PreTitle { get; set; }
         public string? PostTitle { get; set; }
+        public string? PersonName { get; set; }
         public string? BirthName { get; set; }
         public string? PlaceofBirth { get; set; }
         public DateTime BirthDate { get; set; }
@@ -27,6 +27,10 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<PersonIdentificationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactDto>? PersonEmergencyContacts { get; set; }
+                public IEnumerable<PersonContactDto>? PersonContacts { get; set; }
+                public IEnumerable<PersonFamilyDto>? PersonFamilies { get; set; }
+                public IEnumerable<PersonPhysicalCharacteristicDto>? PersonPhysicalCharacteristics { get; set; }
+                public IEnumerable<PersonWorkExperienceDto>? PersonWorkExperiences { get; set; }
         // ##HeaderDetailCollections##
         public IEnumerable<PersonAddressDto>? PersonAddresses { get; set; }
         public int StatusId { get; set; }
@@ -39,7 +43,7 @@ namespace Shared.DataTransferObjects
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record PersonForCreationDto
+    public partial record PersonForCreationDto
     {
         public string FirstName { get; set; } = string.Empty;
         public string? MiddleName { get; set; }
@@ -59,12 +63,16 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<PersonIdentificationForCreationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationForCreationDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactForCreationDto>? PersonEmergencyContacts { get; set; }
+                public IEnumerable<PersonContactForCreationDto>? PersonContacts { get; set; }
+                public IEnumerable<PersonFamilyForCreationDto>? PersonFamilies { get; set; }
+                public IEnumerable<PersonPhysicalCharacteristicForCreationDto>? PersonPhysicalCharacteristics { get; set; }
+                public IEnumerable<PersonWorkExperienceForCreationDto>? PersonWorkExperiences { get; set; }
         // ##HeaderDetailCreateCollections##
         public IEnumerable<PersonAddressForCreationDto>? PersonAddresses { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
-    public record PersonForUpdateDto
+    public partial record PersonForUpdateDto
     {
         public string FirstName { get; set; } = string.Empty;
         public string? MiddleName { get; set; }
@@ -84,17 +92,21 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<PersonIdentificationForUpdateDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationForUpdateDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactForUpdateDto>? PersonEmergencyContacts { get; set; }
+                public IEnumerable<PersonContactForUpdateDto>? PersonContacts { get; set; }
+                public IEnumerable<PersonFamilyForUpdateDto>? PersonFamilies { get; set; }
+                public IEnumerable<PersonPhysicalCharacteristicForUpdateDto>? PersonPhysicalCharacteristics { get; set; }
+                public IEnumerable<PersonWorkExperienceForUpdateDto>? PersonWorkExperiences { get; set; }
         // ##HeaderDetailUpdateCollections##
         public IEnumerable<PersonAddressForUpdateDto>? PersonAddresses { get; set; }
         public long UpdatedById { get; set; }
     }
 
-    public record PersonForDeleteDto
+    public partial record PersonForDeleteDto
     {
         public long DeletedById { get; set; }
     }
 
-    public class PersonSearchDto
+    public partial class PersonSearchDto
     {
         public string? FirstName { get; set; }
         public SearchType FirstNameSearchType { get; set; } = SearchType.Contains;
@@ -110,6 +122,9 @@ namespace Shared.DataTransferObjects
 
         public string? PostTitle { get; set; }
         public SearchType PostTitleSearchType { get; set; } = SearchType.Contains;
+
+        public string? PersonName { get; set; }
+        public SearchType PersonNameSearchType { get; set; } = SearchType.Contains;
 
         public string? BirthName { get; set; }
         public SearchType BirthNameSearchType { get; set; } = SearchType.Contains;

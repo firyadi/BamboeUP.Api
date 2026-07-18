@@ -3,7 +3,7 @@ using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record PersonEmergencyContactDto
+    public partial record PersonEmergencyContactDto
     {
         public long PersonEmergencyContactId { get; set; }
         public Guid PersonEmergencyContactGuid { get; init; }
@@ -24,7 +24,7 @@ public string? PersonName { get; set; }
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record PersonEmergencyContactForCreationDto
+    public partial record PersonEmergencyContactForCreationDto
     {
         public long PersonId { get; set; }
         public string ContactName { get; set; } = string.Empty;
@@ -34,7 +34,7 @@ public string? PersonName { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
-    public record PersonEmergencyContactForUpdateDto
+    public partial record PersonEmergencyContactForUpdateDto
     {
         public Guid PersonEmergencyContactGuid { get; set; }
         public long PersonId { get; set; }
@@ -45,12 +45,12 @@ public string? PersonName { get; set; }
         public long UpdatedById { get; set; }
     }
 
-    public record PersonEmergencyContactForDeleteDto
+    public partial record PersonEmergencyContactForDeleteDto
     {
         public long DeletedById { get; set; }
     }
 
-    public class PersonEmergencyContactSearchDto
+    public partial class PersonEmergencyContactSearchDto
     {
         public string? ContactName { get; set; }
         public SearchType ContactNameSearchType { get; set; } = SearchType.Contains;

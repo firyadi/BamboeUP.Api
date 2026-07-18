@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("Person", Schema = "app")]
-    public class Person
+    public partial class Person
     {
         [Column("PersonId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -26,6 +26,9 @@ namespace Entities.Models
         public string? PreTitle { get; set; }
 
         public string? PostTitle { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public string? PersonName { get; set; }
 
         public string? BirthName { get; set; }
 

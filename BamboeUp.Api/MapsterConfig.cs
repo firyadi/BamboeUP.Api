@@ -9,6 +9,21 @@ namespace BamboeUp.Api
         public static void RegisterMappings()
         {
             // ##MapsterConfig##
+            TypeAdapterConfig<FileStorage, FileStorageDto>.NewConfig();
+            TypeAdapterConfig<FileStorageForCreationDto, FileStorage>.NewConfig();
+            TypeAdapterConfig<FileStorageForUpdateDto, FileStorage>.NewConfig();
+            TypeAdapterConfig<PersonWorkExperience, PersonWorkExperienceDto>.NewConfig();
+            TypeAdapterConfig<PersonWorkExperienceForCreationDto, PersonWorkExperience>.NewConfig();
+            TypeAdapterConfig<PersonWorkExperienceForUpdateDto, PersonWorkExperience>.NewConfig();
+            TypeAdapterConfig<PersonPhysicalCharacteristic, PersonPhysicalCharacteristicDto>.NewConfig();
+            TypeAdapterConfig<PersonPhysicalCharacteristicForCreationDto, PersonPhysicalCharacteristic>.NewConfig();
+            TypeAdapterConfig<PersonPhysicalCharacteristicForUpdateDto, PersonPhysicalCharacteristic>.NewConfig();
+            TypeAdapterConfig<PersonFamily, PersonFamilyDto>.NewConfig();
+            TypeAdapterConfig<PersonFamilyForCreationDto, PersonFamily>.NewConfig();
+            TypeAdapterConfig<PersonFamilyForUpdateDto, PersonFamily>.NewConfig();
+            TypeAdapterConfig<PersonContact, PersonContactDto>.NewConfig();
+            TypeAdapterConfig<PersonContactForCreationDto, PersonContact>.NewConfig();
+            TypeAdapterConfig<PersonContactForUpdateDto, PersonContact>.NewConfig();
             TypeAdapterConfig<PersonEmergencyContact, PersonEmergencyContactDto>.NewConfig();
             TypeAdapterConfig<PersonEmergencyContactForCreationDto, PersonEmergencyContact>.NewConfig();
             TypeAdapterConfig<PersonEmergencyContactForUpdateDto, PersonEmergencyContact>.NewConfig();

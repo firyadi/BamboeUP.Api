@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("PersonIdentification", Schema = "app")]
-    public class PersonIdentification
+    public partial class PersonIdentification
     {
         [Column("PersonIdentificationId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -19,7 +19,7 @@ namespace Entities.Models
         [Required]
         public long PersonId { get; set; }
 
-        public long SrIdentificationTypeId { get; set; }
+        public long SrIdentificationType { get; set; }
 
         [Required]
         public string IdentificationValue { get; set; } = string.Empty;

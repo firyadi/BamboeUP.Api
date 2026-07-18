@@ -23,12 +23,6 @@ namespace Contracts
             string? srAddressTypeSearchType,
             string? address,
             string? addressSearchType,
-            string? countryId,
-            string? countryIdSearchType,
-            string? provinceId,
-            string? provinceIdSearchType,
-            string? cityId,
-            string? cityIdSearchType,
             Guid personGuid, Guid personAddressGuid,
             IDbTransaction? transaction = null);
     }

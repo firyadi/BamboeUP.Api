@@ -3,7 +3,7 @@ using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record PersonEducationDto
+    public partial record PersonEducationDto
     {
         public long PersonEducationId { get; set; }
         public Guid PersonEducationGuid { get; init; }
@@ -22,7 +22,7 @@ public string? PersonName { get; set; }
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record PersonEducationForCreationDto
+    public partial record PersonEducationForCreationDto
     {
         public long PersonId { get; set; }
         public long SrEducationLevel { get; set; }
@@ -30,7 +30,7 @@ public string? PersonName { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
-    public record PersonEducationForUpdateDto
+    public partial record PersonEducationForUpdateDto
     {
         public Guid PersonEducationGuid { get; set; }
         public long PersonId { get; set; }
@@ -39,12 +39,12 @@ public string? PersonName { get; set; }
         public long UpdatedById { get; set; }
     }
 
-    public record PersonEducationForDeleteDto
+    public partial record PersonEducationForDeleteDto
     {
         public long DeletedById { get; set; }
     }
 
-    public class PersonEducationSearchDto
+    public partial class PersonEducationSearchDto
     {
         public string? SrEducationLevel { get; set; }
         public SearchType SrEducationLevelSearchType { get; set; } = SearchType.Contains;

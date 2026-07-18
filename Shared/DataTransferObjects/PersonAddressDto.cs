@@ -3,7 +3,7 @@ using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record PersonAddressDto
+    public partial record PersonAddressDto
     {
         public long PersonAddressId { get; set; }
         public Guid PersonAddressGuid { get; init; }
@@ -28,7 +28,7 @@ public string? ProvinceName { get; set; }
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record PersonAddressForCreationDto
+    public partial record PersonAddressForCreationDto
     {
         public long PersonId { get; set; }
         public long SrAddressType { get; set; }
@@ -39,7 +39,7 @@ public string? ProvinceName { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
-    public record PersonAddressForUpdateDto
+    public partial record PersonAddressForUpdateDto
     {
         public Guid PersonAddressGuid { get; set; }
         public long PersonId { get; set; }
@@ -51,26 +51,17 @@ public string? ProvinceName { get; set; }
         public long UpdatedById { get; set; }
     }
 
-    public record PersonAddressForDeleteDto
+    public partial record PersonAddressForDeleteDto
     {
         public long DeletedById { get; set; }
     }
 
-    public class PersonAddressSearchDto
+    public partial class PersonAddressSearchDto
     {
         public string? SrAddressType { get; set; }
         public SearchType SrAddressTypeSearchType { get; set; } = SearchType.Contains;
 
         public string? Address { get; set; }
         public SearchType AddressSearchType { get; set; } = SearchType.Contains;
-
-        public string? CountryId { get; set; }
-        public SearchType CountryIdSearchType { get; set; } = SearchType.Contains;
-
-        public string? ProvinceId { get; set; }
-        public SearchType ProvinceIdSearchType { get; set; } = SearchType.Contains;
-
-        public string? CityId { get; set; }
-        public SearchType CityIdSearchType { get; set; } = SearchType.Contains;
     }
 }

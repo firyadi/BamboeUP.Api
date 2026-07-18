@@ -6,6 +6,11 @@ namespace Contracts
     public interface IRepositoryManager
     {
         // ##IRepositoryManager##
+        IFileStorageRepository FileStorage { get; }
+        IPersonWorkExperienceRepository PersonWorkExperience { get; }
+        IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic { get; }
+        IPersonFamilyRepository PersonFamily { get; }
+        IPersonContactRepository PersonContact { get; }
         IPersonEmergencyContactRepository PersonEmergencyContact { get; }
         IPersonEducationRepository PersonEducation { get; }
         IPersonIdentificationRepository PersonIdentification { get; }
