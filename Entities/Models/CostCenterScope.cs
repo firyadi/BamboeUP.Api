@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("CostCenterScope", Schema = "app")]
-    public class CostCenterScope
+    public partial class CostCenterScope
     {
         [Column("CostCenterScopeId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

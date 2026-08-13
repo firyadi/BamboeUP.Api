@@ -14,7 +14,15 @@ namespace Repository
         private readonly IUserContext _userContext;
 
         // ##RepositoryManagerFields##
-        private readonly Lazy<IFileStorageRepository> _fileStorageRepository;
+        private readonly Lazy<IEmployeeTrainingRepository> _employeeTrainingRepository;
+        private readonly Lazy<IEmployeeSkillRepository> _employeeSkillRepository;
+        private readonly Lazy<IEmployeeLanguageRepository> _employeeLanguageRepository;
+        private readonly Lazy<IEmployeeContractRepository> _employeeContractRepository;
+        private readonly Lazy<IEmployeeCertificationRepository> _employeeCertificationRepository;
+        private readonly Lazy<IEmployeeCareerRepository> _employeeCareerRepository;
+        private readonly Lazy<IEmployeeAssignmentRepository> _employeeAssignmentRepository;
+        private readonly Lazy<IEmployeeAssetRepository> _employeeAssetRepository;
+        private readonly Lazy<IEmployeeRepository> _employeeRepository;
         private readonly Lazy<IPersonWorkExperienceRepository> _personWorkExperienceRepository;
         private readonly Lazy<IPersonPhysicalCharacteristicRepository> _personPhysicalCharacteristicRepository;
         private readonly Lazy<IPersonFamilyRepository> _personFamilyRepository;
@@ -24,9 +32,19 @@ namespace Repository
         private readonly Lazy<IPersonIdentificationRepository> _personIdentificationRepository;
         private readonly Lazy<IPersonAddressRepository> _personAddressRepository;
         private readonly Lazy<IPersonRepository> _personRepository;
-        private readonly Lazy<IAwardRepository> _awardRepository;
-        private readonly Lazy<ICostCenterScopeRepository> _costCenterScopeRepository;
         private readonly Lazy<ICostCenterAssignmentRepository> _costCenterAssignmentRepository;
+        private readonly Lazy<ICompanyRepository> _companyRepository;
+        private readonly Lazy<IAwardCriteriaRuleRepository> _awardCriteriaRuleRepository;
+        private readonly Lazy<IAwardCriteriaRepository> _awardCriteriaRepository;
+        private readonly Lazy<IAwardRepository> _awardRepository;
+        private readonly Lazy<IHolidayRepository> _holidayRepository;
+        private readonly Lazy<ICertificationRepository> _certificationRepository;
+        private readonly Lazy<IAssetRepository> _assetRepository;
+        private readonly Lazy<ITrainingRepository> _trainingRepository;
+        private readonly Lazy<ISkillRepository> _skillRepository;
+        private readonly Lazy<IPersonBankAccountRepository> _personBankAccountRepository;
+        private readonly Lazy<IFileStorageRepository> _fileStorageRepository;
+        private readonly Lazy<ICostCenterScopeRepository> _costCenterScopeRepository;
         private readonly Lazy<ICostCenterRepository> _costCenterRepository;
         private readonly Lazy<IHospitalRepository> _hospitalRepository;
         private readonly Lazy<IParameterscopeRepository> _parameterscopeRepository;
@@ -46,12 +64,10 @@ namespace Repository
         private readonly Lazy<IAutoNumberGenerateRepository> _autoNumberGenerateRepository;
         private readonly Lazy<IBankRepository> _bankRepository;
         private readonly Lazy<ICityRepository> _cityRepository;
-        private readonly Lazy<ICompanyRepository> _companyRepository;
         private readonly Lazy<ICompanyOfficeRepository> _companyOfficeRepository;
         private readonly Lazy<ICountryRepository> _countryRepository;
         private readonly Lazy<IDistrictRepository> _districtRepository;
         private readonly Lazy<IDocumentNumberRequestRepository> _documentNumberRequestRepository;
-        private readonly Lazy<IHolidayRepository> _holidayRepository;
         private readonly Lazy<IOrganizationUnitRepository> _organizationUnitRepository;
         private readonly Lazy<IOrganizationUnitScopeRepository> _organizationUnitScopeRepository;
         private readonly Lazy<IParameterRepository> _parameterRepository;
@@ -83,7 +99,15 @@ namespace Repository
             _auditService = auditService;
             _userContext = userContext;
             // ##RepositoryManagerConstructor##
-            _fileStorageRepository = new Lazy<IFileStorageRepository>(() => new FileStorageRepository(_context));
+            _employeeTrainingRepository = new Lazy<IEmployeeTrainingRepository>(() => new EmployeeTrainingRepository(_context, _auditService));
+            _employeeSkillRepository = new Lazy<IEmployeeSkillRepository>(() => new EmployeeSkillRepository(_context, _auditService));
+            _employeeLanguageRepository = new Lazy<IEmployeeLanguageRepository>(() => new EmployeeLanguageRepository(_context, _auditService));
+            _employeeContractRepository = new Lazy<IEmployeeContractRepository>(() => new EmployeeContractRepository(_context, _auditService));
+            _employeeCertificationRepository = new Lazy<IEmployeeCertificationRepository>(() => new EmployeeCertificationRepository(_context, _auditService));
+            _employeeCareerRepository = new Lazy<IEmployeeCareerRepository>(() => new EmployeeCareerRepository(_context, _auditService));
+            _employeeAssignmentRepository = new Lazy<IEmployeeAssignmentRepository>(() => new EmployeeAssignmentRepository(_context, _auditService));
+            _employeeAssetRepository = new Lazy<IEmployeeAssetRepository>(() => new EmployeeAssetRepository(_context, _auditService));
+            _employeeRepository = new Lazy<IEmployeeRepository>(() => new EmployeeRepository(_context, _auditService));
             _personWorkExperienceRepository = new Lazy<IPersonWorkExperienceRepository>(() => new PersonWorkExperienceRepository(_context, _auditService));
             _personPhysicalCharacteristicRepository = new Lazy<IPersonPhysicalCharacteristicRepository>(() => new PersonPhysicalCharacteristicRepository(_context, _auditService));
             _personFamilyRepository = new Lazy<IPersonFamilyRepository>(() => new PersonFamilyRepository(_context, _auditService));
@@ -93,9 +117,19 @@ namespace Repository
             _personIdentificationRepository = new Lazy<IPersonIdentificationRepository>(() => new PersonIdentificationRepository(_context, _auditService));
             _personAddressRepository = new Lazy<IPersonAddressRepository>(() => new PersonAddressRepository(_context, _auditService));
             _personRepository = new Lazy<IPersonRepository>(() => new PersonRepository(_context, _auditService));
-            _awardRepository = new Lazy<IAwardRepository>(() => new AwardRepository(_context));
-            _costCenterScopeRepository = new Lazy<ICostCenterScopeRepository>(() => new CostCenterScopeRepository(_context, _auditService));
             _costCenterAssignmentRepository = new Lazy<ICostCenterAssignmentRepository>(() => new CostCenterAssignmentRepository(_context, _auditService));
+            _companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(_context, _auditService));
+            _awardCriteriaRuleRepository = new Lazy<IAwardCriteriaRuleRepository>(() => new AwardCriteriaRuleRepository(_context, _auditService));
+            _awardCriteriaRepository = new Lazy<IAwardCriteriaRepository>(() => new AwardCriteriaRepository(_context, _auditService));
+            _awardRepository = new Lazy<IAwardRepository>(() => new AwardRepository(_context, _auditService));
+            _holidayRepository = new Lazy<IHolidayRepository>(() => new HolidayRepository(_context));
+            _certificationRepository = new Lazy<ICertificationRepository>(() => new CertificationRepository(_context));
+            _assetRepository = new Lazy<IAssetRepository>(() => new AssetRepository(_context));
+            _trainingRepository = new Lazy<ITrainingRepository>(() => new TrainingRepository(_context));
+            _skillRepository = new Lazy<ISkillRepository>(() => new SkillRepository(_context));
+            _personBankAccountRepository = new Lazy<IPersonBankAccountRepository>(() => new PersonBankAccountRepository(_context, _auditService));
+            _fileStorageRepository = new Lazy<IFileStorageRepository>(() => new FileStorageRepository(_context));
+            _costCenterScopeRepository = new Lazy<ICostCenterScopeRepository>(() => new CostCenterScopeRepository(_context, _auditService));
             _costCenterRepository = new Lazy<ICostCenterRepository>(() => new CostCenterRepository(_context, _auditService));
             _hospitalRepository = new Lazy<IHospitalRepository>(() => new HospitalRepository(_context));
             _parameterscopeRepository = new Lazy<IParameterscopeRepository>(() => new ParameterscopeRepository(_context));
@@ -115,12 +149,10 @@ namespace Repository
             _autoNumberGenerateRepository = new Lazy<IAutoNumberGenerateRepository>(() => new AutoNumberGenerateRepository(_context));
             _bankRepository = new Lazy<IBankRepository>(() => new BankRepository(_context));
             _cityRepository = new Lazy<ICityRepository>(() => new CityRepository(_context, _auditService));
-            _companyRepository = new Lazy<ICompanyRepository>(() => new CompanyRepository(_context));
             _companyOfficeRepository = new Lazy<ICompanyOfficeRepository>(() => new CompanyOfficeRepository(_context, _userContext));
             _countryRepository = new Lazy<ICountryRepository>(() => new CountryRepository(_context, _auditService));
             _districtRepository = new Lazy<IDistrictRepository>(() => new DistrictRepository(_context, _auditService));
             _documentNumberRequestRepository = new Lazy<IDocumentNumberRequestRepository>(() => new DocumentNumberRequestRepository(_context, _auditService));
-            _holidayRepository = new Lazy<IHolidayRepository>(() => new HolidayRepository(_context, _auditService));
             _organizationUnitRepository = new Lazy<IOrganizationUnitRepository>(() => new OrganizationUnitRepository(_context, _auditService));
             _organizationUnitScopeRepository = new Lazy<IOrganizationUnitScopeRepository>(() => new OrganizationUnitScopeRepository(_context, _auditService));
             _parameterRepository = new Lazy<IParameterRepository>(() => new ParameterRepository(_context));
@@ -147,7 +179,15 @@ namespace Repository
         }
 
         // ##RepositoryManagerAccessors##
-        public IFileStorageRepository FileStorage => _fileStorageRepository.Value;
+        public IEmployeeTrainingRepository EmployeeTraining => _employeeTrainingRepository.Value;
+        public IEmployeeSkillRepository EmployeeSkill => _employeeSkillRepository.Value;
+        public IEmployeeLanguageRepository EmployeeLanguage => _employeeLanguageRepository.Value;
+        public IEmployeeContractRepository EmployeeContract => _employeeContractRepository.Value;
+        public IEmployeeCertificationRepository EmployeeCertification => _employeeCertificationRepository.Value;
+        public IEmployeeCareerRepository EmployeeCareer => _employeeCareerRepository.Value;
+        public IEmployeeAssignmentRepository EmployeeAssignment => _employeeAssignmentRepository.Value;
+        public IEmployeeAssetRepository EmployeeAsset => _employeeAssetRepository.Value;
+        public IEmployeeRepository Employee => _employeeRepository.Value;
         public IPersonWorkExperienceRepository PersonWorkExperience => _personWorkExperienceRepository.Value;
         public IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic => _personPhysicalCharacteristicRepository.Value;
         public IPersonFamilyRepository PersonFamily => _personFamilyRepository.Value;
@@ -157,9 +197,19 @@ namespace Repository
         public IPersonIdentificationRepository PersonIdentification => _personIdentificationRepository.Value;
         public IPersonAddressRepository PersonAddress => _personAddressRepository.Value;
         public IPersonRepository Person => _personRepository.Value;
-        public IAwardRepository Award => _awardRepository.Value;
-        public ICostCenterScopeRepository CostCenterScope => _costCenterScopeRepository.Value;
         public ICostCenterAssignmentRepository CostCenterAssignment => _costCenterAssignmentRepository.Value;
+        public ICompanyRepository Company => _companyRepository.Value;
+        public IAwardCriteriaRuleRepository AwardCriteriaRule => _awardCriteriaRuleRepository.Value;
+        public IAwardCriteriaRepository AwardCriteria => _awardCriteriaRepository.Value;
+        public IAwardRepository Award => _awardRepository.Value;
+        public IHolidayRepository Holiday => _holidayRepository.Value;
+        public ICertificationRepository Certification => _certificationRepository.Value;
+        public IAssetRepository Asset => _assetRepository.Value;
+        public ITrainingRepository Training => _trainingRepository.Value;
+        public ISkillRepository Skill => _skillRepository.Value;
+        public IPersonBankAccountRepository PersonBankAccount => _personBankAccountRepository.Value;
+        public IFileStorageRepository FileStorage => _fileStorageRepository.Value;
+        public ICostCenterScopeRepository CostCenterScope => _costCenterScopeRepository.Value;
         public ICostCenterRepository CostCenter => _costCenterRepository.Value;
         public IHospitalRepository Hospital => _hospitalRepository.Value;
         public IParameterscopeRepository Parameterscope => _parameterscopeRepository.Value;
@@ -179,12 +229,10 @@ namespace Repository
         public IAutoNumberGenerateRepository AutoNumberGenerate => _autoNumberGenerateRepository.Value;
         public IBankRepository Bank => _bankRepository.Value;
         public ICityRepository City => _cityRepository.Value;
-        public ICompanyRepository Company => _companyRepository.Value;
         public ICompanyOfficeRepository CompanyOffice => _companyOfficeRepository.Value;
         public ICountryRepository Country => _countryRepository.Value;
         public IDistrictRepository District => _districtRepository.Value;
         public IDocumentNumberRequestRepository DocumentNumberRequest => _documentNumberRequestRepository.Value;
-        public IHolidayRepository Holiday => _holidayRepository.Value;
         public IOrganizationUnitRepository OrganizationUnit => _organizationUnitRepository.Value;
         public IOrganizationUnitScopeRepository OrganizationUnitScope => _organizationUnitScopeRepository.Value;
         public IParameterRepository Parameter => _parameterRepository.Value;

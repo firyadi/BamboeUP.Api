@@ -28,6 +28,7 @@ namespace Entities.Models
 
         public bool IsPrimary { get; set; }
 
+public string? RelationshipName { get; set; }
 
 
         [Column("StatusId")]

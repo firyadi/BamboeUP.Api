@@ -52,7 +52,8 @@ namespace Service.Modules
         {
             var entity = await _repository.PersonWorkExperience.GetPersonWorkExperienceAsync(personWorkExperienceGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonWorkExperienceDto>();
+            var dto = entity.Adapt<PersonWorkExperienceDto>();
+            return dto;
         }
 
         public async Task<PersonWorkExperienceDto> CreatePersonWorkExperienceAsync(Guid personGuid, PersonWorkExperienceForCreationDto input)
@@ -163,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonWorkExperienceDto>> SearchPersonWorkExperienceAsync(
-            string? srIndustry, string? srIndustrySearchType, string? srEmploymentType, string? srEmploymentTypeSearchType, string? companyName, string? companyNameSearchType, string? jobTitle, string? jobTitleSearchType, string? department, string? departmentSearchType, string? location, string? locationSearchType, string? supervisor, string? supervisorSearchType, string? jobDescription, string? jobDescriptionSearchType, string? startDate, string? startDateSearchType, string? endDate, string? endDateSearchType, string? isCurrentEmployment, string? isCurrentEmploymentSearchType, string? lastSalary, string? lastSalarySearchType, string? reasonforLeaving, string? reasonforLeavingSearchType, string? remarks, string? remarksSearchType,
+            string? companyName, string? companyNameSearchType, string? jobTitle, string? jobTitleSearchType, string? department, string? departmentSearchType, string? location, string? locationSearchType, string? supervisor, string? supervisorSearchType, string? jobDescription, string? jobDescriptionSearchType, string? startDate, string? startDateSearchType, string? endDate, string? endDateSearchType, string? isCurrentEmployment, string? isCurrentEmploymentSearchType, string? lastSalary, string? lastSalarySearchType, string? reasonforLeaving, string? reasonforLeavingSearchType, string? remarks, string? remarksSearchType,
             Guid personGuid, Guid personWorkExperienceGuid)
         {
             var data = await _repository.PersonWorkExperience.SearchPersonWorkExperienceAsync(
-                srIndustry, srIndustrySearchType, srEmploymentType, srEmploymentTypeSearchType, companyName, companyNameSearchType, jobTitle, jobTitleSearchType, department, departmentSearchType, location, locationSearchType, supervisor, supervisorSearchType, jobDescription, jobDescriptionSearchType, startDate, startDateSearchType, endDate, endDateSearchType, isCurrentEmployment, isCurrentEmploymentSearchType, lastSalary, lastSalarySearchType, reasonforLeaving, reasonforLeavingSearchType, remarks, remarksSearchType, 
+                companyName, companyNameSearchType, jobTitle, jobTitleSearchType, department, departmentSearchType, location, locationSearchType, supervisor, supervisorSearchType, jobDescription, jobDescriptionSearchType, startDate, startDateSearchType, endDate, endDateSearchType, isCurrentEmployment, isCurrentEmploymentSearchType, lastSalary, lastSalarySearchType, reasonforLeaving, reasonforLeavingSearchType, remarks, remarksSearchType, 
                 personGuid, personWorkExperienceGuid);
             return data.Adapt<IEnumerable<PersonWorkExperienceDto>>();
         }

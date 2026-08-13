@@ -80,17 +80,11 @@ namespace Presentation.Modules.Controllers
         public async Task<IActionResult> Search([FromQuery] PersonFamilySearchDto input, [FromQuery] Guid headerGuid, [FromQuery] Guid detailGuid)
         {
             var result = await _service.PersonFamilyService.SearchPersonFamilyAsync(
-                                input.SrFamilyRelation, input.SrFamilyRelationSearchType.ToString(),
-                input.FamilyName, input.FamilyNameSearchType.ToString(),
+                                input.FamilyName, input.FamilyNameSearchType.ToString(),
                 input.DateBirth, input.DateBirthSearchType.ToString(),
-                input.SrEducationLevel, input.SrEducationLevelSearchType.ToString(),
                 input.Address, input.AddressSearchType.ToString(),
-                input.StateId, input.StateIdSearchType.ToString(),
-                input.CityId, input.CityIdSearchType.ToString(),
                 input.ZipCode, input.ZipCodeSearchType.ToString(),
                 input.Phone, input.PhoneSearchType.ToString(),
-                input.SrMaritalStatus, input.SrMaritalStatusSearchType.ToString(),
-                input.SrGender, input.SrGenderSearchType.ToString(),
                 headerGuid, detailGuid);
             return Ok(result);
         }

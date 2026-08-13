@@ -3,7 +3,7 @@ using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record CostCenterScopeDto
+    public partial record CostCenterScopeDto
     {
         public long CostCenterScopeId { get; set; }
         public Guid CostCenterScopeGuid { get; init; }
@@ -13,8 +13,8 @@ namespace Shared.DataTransferObjects
         public string ScopeType { get; set; } = string.Empty;
 public string? CostCenterName { get; set; }
 
-        public int StatusId { get; set; }
-        public byte[]? RowVersion { get; set; }
+        public int StatusId { get; init; }
+        public byte[]? RowVersion { get; init; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -23,31 +23,34 @@ public string? CostCenterName { get; set; }
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record CostCenterScopeForCreationDto
+    public partial record CostCenterScopeForCreationDto
     {
         public long CostCenterId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
         public string ScopeType { get; set; } = string.Empty;
-        public long CreatedById { get; set; } = 0;
+        public long CreatedById { get; init; } = 0;
+        public int StatusId { get; init; } = 1;
     }
 
-    public record CostCenterScopeForUpdateDto
+    public partial record CostCenterScopeForUpdateDto
     {
         public Guid CostCenterScopeGuid { get; set; }
         public long CostCenterId { get; set; }
         public long CompanyId { get; set; }
         public long? CompanyOfficeId { get; set; }
         public string ScopeType { get; set; } = string.Empty;
-        public long UpdatedById { get; set; }
+        public long UpdatedById { get; init; }
+        public int StatusId { get; init; }
+        public byte[]? RowVersion { get; init; }
     }
 
-    public record CostCenterScopeForDeleteDto
+    public partial record CostCenterScopeForDeleteDto
     {
-        public long DeletedById { get; set; }
+        public long DeletedById { get; init; }
     }
 
-    public class CostCenterScopeSearchDto
+    public partial class CostCenterScopeSearchDto
     {
         public string? CompanyId { get; set; }
         public SearchType CompanyIdSearchType { get; set; } = SearchType.Contains;
@@ -57,5 +60,7 @@ public string? CostCenterName { get; set; }
 
         public string? ScopeType { get; set; }
         public SearchType ScopeTypeSearchType { get; set; } = SearchType.Contains;
+        public string? CostCenterId { get; set; }
+        public SearchType CostCenterIdSearchType { get; set; } = SearchType.Contains;
     }
 }

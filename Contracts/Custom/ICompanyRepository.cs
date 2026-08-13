@@ -1,7 +1,12 @@
+using Entities.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace Contracts
 {
     public partial interface ICompanyRepository
     {
-        // Custom methods can be added here
+        Task<IEnumerable<Company>> GetAllCompaniesAsync(bool trackChanges);
+        Task<Company?> GetCompanyByIdAsync(long companyId, bool trackChanges);
     }
 }

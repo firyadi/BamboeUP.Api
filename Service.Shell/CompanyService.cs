@@ -234,7 +234,7 @@ namespace Service.Shell
                 throw new KeyNotFoundException($"Company with GUID {companyGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(oldCompany.CompanyId);
             var model = new Company { CompanyGuid = companyGuid };
-            await _repository.Company.SoftDeleteCompanyAsync(model, input.DeletedById ?? 0);
+            await _repository.Company.SoftDeleteCompanyAsync(model, input.DeletedById);
 
             await _audit.LogSessionAsync(new AuditSessionInput
             {
@@ -242,7 +242,7 @@ namespace Service.Shell
                 RootTableName = "Company",
                 RootEntityKey = companyGuid.ToString(),
                 RootDisplayName = oldCompany?.CompanyName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : (input.DeletedById ?? 0).ToString(),
+                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : input.DeletedById.ToString(),
                 Entries = new()
                 {
                     new AuditLogEntry
@@ -271,7 +271,8 @@ namespace Service.Shell
                 .ToHashSet();
 
             var data = await _repository.Company.SearchCompanyAsync(
-                companyName, companyNameSearchType, initialName, initialNameSearchType, taxCompulsionNo, taxCompulsionNoSearchType, registrationNo, registrationNoSearchType, defaultCurrency, defaultCurrencySearchType);
+                companyName, companyNameSearchType, initialName, initialNameSearchType, taxCompulsionNo, taxCompulsionNoSearchType, registrationNo, registrationNoSearchType, defaultCurrency, defaultCurrencySearchType,
+                null, null, Guid.Empty, Guid.Empty);
 
             return data
                 .Where(c => accessibleIds.Contains(c.CompanyId))

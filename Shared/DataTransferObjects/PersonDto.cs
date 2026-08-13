@@ -23,8 +23,13 @@ namespace Shared.DataTransferObjects
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
         public long? FileStorageId { get; set; }
-        /// <summary>Resolved FileStorageGuid for preview/download (not a table column).</summary>
         public Guid? FileStorageGuid { get; set; }
+public string? BloodTypeName { get; set; }
+public string? GenderName { get; set; }
+public string? MaritalStatusName { get; set; }
+public string? ReligionName { get; set; }
+public string? SalutationName { get; set; }
+
 
                 public IEnumerable<PersonIdentificationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonEducationDto>? PersonEducations { get; set; }
@@ -33,6 +38,8 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<PersonFamilyDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicDto>? PersonPhysicalCharacteristics { get; set; }
                 public IEnumerable<PersonWorkExperienceDto>? PersonWorkExperiences { get; set; }
+        public IEnumerable<CompanyDto>? Companies { get; set; }
+        public IEnumerable<CostCenterAssignmentDto>? CostCenterAssignments { get; set; }
         // ##HeaderDetailCollections##
         public IEnumerable<PersonAddressDto>? PersonAddresses { get; set; }
         public int StatusId { get; set; }
@@ -69,6 +76,8 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<PersonFamilyForCreationDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicForCreationDto>? PersonPhysicalCharacteristics { get; set; }
                 public IEnumerable<PersonWorkExperienceForCreationDto>? PersonWorkExperiences { get; set; }
+        public IEnumerable<CompanyForCreationDto>? Companies { get; set; }
+        public IEnumerable<CostCenterAssignmentForCreationDto>? CostCenterAssignments { get; set; }
         // ##HeaderDetailCreateCollections##
         public IEnumerable<PersonAddressForCreationDto>? PersonAddresses { get; set; }
         public long CreatedById { get; set; } = 0;
@@ -98,6 +107,8 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<PersonFamilyForUpdateDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicForUpdateDto>? PersonPhysicalCharacteristics { get; set; }
                 public IEnumerable<PersonWorkExperienceForUpdateDto>? PersonWorkExperiences { get; set; }
+        public IEnumerable<CompanyForUpdateDto>? Companies { get; set; }
+        public IEnumerable<CostCenterAssignmentForUpdateDto>? CostCenterAssignments { get; set; }
         // ##HeaderDetailUpdateCollections##
         public IEnumerable<PersonAddressForUpdateDto>? PersonAddresses { get; set; }
         public long UpdatedById { get; set; }
@@ -139,21 +150,16 @@ namespace Shared.DataTransferObjects
 
         public string? NationalIdNo { get; set; }
         public SearchType NationalIdNoSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrGender { get; set; }
-        public SearchType SrGenderSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrReligion { get; set; }
-        public SearchType SrReligionSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrSalutation { get; set; }
-        public SearchType SrSalutationSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrBloodType { get; set; }
-        public SearchType SrBloodTypeSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrMaritalStatus { get; set; }
-        public SearchType SrMaritalStatusSearchType { get; set; } = SearchType.Contains;
+public string? BloodTypeName { get; set; }
+public string? GenderName { get; set; }
+public string? MaritalStatusName { get; set; }
+public string? ReligionName { get; set; }
+public string? SalutationName { get; set; }
+public SearchType BloodTypeNameSearchType { get; set; } = SearchType.Contains;
+public SearchType GenderNameSearchType { get; set; } = SearchType.Contains;
+public SearchType MaritalStatusNameSearchType { get; set; } = SearchType.Contains;
+public SearchType ReligionNameSearchType { get; set; } = SearchType.Contains;
+public SearchType SalutationNameSearchType { get; set; } = SearchType.Contains;
 
     }
 }

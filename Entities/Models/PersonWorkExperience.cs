@@ -49,6 +49,8 @@ namespace Entities.Models
 
         public string? Remarks { get; set; }
 
+public string? EmploymentTypeName { get; set; }
+public string? IndustryName { get; set; }
 
 
         [Column("StatusId")]

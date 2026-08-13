@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("Company", Schema = "app")]
-    public class Company
+    public partial class Company
     {
         [Column("CompanyId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,25 +17,28 @@ namespace Entities.Models
         public Guid CompanyGuid { get; set; } = Guid.NewGuid();
 
         [Required]
-        [MaxLength(200)]
+        public long LeaderId { get; set; }
+
+        [Required]
         public string CompanyName { get; set; } = string.Empty;
 
-        [MaxLength(20)]
-        public string InitialName { get; set; } = string.Empty;
+        public string? InitialName { get; set; }
 
-        [MaxLength(30)]
-        public string TaxCompulsionNo { get; set; } = string.Empty;
+        public string? TaxCompulsionNo { get; set; }
 
-        [MaxLength(30)]
-        public string RegistrationNo { get; set; } = string.Empty;
+        public string? RegistrationNo { get; set; }
 
-        [Column("ParentCompanyId")]
-        public long ParentCompanyId { get; set; } = 0;
+        public long? ParentCompanyId { get; set; }
 
-        [MaxLength(3)]
-        public string DefaultCurrency { get; set; } = string.Empty;
+        public string? DefaultCurrency { get; set; }
 
+        // IMPORTANT: app.Company.CompanyLogo is varbinary(max). Keep this as
+        // byte[] so Dapper and report branding can consume binary image data.
+        // Public DTOs expose Base64 string through Mapster configuration.
         public byte[]? CompanyLogo { get; set; }
+
+public string? ParentCompanyName { get; set; }
+
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;
@@ -47,7 +50,7 @@ namespace Entities.Models
         public long CreatedById { get; set; } = 0;
 
         [Required]
-        public DateTime CreatedTime { get; set; }  = DateTime.UtcNow;
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         [Column("UpdatedById")]
         public long UpdatedById { get; set; } = 0;

@@ -468,6 +468,27 @@ namespace Service.Shell
             return (companyName, officeName, companyLogo);
         }
 
+        private static byte[]? ParseBase64Image(string? base64Str)
+        {
+            if (string.IsNullOrWhiteSpace(base64Str))
+                return null;
+
+            try
+            {
+                var s = base64Str.Trim();
+                if (s.Contains(','))
+                {
+                    var index = s.IndexOf(',');
+                    s = s.Substring(index + 1);
+                }
+                return Convert.FromBase64String(s);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         private static Dictionary<string, object?> BuildRunParameters(
             ReportRunRequestDto request,
             IReadOnlyDictionary<string, string?> normalizedParameters)

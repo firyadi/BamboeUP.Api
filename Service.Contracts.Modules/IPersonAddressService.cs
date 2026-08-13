@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonAddressByAdminAsync(Guid personAddressGuid, bool trackChanges);
 
         Task<IEnumerable<PersonAddressDto>> SearchPersonAddressAsync(
-            string? srAddressType, string? srAddressTypeSearchType, string? address, string? addressSearchType,
+            string? address, string? addressSearchType,
             Guid personGuid, Guid personAddressGuid);
 
         // Detail (child) helpers

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("Holiday", Schema = "app")]
-    public class Holiday
+    public partial class Holiday
     {
         [Column("HolidayId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,16 +16,20 @@ namespace Entities.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid HolidayGuid { get; set; } = Guid.NewGuid();
 
-        [Required]
-        [MaxLength(4)]
-        public string YearPeriode { get; set; } = string.Empty;
+        public DateTime HolidayDate { get; set; }
 
         [Required]
-        public DateTime HolidayDates { get; set; }
+        public string HolidayName { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(500)]
-        public string Note { get; set; } = string.Empty;
+        public string? HolidayDescription { get; set; }
+
+        public long? SrHolidayType { get; set; }
+
+        public bool IsNational { get; set; }
+
+        public bool IsCompanyHoliday { get; set; }
+
+
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;
@@ -37,7 +41,7 @@ namespace Entities.Models
         public long CreatedById { get; set; } = 0;
 
         [Required]
-        public DateTime CreatedTime { get; set; }  = DateTime.UtcNow;
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
         [Column("UpdatedById")]
         public long UpdatedById { get; set; } = 0;

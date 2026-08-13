@@ -1,0 +1,34 @@
+Award 3-tier — SchemaStudio generate checklist
+==============================================
+
+DB (Dev.BamboeHR) ready after:
+  1. Table/AwardCriteria.sql
+  2. Table/AwardCriteriaRule.sql
+  3. Table/Seed.StandardReference.Award.sql
+  4. Table/Migration_Award_3Tier.sql
+
+Hierarchy / FKs:
+  Award 1—N AwardCriteria     (FK AwardCriteria.AwardId → Award.AwardId)
+  AwardCriteria 1—N AwardCriteriaRule  (FK AwardCriteriaRule.AwardCriteriaId → AwardCriteria.AwardCriteriaId)
+
+Generate:
+  1. SchemaStudio → Capture schema app (Award, AwardCriteria, AwardCriteriaRule)
+     Confirm tables appear in project metadata (not only in SQL Server).
+  2. Template Mapping for "04. ApiHeaderDetailSubDetail Template":
+       TemplatePath MUST be:
+         Api.TemplateApiHeaderDetailSubDetail.md
+       Fixed in SchemaStudio_DB (was wrongly: TemplateApiHeaderDetailSubDetail.md
+       which made UI show 3 pickers but ran ApiOneTable → Award only, ~12 files).
+  3. Restart SchemaStudio.UI after pull (CodeGeneratorResolver fix).
+  4. Generator API:
+       Header    = Award
+       Detail    = AwardCriteria
+       SubDetail = AwardCriteriaRule
+       Layer     = Modules
+  5. Expect ~21+ artifact files across three entities (not ~12 Award-only).
+  6. Replace old Award 1-table artifacts that still use SrAwardCriteria
+
+Key columns (aligned to existing DB):
+  AwardCriteria: CriteriaCode, CriteriaName, LineNo, MinimumScore, MaximumScore, Weight, Note, AwardGuid
+  AwardCriteriaRule: RuleCode, RuleName, LineNo, Operator, ValueFrom, ValueTo, Score, Note, AwardCriteriaGuid
+  Award header: SrAwardType kept; SrAwardCriteria removed; ValidTo

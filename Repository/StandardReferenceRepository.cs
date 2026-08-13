@@ -114,6 +114,8 @@ namespace Repository
             string? standardReferenceInitial, string? standardReferenceInitialSearchType,
             string? standardReferenceName, string? standardReferenceNameSearchType,
             string? note, string? noteSearchType,
+            string? standardReferenceItemInitial, string? standardReferenceItemInitialSearchType,
+            string? standardReferenceItemName, string? standardReferenceItemNameSearchType,
             Guid companyGuid, Guid companyOfficeGuid,
             IDbTransaction? transaction = null)
         {
@@ -145,6 +147,46 @@ namespace Repository
                 var param = SqlFilterHelper.BuildFilter("a.Description", "@description", noteSearchType, parameters, "description", note);
                 if (!string.IsNullOrWhiteSpace(param))
                     whereClauses.Add(param);
+            }
+
+            var itemFilters = new List<string>();
+            if (!string.IsNullOrWhiteSpace(standardReferenceItemInitial))
+            {
+                var param = SqlFilterHelper.BuildFilter(
+                    "i.StandardReferenceItemInitial",
+                    "@standardReferenceItemInitial",
+                    standardReferenceItemInitialSearchType,
+                    parameters,
+                    "standardReferenceItemInitial",
+                    standardReferenceItemInitial);
+                if (!string.IsNullOrWhiteSpace(param))
+                    itemFilters.Add(param);
+            }
+
+            if (!string.IsNullOrWhiteSpace(standardReferenceItemName))
+            {
+                var param = SqlFilterHelper.BuildFilter(
+                    "i.StandardReferenceItemName",
+                    "@standardReferenceItemName",
+                    standardReferenceItemNameSearchType,
+                    parameters,
+                    "standardReferenceItemName",
+                    standardReferenceItemName);
+                if (!string.IsNullOrWhiteSpace(param))
+                    itemFilters.Add(param);
+            }
+
+            if (itemFilters.Count > 0)
+            {
+                whereClauses.Add($@"
+                    EXISTS (
+                        SELECT 1
+                        FROM [app].[StandardReferenceItem] i
+                        WHERE i.StandardReferenceId = a.StandardReferenceId
+                          AND i.StatusId > 0
+                          AND i.DeletedTime IS NULL
+                          AND {string.Join(" AND ", itemFilters)}
+                    )");
             }
 
             var sql = $@"

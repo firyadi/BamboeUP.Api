@@ -13,6 +13,7 @@ namespace Shared.DataTransferObjects
         public string? Phone { get; set; }
         public bool IsPrimary { get; set; }
 public string? PersonName { get; set; }
+public string? RelationshipName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -54,9 +55,6 @@ public string? PersonName { get; set; }
     {
         public string? ContactName { get; set; }
         public SearchType ContactNameSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrRelationship { get; set; }
-        public SearchType SrRelationshipSearchType { get; set; } = SearchType.Contains;
 
         public string? Phone { get; set; }
         public SearchType PhoneSearchType { get; set; } = SearchType.Contains;

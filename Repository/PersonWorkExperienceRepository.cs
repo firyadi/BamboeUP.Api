@@ -18,10 +18,23 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
+, ISNULL(v_SrIndustry.StandardReferenceItemName, '') AS IndustryName
+
 
                 FROM [app].[PersonWorkExperience] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
+    WHERE StandardReferenceItemId = a.SrEmploymentType
+) v_SrEmploymentType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Industry')
+    WHERE StandardReferenceItemId = a.SrIndustry
+) v_SrIndustry
 
                 WHERE a.PersonWorkExperienceGuid = @personWorkExperienceGuid
                   AND a.StatusId > 0
@@ -34,10 +47,23 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
+, ISNULL(v_SrIndustry.StandardReferenceItemName, '') AS IndustryName
+
 
                 FROM [app].[PersonWorkExperience] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
+    WHERE StandardReferenceItemId = a.SrEmploymentType
+) v_SrEmploymentType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Industry')
+    WHERE StandardReferenceItemId = a.SrIndustry
+) v_SrIndustry
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonWorkExperienceGuid = @personWorkExperienceGuid
@@ -51,10 +77,23 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
+, ISNULL(v_SrIndustry.StandardReferenceItemName, '') AS IndustryName
+
 
                 FROM [app].[PersonWorkExperience] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
+    WHERE StandardReferenceItemId = a.SrEmploymentType
+) v_SrEmploymentType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Industry')
+    WHERE StandardReferenceItemId = a.SrIndustry
+) v_SrIndustry
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -69,7 +108,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonWorkExperience]
-                (PersonWorkExperienceGuid, PersonId, CreatedById, StatusId, CreatedTime, SrIndustry, SrEmploymentType, CompanyName, JobTitle, Department, Location, Supervisor, JobDescription, StartDate, EndDate, IsCurrentEmployment, LastSalary, ReasonforLeaving, Remarks)
+                (PersonWorkExperienceGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrIndustry], [SrEmploymentType], [CompanyName], [JobTitle], [Department], [Location], [Supervisor], [JobDescription], [StartDate], [EndDate], [IsCurrentEmployment], [LastSalary], [ReasonforLeaving], [Remarks])
                 VALUES
                 (@PersonWorkExperienceGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrIndustry, @SrEmploymentType, @CompanyName, @JobTitle, @Department, @Location, @Supervisor, @JobDescription, @StartDate, @EndDate, @IsCurrentEmployment, @LastSalary, @ReasonforLeaving, @Remarks);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -82,21 +121,21 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonWorkExperience]
-                SET                     PersonId = @PersonId,
-                    SrIndustry = @SrIndustry,
-                    SrEmploymentType = @SrEmploymentType,
-                    CompanyName = @CompanyName,
-                    JobTitle = @JobTitle,
-                    Department = @Department,
-                    Location = @Location,
-                    Supervisor = @Supervisor,
-                    JobDescription = @JobDescription,
-                    StartDate = @StartDate,
-                    EndDate = @EndDate,
-                    IsCurrentEmployment = @IsCurrentEmployment,
-                    LastSalary = @LastSalary,
-                    ReasonforLeaving = @ReasonforLeaving,
-                    Remarks = @Remarks,
+                SET                     [PersonId] = @PersonId,
+                    [SrIndustry] = @SrIndustry,
+                    [SrEmploymentType] = @SrEmploymentType,
+                    [CompanyName] = @CompanyName,
+                    [JobTitle] = @JobTitle,
+                    [Department] = @Department,
+                    [Location] = @Location,
+                    [Supervisor] = @Supervisor,
+                    [JobDescription] = @JobDescription,
+                    [StartDate] = @StartDate,
+                    [EndDate] = @EndDate,
+                    [IsCurrentEmployment] = @IsCurrentEmployment,
+                    [LastSalary] = @LastSalary,
+                    [ReasonforLeaving] = @ReasonforLeaving,
+                    [Remarks] = @Remarks,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -133,10 +172,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         }
 
         public async Task<IEnumerable<PersonWorkExperience>> SearchPersonWorkExperienceAsync(
-            string? srIndustry,
-            string? srIndustrySearchType,
-            string? srEmploymentType,
-            string? srEmploymentTypeSearchType,
             string? companyName,
             string? companyNameSearchType,
             string? jobTitle,
@@ -177,18 +212,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             {
                 whereClauses.Add("a.PersonWorkExperienceGuid = @personWorkExperienceGuid");
                 parameters.Add("@personWorkExperienceGuid", personWorkExperienceGuid);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srIndustry))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrIndustry", "@srIndustry", srIndustrySearchType, parameters, "srIndustry", srIndustry);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srEmploymentType))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrEmploymentType", "@srEmploymentType", srEmploymentTypeSearchType, parameters, "srEmploymentType", srEmploymentType);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(companyName))
@@ -265,10 +288,23 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
+, ISNULL(v_SrIndustry.StandardReferenceItemName, '') AS IndustryName
+
 
                 FROM [app].[PersonWorkExperience] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
+    WHERE StandardReferenceItemId = a.SrEmploymentType
+) v_SrEmploymentType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Industry')
+    WHERE StandardReferenceItemId = a.SrIndustry
+) v_SrIndustry
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonWorkExperienceId DESC";

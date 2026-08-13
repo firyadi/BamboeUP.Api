@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonWorkExperienceByAdminAsync(Guid personWorkExperienceGuid, bool trackChanges);
 
         Task<IEnumerable<PersonWorkExperienceDto>> SearchPersonWorkExperienceAsync(
-            string? srIndustry, string? srIndustrySearchType, string? srEmploymentType, string? srEmploymentTypeSearchType, string? companyName, string? companyNameSearchType, string? jobTitle, string? jobTitleSearchType, string? department, string? departmentSearchType, string? location, string? locationSearchType, string? supervisor, string? supervisorSearchType, string? jobDescription, string? jobDescriptionSearchType, string? startDate, string? startDateSearchType, string? endDate, string? endDateSearchType, string? isCurrentEmployment, string? isCurrentEmploymentSearchType, string? lastSalary, string? lastSalarySearchType, string? reasonforLeaving, string? reasonforLeavingSearchType, string? remarks, string? remarksSearchType,
+            string? companyName, string? companyNameSearchType, string? jobTitle, string? jobTitleSearchType, string? department, string? departmentSearchType, string? location, string? locationSearchType, string? supervisor, string? supervisorSearchType, string? jobDescription, string? jobDescriptionSearchType, string? startDate, string? startDateSearchType, string? endDate, string? endDateSearchType, string? isCurrentEmployment, string? isCurrentEmploymentSearchType, string? lastSalary, string? lastSalarySearchType, string? reasonforLeaving, string? reasonforLeavingSearchType, string? remarks, string? remarksSearchType,
             Guid personGuid, Guid personWorkExperienceGuid);
 
         // Detail (child) helpers

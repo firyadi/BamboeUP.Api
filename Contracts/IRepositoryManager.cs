@@ -6,7 +6,15 @@ namespace Contracts
     public interface IRepositoryManager
     {
         // ##IRepositoryManager##
-        IFileStorageRepository FileStorage { get; }
+        IEmployeeTrainingRepository EmployeeTraining { get; }
+        IEmployeeSkillRepository EmployeeSkill { get; }
+        IEmployeeLanguageRepository EmployeeLanguage { get; }
+        IEmployeeContractRepository EmployeeContract { get; }
+        IEmployeeCertificationRepository EmployeeCertification { get; }
+        IEmployeeCareerRepository EmployeeCareer { get; }
+        IEmployeeAssignmentRepository EmployeeAssignment { get; }
+        IEmployeeAssetRepository EmployeeAsset { get; }
+        IEmployeeRepository Employee { get; }
         IPersonWorkExperienceRepository PersonWorkExperience { get; }
         IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic { get; }
         IPersonFamilyRepository PersonFamily { get; }
@@ -16,9 +24,19 @@ namespace Contracts
         IPersonIdentificationRepository PersonIdentification { get; }
         IPersonAddressRepository PersonAddress { get; }
         IPersonRepository Person { get; }
-        IAwardRepository Award { get; }
-        ICostCenterScopeRepository CostCenterScope { get; }
         ICostCenterAssignmentRepository CostCenterAssignment { get; }
+        ICompanyRepository Company { get; }
+        IAwardCriteriaRuleRepository AwardCriteriaRule { get; }
+        IAwardCriteriaRepository AwardCriteria { get; }
+        IAwardRepository Award { get; }
+        IHolidayRepository Holiday { get; }
+        ICertificationRepository Certification { get; }
+        IAssetRepository Asset { get; }
+        ITrainingRepository Training { get; }
+        ISkillRepository Skill { get; }
+        IPersonBankAccountRepository PersonBankAccount { get; }
+        IFileStorageRepository FileStorage { get; }
+        ICostCenterScopeRepository CostCenterScope { get; }
         ICostCenterRepository CostCenter { get; }
         IHospitalRepository Hospital { get; }
         IParameterscopeRepository Parameterscope { get; }
@@ -38,12 +56,10 @@ namespace Contracts
         IAutoNumberGenerateRepository AutoNumberGenerate { get; }
         IBankRepository Bank { get; }
         ICityRepository City { get; }
-        ICompanyRepository Company { get; }
         ICompanyOfficeRepository CompanyOffice { get; }
         ICountryRepository Country { get; }
         IDistrictRepository District { get; }
         IDocumentNumberRequestRepository DocumentNumberRequest { get; }
-        IHolidayRepository Holiday { get; }
         IOrganizationUnitRepository OrganizationUnit { get; }
         IOrganizationUnitScopeRepository OrganizationUnitScope { get; }
         IParameterRepository Parameter { get; }

@@ -67,5 +67,12 @@ namespace Shared.DataTransferObjects
 
         public string? Description { get; set; }
         public SearchType DescriptionSearchType { get; set; } = SearchType.Contains;
+
+        // Detail (StandardReferenceItem) — returns headers that have matching items
+        public string? StandardReferenceItemInitial { get; set; }
+        public SearchType StandardReferenceItemInitialSearchType { get; set; } = SearchType.Contains;
+
+        public string? StandardReferenceItemName { get; set; }
+        public SearchType StandardReferenceItemNameSearchType { get; set; } = SearchType.Contains;
     }
 }

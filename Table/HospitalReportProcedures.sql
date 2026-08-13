@@ -27,6 +27,13 @@ BEGIN
         t.HospitalGuid,
         t.HospitalName,
         t.HospitalCode,
+        t.ShortName,
+        t.LicenseNo,
+        t.HospitalType,
+        t.HospitalClass,
+        t.PhoneNo,
+        t.Email,
+        t.Website,
         SYSDATETIME() AS PrintedAt
     FROM [app].[Hospital] t
     WHERE 1 = 1

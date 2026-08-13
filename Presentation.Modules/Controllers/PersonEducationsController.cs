@@ -80,8 +80,7 @@ namespace Presentation.Modules.Controllers
         public async Task<IActionResult> Search([FromQuery] PersonEducationSearchDto input, [FromQuery] Guid headerGuid, [FromQuery] Guid detailGuid)
         {
             var result = await _service.PersonEducationService.SearchPersonEducationAsync(
-                                input.SrEducationLevel, input.SrEducationLevelSearchType.ToString(),
-                input.InstitutionName, input.InstitutionNameSearchType.ToString(),
+                                input.InstitutionName, input.InstitutionNameSearchType.ToString(),
                 headerGuid, detailGuid);
             return Ok(result);
         }

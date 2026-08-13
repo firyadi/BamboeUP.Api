@@ -10,23 +10,16 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class CostCenterScopeRepository : ICostCenterScopeRepository
+    public partial class CostCenterScopeRepository(RepositoryContext context, IAuditService audit) : ICostCenterScopeRepository
     {
-        private readonly RepositoryContext _context;
-        private readonly IAuditService _audit;
-
-        public CostCenterScopeRepository(RepositoryContext context, IAuditService audit)
-        {
-            _context = context;
-            _audit = audit;
-        }
 
         public async Task<CostCenterScope?> GetCostCenterScopeAsync(Guid costCenterScopeGuid, bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+
 
                 FROM [app].[CostCenterScope] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
@@ -39,10 +32,11 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
 
         public async Task<CostCenterScope?> GetByCostCenterGuidAndCostCenterScopeGuidAsync(Guid costCenterGuid, Guid costCenterScopeGuid)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+
 
                 FROM [app].[CostCenterScope] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
@@ -56,10 +50,11 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
 
         public async Task<IEnumerable<CostCenterScope>> GetAllByCostCenterGuidAsync(Guid costCenterGuid)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+
 
                 FROM [app].[CostCenterScope] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
@@ -74,7 +69,7 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         public async Task CreateCostCenterScopeAsync(CostCenterScope costCenterScope, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(costCenterScope);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[CostCenterScope]
                 (CostCenterScopeGuid, CostCenterId, CreatedById, StatusId, CreatedTime, CompanyId, CompanyOfficeId, ScopeType)
@@ -87,7 +82,7 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         public async Task UpdateCostCenterScopeAsync(CostCenterScope costCenterScope, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(costCenterScope);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[CostCenterScope]
                 SET                     CostCenterId = @CostCenterId,
@@ -104,7 +99,7 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         public async Task SoftDeleteCostCenterScopeAsync(CostCenterScope costCenterScope, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(costCenterScope, deletedBy);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[CostCenterScope]
                 SET StatusId = 0,
@@ -117,14 +112,14 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
 
         public async Task DeleteCostCenterScopeAsync(Guid costCenterScopeGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"DELETE FROM [app].[CostCenterScope] WHERE CostCenterScopeGuid = @costCenterScopeGuid";
             await conn.ExecuteAsync(sql, new { costCenterScopeGuid }, transaction);
         }
 
         public async Task DeleteByCostCenterGuidAsync(Guid costCenterGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"DELETE FROM [app].[CostCenterScope] WHERE CostCenterId IN (SELECT CostCenterId FROM [app].[CostCenter] WHERE CostCenterGuid = @costCenterGuid)";
             await conn.ExecuteAsync(sql, new { costCenterGuid }, transaction);
         }
@@ -139,8 +134,8 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
             Guid costCenterGuid, Guid costCenterScopeGuid,
             IDbTransaction? transaction = null)
         {
-            var connection = transaction?.Connection ?? _context.CreateConnection();
-            var whereClauses = new List<string> { "a.StatusId > 0", "a.DeletedTime IS NULL" };
+            var connection = transaction?.Connection ?? context.CreateConnection();
+            List<string> whereClauses = [ "a.StatusId > 0", "a.DeletedTime IS NULL" ];
             var parameters = new DynamicParameters();
 
             if (costCenterGuid != Guid.Empty)
@@ -175,6 +170,7 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+
 
                 FROM [app].[CostCenterScope] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId

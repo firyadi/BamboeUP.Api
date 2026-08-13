@@ -11,6 +11,7 @@ namespace Shared.DataTransferObjects
         public long SrEducationLevel { get; set; }
         public string InstitutionName { get; set; } = string.Empty;
 public string? PersonName { get; set; }
+public string? EducationLevelName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -46,9 +47,6 @@ public string? PersonName { get; set; }
 
     public partial class PersonEducationSearchDto
     {
-        public string? SrEducationLevel { get; set; }
-        public SearchType SrEducationLevelSearchType { get; set; } = SearchType.Contains;
-
         public string? InstitutionName { get; set; }
         public SearchType InstitutionNameSearchType { get; set; } = SearchType.Contains;
     }

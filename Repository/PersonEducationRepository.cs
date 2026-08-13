@@ -18,10 +18,17 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+
 
                 FROM [app].[PersonEducation] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
 
                 WHERE a.PersonEducationGuid = @personEducationGuid
                   AND a.StatusId > 0
@@ -34,10 +41,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+
 
                 FROM [app].[PersonEducation] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonEducationGuid = @personEducationGuid
@@ -51,10 +65,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+
 
                 FROM [app].[PersonEducation] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -69,7 +90,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonEducation]
-                (PersonEducationGuid, PersonId, CreatedById, StatusId, CreatedTime, SrEducationLevel, InstitutionName)
+                (PersonEducationGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrEducationLevel], [InstitutionName])
                 VALUES
                 (@PersonEducationGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrEducationLevel, @InstitutionName);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -82,9 +103,9 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonEducation]
-                SET                     PersonId = @PersonId,
-                    SrEducationLevel = @SrEducationLevel,
-                    InstitutionName = @InstitutionName,
+                SET                     [PersonId] = @PersonId,
+                    [SrEducationLevel] = @SrEducationLevel,
+                    [InstitutionName] = @InstitutionName,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -121,8 +142,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         }
 
         public async Task<IEnumerable<PersonEducation>> SearchPersonEducationAsync(
-            string? srEducationLevel,
-            string? srEducationLevelSearchType,
             string? institutionName,
             string? institutionNameSearchType,
             Guid personGuid, Guid personEducationGuid,
@@ -143,12 +162,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 parameters.Add("@personEducationGuid", personEducationGuid);
             }
 
-            if (!string.IsNullOrWhiteSpace(srEducationLevel))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrEducationLevel", "@srEducationLevel", srEducationLevelSearchType, parameters, "srEducationLevel", srEducationLevel);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(institutionName))
             {
                 var param = SqlFilterHelper.BuildFilter("a.InstitutionName", "@institutionName", institutionNameSearchType, parameters, "institutionName", institutionName);
@@ -157,10 +170,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+
 
                 FROM [app].[PersonEducation] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonEducationId DESC";

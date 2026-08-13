@@ -81,7 +81,6 @@ namespace Presentation.Modules.Controllers
         {
             var result = await _service.PersonEmergencyContactService.SearchPersonEmergencyContactAsync(
                                 input.ContactName, input.ContactNameSearchType.ToString(),
-                input.SrRelationship, input.SrRelationshipSearchType.ToString(),
                 input.Phone, input.PhoneSearchType.ToString(),
                 input.IsPrimary, input.IsPrimarySearchType.ToString(),
                 headerGuid, detailGuid);

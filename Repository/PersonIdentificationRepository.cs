@@ -18,10 +18,17 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrIdentificationType.StandardReferenceItemName, '') AS IdentificationTypeName
+
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'IdentificationType')
+    WHERE StandardReferenceItemId = a.SrIdentificationType
+) v_SrIdentificationType
 
                 WHERE a.PersonIdentificationGuid = @personIdentificationGuid
                   AND a.StatusId > 0
@@ -34,10 +41,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrIdentificationType.StandardReferenceItemName, '') AS IdentificationTypeName
+
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'IdentificationType')
+    WHERE StandardReferenceItemId = a.SrIdentificationType
+) v_SrIdentificationType
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonIdentificationGuid = @personIdentificationGuid
@@ -51,10 +65,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrIdentificationType.StandardReferenceItemName, '') AS IdentificationTypeName
+
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'IdentificationType')
+    WHERE StandardReferenceItemId = a.SrIdentificationType
+) v_SrIdentificationType
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -69,7 +90,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonIdentification]
-                (PersonIdentificationGuid, PersonId, CreatedById, StatusId, CreatedTime, SrIdentificationType, IdentificationValue)
+                (PersonIdentificationGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrIdentificationType], [IdentificationValue])
                 VALUES
                 (@PersonIdentificationGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrIdentificationType, @IdentificationValue);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -82,9 +103,9 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonIdentification]
-                SET                     PersonId = @PersonId,
-                    SrIdentificationType = @SrIdentificationType,
-                    IdentificationValue = @IdentificationValue,
+                SET                     [PersonId] = @PersonId,
+                    [SrIdentificationType] = @SrIdentificationType,
+                    [IdentificationValue] = @IdentificationValue,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -121,8 +142,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         }
 
         public async Task<IEnumerable<PersonIdentification>> SearchPersonIdentificationAsync(
-            string? srIdentificationType,
-            string? srIdentificationTypeSearchType,
             string? identificationValue,
             string? identificationValueSearchType,
             Guid personGuid, Guid personIdentificationGuid,
@@ -143,12 +162,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 parameters.Add("@personIdentificationGuid", personIdentificationGuid);
             }
 
-            if (!string.IsNullOrWhiteSpace(srIdentificationType))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrIdentificationType", "@srIdentificationType", srIdentificationTypeSearchType, parameters, "srIdentificationType", srIdentificationType);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(identificationValue))
             {
                 var param = SqlFilterHelper.BuildFilter("a.IdentificationValue", "@identificationValue", identificationValueSearchType, parameters, "identificationValue", identificationValue);
@@ -157,10 +170,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrIdentificationType.StandardReferenceItemName, '') AS IdentificationTypeName
+
 
                 FROM [app].[PersonIdentification] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'IdentificationType')
+    WHERE StandardReferenceItemId = a.SrIdentificationType
+) v_SrIdentificationType
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonIdentificationId DESC";

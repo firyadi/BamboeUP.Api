@@ -24,6 +24,7 @@ namespace Entities.Models
         [Required]
         public string InstitutionName { get; set; } = string.Empty;
 
+public string? EducationLevelName { get; set; }
 
 
         [Column("StatusId")]

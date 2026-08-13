@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
 
@@ -12,10 +15,17 @@ namespace Presentation.Shell.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authService;
+    private readonly ILogger<AuthController> _logger;
+    private readonly IWebHostEnvironment _environment;
 
-    public AuthController(IAuthenticationService authService)
+    public AuthController(
+        IAuthenticationService authService,
+        ILogger<AuthController> logger,
+        IWebHostEnvironment environment)
     {
         _authService = authService;
+        _logger = logger;
+        _environment = environment;
     }
 
     [HttpPost("login-scopes")]
@@ -32,9 +42,13 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to load login scopes. Please contact the administrator." });
+            _logger.LogError(ex, "Failed to load login scopes for user {Username}", login?.Username);
+            var message = _environment.IsDevelopment()
+                ? $"Failed to load login scopes: {ex.Message}"
+                : "Failed to load login scopes. Please contact the administrator.";
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message });
         }
     }
 
@@ -52,9 +66,13 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "It seems there is a problem with your account. Please contact the administrator." });
+            _logger.LogError(ex, "Login failed for user {Username}", login?.Username);
+            var message = _environment.IsDevelopment()
+                ? $"Login failed: {ex.Message}"
+                : "It seems there is a problem with your account. Please contact the administrator.";
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message });
         }
     }
 
@@ -75,9 +93,13 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to switch scope. Please contact the administrator." });
+            _logger.LogError(ex, "Failed to switch scope for user {UserName}", User.Identity?.Name);
+            var message = _environment.IsDevelopment()
+                ? $"Failed to switch scope: {ex.Message}"
+                : "Failed to switch scope. Please contact the administrator.";
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message });
         }
     }
 }

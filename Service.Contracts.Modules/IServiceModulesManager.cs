@@ -10,7 +10,6 @@ namespace Service.Contracts.Modules
         IProvinceService ProvinceService { get; }
         ISubDistrictService SubDistrictService { get; }
         IPostalCodeService PostalCodeService { get; }
-        IHolidayService HolidayService { get; }
         IAdministrativeAreaDisplayService AdministrativeAreaDisplayService { get; }
         IStandardReferenceItemDisplayService StandardReferenceItemDisplayService { get; }
 		IHospitalService HospitalService { get; }
@@ -18,7 +17,17 @@ namespace Service.Contracts.Modules
 		
 		
 		// ##IServiceManager Start##
-            IAwardService AwardService { get; }
+        IPersonBankAccountService PersonBankAccountService { get; }
+        ISkillService SkillService { get; }
+        ITrainingService TrainingService { get; }
+        IAssetService AssetService { get; }
+        ICertificationService CertificationService { get; }
+        IHolidayService HolidayService { get; }
+        IAwardService AwardService { get; }
+        IAwardCriteriaService AwardCriteriaService { get; }
+        IAwardCriteriaRuleService AwardCriteriaRuleService { get; }
+        ICompanyService CompanyService { get; }
+        ICostCenterAssignmentService CostCenterAssignmentService { get; }
         IPersonService PersonService { get; }
         IPersonAddressService PersonAddressService { get; }
         IPersonIdentificationService PersonIdentificationService { get; }
@@ -28,5 +37,14 @@ namespace Service.Contracts.Modules
         IPersonFamilyService PersonFamilyService { get; }
         IPersonPhysicalCharacteristicService PersonPhysicalCharacteristicService { get; }
         IPersonWorkExperienceService PersonWorkExperienceService { get; }
+        IEmployeeService EmployeeService { get; }
+        IEmployeeAssetService EmployeeAssetService { get; }
+        IEmployeeAssignmentService EmployeeAssignmentService { get; }
+        IEmployeeCareerService EmployeeCareerService { get; }
+        IEmployeeCertificationService EmployeeCertificationService { get; }
+        IEmployeeContractService EmployeeContractService { get; }
+        IEmployeeLanguageService EmployeeLanguageService { get; }
+        IEmployeeSkillService EmployeeSkillService { get; }
+        IEmployeeTrainingService EmployeeTrainingService { get; }
 }        
 }

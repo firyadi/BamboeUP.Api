@@ -30,6 +30,8 @@ namespace Entities.Models
 
         public string? Remarks { get; set; }
 
+public string? MeasurementUnitName { get; set; }
+public string? PhysicalCharacteristicName { get; set; }
 
 
         [Column("StatusId")]

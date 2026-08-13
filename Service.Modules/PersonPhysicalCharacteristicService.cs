@@ -52,7 +52,8 @@ namespace Service.Modules
         {
             var entity = await _repository.PersonPhysicalCharacteristic.GetPersonPhysicalCharacteristicAsync(personPhysicalCharacteristicGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonPhysicalCharacteristicDto>();
+            var dto = entity.Adapt<PersonPhysicalCharacteristicDto>();
+            return dto;
         }
 
         public async Task<PersonPhysicalCharacteristicDto> CreatePersonPhysicalCharacteristicAsync(Guid personGuid, PersonPhysicalCharacteristicForCreationDto input)
@@ -163,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonPhysicalCharacteristicDto>> SearchPersonPhysicalCharacteristicAsync(
-            string? srPhysicalCharacteristic, string? srPhysicalCharacteristicSearchType, string? physicalValue, string? physicalValueSearchType, string? srMeasurementUnit, string? srMeasurementUnitSearchType, string? recordedDate, string? recordedDateSearchType, string? remarks, string? remarksSearchType,
+            string? physicalValue, string? physicalValueSearchType, string? recordedDate, string? recordedDateSearchType, string? remarks, string? remarksSearchType,
             Guid personGuid, Guid personPhysicalCharacteristicGuid)
         {
             var data = await _repository.PersonPhysicalCharacteristic.SearchPersonPhysicalCharacteristicAsync(
-                srPhysicalCharacteristic, srPhysicalCharacteristicSearchType, physicalValue, physicalValueSearchType, srMeasurementUnit, srMeasurementUnitSearchType, recordedDate, recordedDateSearchType, remarks, remarksSearchType, 
+                physicalValue, physicalValueSearchType, recordedDate, recordedDateSearchType, remarks, remarksSearchType, 
                 personGuid, personPhysicalCharacteristicGuid);
             return data.Adapt<IEnumerable<PersonPhysicalCharacteristicDto>>();
         }

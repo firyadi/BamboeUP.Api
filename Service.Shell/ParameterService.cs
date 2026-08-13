@@ -48,7 +48,7 @@ namespace Service.Shell
             var dto = entity.Adapt<ParameterDto>();
 
             var scopes = await _repository.ParameterScope.GetAllByParameterGuidAsync(parameterGuid);
-            dto.Parameterscopes = scopes.Adapt<IEnumerable<ParameterscopeDto>>();
+            dto.Parameterscopes = scopes.Adapt<IEnumerable<ParameterScopeDto>>();
 
             return dto;
         }
@@ -162,7 +162,7 @@ namespace Service.Shell
             };
 
             // 3. Child alignment/diff logic
-            var newParameterscopes = input.Parameterscopes?.ToList() ?? new List<ParameterscopeForUpdateDto>();
+            var newParameterscopes = input.Parameterscopes?.ToList() ?? new List<ParameterScopeForUpdateDto>();
             var oldParameterscopeDict = oldParameterscopes.ToDictionary(o => o.ParameterscopeGuid);
 
             // Process incoming details (create or update)

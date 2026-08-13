@@ -33,6 +33,7 @@ namespace Entities.Models
 public string? CityName { get; set; }
 public string? CountryName { get; set; }
 public string? ProvinceName { get; set; }
+public string? AddressTypeName { get; set; }
 
 
         [Column("StatusId")]

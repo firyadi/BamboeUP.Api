@@ -18,10 +18,23 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
+, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+
 
                 FROM [app].[PersonPhysicalCharacteristic] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
+    WHERE StandardReferenceItemId = a.SrMeasurementUnit
+) v_SrMeasurementUnit
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
+    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
+) v_SrPhysicalCharacteristic
 
                 WHERE a.PersonPhysicalCharacteristicGuid = @personPhysicalCharacteristicGuid
                   AND a.StatusId > 0
@@ -34,10 +47,23 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
+, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+
 
                 FROM [app].[PersonPhysicalCharacteristic] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
+    WHERE StandardReferenceItemId = a.SrMeasurementUnit
+) v_SrMeasurementUnit
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
+    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
+) v_SrPhysicalCharacteristic
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonPhysicalCharacteristicGuid = @personPhysicalCharacteristicGuid
@@ -51,10 +77,23 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
+, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+
 
                 FROM [app].[PersonPhysicalCharacteristic] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
+    WHERE StandardReferenceItemId = a.SrMeasurementUnit
+) v_SrMeasurementUnit
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
+    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
+) v_SrPhysicalCharacteristic
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -69,7 +108,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonPhysicalCharacteristic]
-                (PersonPhysicalCharacteristicGuid, PersonId, CreatedById, StatusId, CreatedTime, SrPhysicalCharacteristic, PhysicalValue, SrMeasurementUnit, RecordedDate, Remarks)
+                (PersonPhysicalCharacteristicGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrPhysicalCharacteristic], [PhysicalValue], [SrMeasurementUnit], [RecordedDate], [Remarks])
                 VALUES
                 (@PersonPhysicalCharacteristicGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrPhysicalCharacteristic, @PhysicalValue, @SrMeasurementUnit, @RecordedDate, @Remarks);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -82,12 +121,12 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonPhysicalCharacteristic]
-                SET                     PersonId = @PersonId,
-                    SrPhysicalCharacteristic = @SrPhysicalCharacteristic,
-                    PhysicalValue = @PhysicalValue,
-                    SrMeasurementUnit = @SrMeasurementUnit,
-                    RecordedDate = @RecordedDate,
-                    Remarks = @Remarks,
+                SET                     [PersonId] = @PersonId,
+                    [SrPhysicalCharacteristic] = @SrPhysicalCharacteristic,
+                    [PhysicalValue] = @PhysicalValue,
+                    [SrMeasurementUnit] = @SrMeasurementUnit,
+                    [RecordedDate] = @RecordedDate,
+                    [Remarks] = @Remarks,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -124,12 +163,8 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         }
 
         public async Task<IEnumerable<PersonPhysicalCharacteristic>> SearchPersonPhysicalCharacteristicAsync(
-            string? srPhysicalCharacteristic,
-            string? srPhysicalCharacteristicSearchType,
             string? physicalValue,
             string? physicalValueSearchType,
-            string? srMeasurementUnit,
-            string? srMeasurementUnitSearchType,
             string? recordedDate,
             string? recordedDateSearchType,
             string? remarks,
@@ -152,21 +187,9 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 parameters.Add("@personPhysicalCharacteristicGuid", personPhysicalCharacteristicGuid);
             }
 
-            if (!string.IsNullOrWhiteSpace(srPhysicalCharacteristic))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrPhysicalCharacteristic", "@srPhysicalCharacteristic", srPhysicalCharacteristicSearchType, parameters, "srPhysicalCharacteristic", srPhysicalCharacteristic);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(physicalValue))
             {
                 var param = SqlFilterHelper.BuildFilter("a.PhysicalValue", "@physicalValue", physicalValueSearchType, parameters, "physicalValue", physicalValue);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srMeasurementUnit))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrMeasurementUnit", "@srMeasurementUnit", srMeasurementUnitSearchType, parameters, "srMeasurementUnit", srMeasurementUnit);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -184,10 +207,23 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.FirstName AS FirstName
+, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
+, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+
 
                 FROM [app].[PersonPhysicalCharacteristic] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
+    WHERE StandardReferenceItemId = a.SrMeasurementUnit
+) v_SrMeasurementUnit
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
+    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
+) v_SrPhysicalCharacteristic
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonPhysicalCharacteristicId DESC";

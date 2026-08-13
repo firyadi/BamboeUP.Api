@@ -20,14 +20,21 @@ namespace Repository
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
+, ISNULL(v_SrAddressType.StandardReferenceItemName, '') AS AddressTypeName
+
 
                 FROM [app].[PersonAddress] a
-LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN [app].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
 
                 WHERE a.PersonAddressGuid = @personAddressGuid
                   AND a.StatusId > 0
@@ -42,14 +49,21 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
+, ISNULL(v_SrAddressType.StandardReferenceItemName, '') AS AddressTypeName
+
 
                 FROM [app].[PersonAddress] a
-LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN [app].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonAddressGuid = @personAddressGuid
@@ -65,14 +79,21 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
+, ISNULL(v_SrAddressType.StandardReferenceItemName, '') AS AddressTypeName
+
 
                 FROM [app].[PersonAddress] a
-LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN [app].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -87,7 +108,7 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonAddress]
-                (PersonAddressGuid, PersonId, CreatedById, StatusId, CreatedTime, SrAddressType, Address, CountryId, ProvinceId, CityId)
+                (PersonAddressGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrAddressType], [Address], [CountryId], [ProvinceId], [CityId])
                 VALUES
                 (@PersonAddressGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrAddressType, @Address, @CountryId, @ProvinceId, @CityId);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -100,12 +121,12 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonAddress]
-                SET                     PersonId = @PersonId,
-                    SrAddressType = @SrAddressType,
-                    Address = @Address,
-                    CountryId = @CountryId,
-                    ProvinceId = @ProvinceId,
-                    CityId = @CityId,
+                SET                     [PersonId] = @PersonId,
+                    [SrAddressType] = @SrAddressType,
+                    [Address] = @Address,
+                    [CountryId] = @CountryId,
+                    [ProvinceId] = @ProvinceId,
+                    [CityId] = @CityId,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -142,8 +163,6 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
         }
 
         public async Task<IEnumerable<PersonAddress>> SearchPersonAddressAsync(
-            string? srAddressType,
-            string? srAddressTypeSearchType,
             string? address,
             string? addressSearchType,
             Guid personGuid, Guid personAddressGuid,
@@ -164,12 +183,6 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 parameters.Add("@personAddressGuid", personAddressGuid);
             }
 
-            if (!string.IsNullOrWhiteSpace(srAddressType))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrAddressType", "@srAddressType", srAddressTypeSearchType, parameters, "srAddressType", srAddressType);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(address))
             {
                 var param = SqlFilterHelper.BuildFilter("a.Address", "@address", addressSearchType, parameters, "address", address);
@@ -180,14 +193,21 @@ LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.Province
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CityId.CityName AS CityName
 , j_CountryId.CountryName AS CountryName
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
 , j_ProvinceId.ProvinceName AS ProvinceName
+, ISNULL(v_SrAddressType.StandardReferenceItemName, '') AS AddressTypeName
+
 
                 FROM [app].[PersonAddress] a
-LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN [core].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN [app].[Province] j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonAddressId DESC";

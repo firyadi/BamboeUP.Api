@@ -37,8 +37,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.FastReport"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.Telerik", "..\BamboeUp.Report\engines\BamboeUp.Report.Telerik\BamboeUp.Report.Telerik.csproj", "{0F4D3456-BB11-4F12-BDA4-815860E04F10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.DevExpress", "..\BamboeUp.Report\engines\BamboeUp.Report.DevExpress\BamboeUp.Report.DevExpress.csproj", "{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Report.Engines", "..\BamboeUp.Report\engines\BamboeUp.Report.Engines\BamboeUp.Report.Engines.csproj", "{FCF1AF0E-8012-4F75-BEB1-C8C98E03242F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BamboeUp.Audit", "..\BamboeUp.Audit\BamboeUp.Audit.csproj", "{4CBBD1E4-04B5-40BB-9A41-37CDDD00C353}"
@@ -257,18 +255,6 @@ Global
 		{0F4D3456-BB11-4F12-BDA4-815860E04F10}.Release|x64.Build.0 = Release|Any CPU
 		{0F4D3456-BB11-4F12-BDA4-815860E04F10}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F4D3456-BB11-4F12-BDA4-815860E04F10}.Release|x86.Build.0 = Release|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Debug|x64.Build.0 = Debug|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Debug|x86.Build.0 = Debug|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Release|x64.ActiveCfg = Release|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Release|x64.Build.0 = Release|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Release|x86.ActiveCfg = Release|Any CPU
-		{DC41F3BB-164B-4B34-BAA6-1C14FD73E2AC}.Release|x86.Build.0 = Release|Any CPU
 		{FCF1AF0E-8012-4F75-BEB1-C8C98E03242F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FCF1AF0E-8012-4F75-BEB1-C8C98E03242F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCF1AF0E-8012-4F75-BEB1-C8C98E03242F}.Debug|x64.ActiveCfg = Debug|Any CPU

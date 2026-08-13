@@ -13,7 +13,9 @@ namespace Shared.DataTransferObjects
         public long? SrMeasurementUnit { get; set; }
         public DateTime RecordedDate { get; set; }
         public string? Remarks { get; set; }
-public string? PersonName { get; set; }
+public string? FirstName { get; set; }
+public string? MeasurementUnitName { get; set; }
+public string? PhysicalCharacteristicName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -55,14 +57,8 @@ public string? PersonName { get; set; }
 
     public partial class PersonPhysicalCharacteristicSearchDto
     {
-        public string? SrPhysicalCharacteristic { get; set; }
-        public SearchType SrPhysicalCharacteristicSearchType { get; set; } = SearchType.Contains;
-
         public string? PhysicalValue { get; set; }
         public SearchType PhysicalValueSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrMeasurementUnit { get; set; }
-        public SearchType SrMeasurementUnitSearchType { get; set; } = SearchType.Contains;
 
         public string? RecordedDate { get; set; }
         public SearchType RecordedDateSearchType { get; set; } = SearchType.Contains;

@@ -1,9 +1,12 @@
 using Entities.Models;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Contracts
 {
-    public interface IHolidayRepository
+    public partial interface IHolidayRepository
     {
         Task<Holiday?> GetHolidayAsync(Guid holidayGuid, bool trackChanges);
         Task<IEnumerable<Holiday>> GetAllHolidaysAsync(bool trackChanges);
@@ -14,12 +17,19 @@ namespace Contracts
         Task SoftDeleteHolidayAsync(Holiday holiday, long deletedBy, IDbTransaction? transaction = null);
         
         Task<IEnumerable<Holiday>> SearchHolidayAsync(
-            string? yearPeriode, string? yearPeriodeSearchType,
-string? note, string? noteSearchType,
-DateTime? holidayDatesFrom, DateTime? holidayDatesTo,
-IDbTransaction? transaction = null);
+            string? holidayDate,
+            string? holidayDateSearchType,
+            string? holidayName,
+            string? holidayNameSearchType,
+            string? holidayDescription,
+            string? holidayDescriptionSearchType,
+            string? srHolidayType,
+            string? srHolidayTypeSearchType,
+            string? isNational,
+            string? isNationalSearchType,
+            string? isCompanyHoliday,
+            string? isCompanyHolidaySearchType,
 
-        // Detail helpers (only if entity has a parent)
-        
+            IDbTransaction? transaction = null);
     }
 }

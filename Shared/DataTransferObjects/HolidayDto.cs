@@ -1,16 +1,22 @@
+using System;
 using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record HolidayDto
+    public partial record HolidayDto
     {
         public long HolidayId { get; set; }
         public Guid HolidayGuid { get; init; }
-        public string YearPeriode { get; set; } = string.Empty;
-        public DateTime HolidayDates { get; set; }
-        public string Note { get; set; } = string.Empty;
+        
+        public DateTime HolidayDate { get; set; }
+        public string HolidayName { get; set; } = string.Empty;
+        public string? HolidayDescription { get; set; }
+        public long? SrHolidayType { get; set; }
+        public bool IsNational { get; set; }
+        public bool IsCompanyHoliday { get; set; }
+
+
         public int StatusId { get; set; }
-        public string? StatusName { get; set; }
         public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
@@ -20,36 +26,52 @@ namespace Shared.DataTransferObjects
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record HolidayForCreationDto
+    public partial record HolidayForCreationDto
     {
-        public string YearPeriode { get; set; } = string.Empty;
-        public DateTime HolidayDates { get; set; }
-        public string Note { get; set; } = string.Empty;
+        public DateTime HolidayDate { get; set; }
+        public string HolidayName { get; set; } = string.Empty;
+        public string? HolidayDescription { get; set; }
+        public long? SrHolidayType { get; set; }
+        public bool IsNational { get; set; }
+        public bool IsCompanyHoliday { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
-    public record HolidayForUpdateDto
+    public partial record HolidayForUpdateDto
     {
-        public string YearPeriode { get; set; } = string.Empty;
-        public DateTime HolidayDates { get; set; }
-        public string Note { get; set; } = string.Empty;
-        public long? UpdatedById { get; set; }
+        public DateTime HolidayDate { get; set; }
+        public string HolidayName { get; set; } = string.Empty;
+        public string? HolidayDescription { get; set; }
+        public long? SrHolidayType { get; set; }
+        public bool IsNational { get; set; }
+        public bool IsCompanyHoliday { get; set; }
+        public long UpdatedById { get; set; }
     }
 
-    public record HolidayForDeleteDto
+    public partial record HolidayForDeleteDto
     {
-        public long? DeletedById { get; set; }
+        public long DeletedById { get; set; }
     }
 
-    public class HolidaySearchDto
+    public partial class HolidaySearchDto
     {
-        public string? YearPeriode { get; set; }
-        public SearchType YearPeriodeSearchType { get; set; } = SearchType.Contains;
+        public string? HolidayDate { get; set; }
+        public SearchType HolidayDateSearchType { get; set; } = SearchType.Contains;
 
-        public DateTime? HolidayDatesFrom { get; set; }
-        public DateTime? HolidayDatesTo { get; set; }
+        public string? HolidayName { get; set; }
+        public SearchType HolidayNameSearchType { get; set; } = SearchType.Contains;
 
-        public string? Note { get; set; }
-        public SearchType NoteSearchType { get; set; } = SearchType.Contains;
+        public string? HolidayDescription { get; set; }
+        public SearchType HolidayDescriptionSearchType { get; set; } = SearchType.Contains;
+
+        public string? SrHolidayType { get; set; }
+        public SearchType SrHolidayTypeSearchType { get; set; } = SearchType.Contains;
+
+        public string? IsNational { get; set; }
+        public SearchType IsNationalSearchType { get; set; } = SearchType.Contains;
+
+        public string? IsCompanyHoliday { get; set; }
+        public SearchType IsCompanyHolidaySearchType { get; set; } = SearchType.Contains;
+
     }
 }

@@ -28,6 +28,7 @@ namespace Entities.Models
 
         public string? Remark { get; set; }
 
+public string? ContactTypeName { get; set; }
 
 
         [Column("StatusId")]

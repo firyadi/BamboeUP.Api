@@ -53,12 +53,12 @@ namespace Entities.Models
         public DateTime CreatedTime { get; set; }  = DateTime.UtcNow;
 
         [Column("UpdatedById")]
-        public long UpdatedById { get; set; } = 0;
+        public long? UpdatedById { get; set; }
 
         public DateTime? UpdatedTime { get; set; }
 
         [Column("DeletedById")]
-        public long DeletedById { get; set; } = 0;
+        public long? DeletedById { get; set; }
 
         public DateTime? DeletedTime { get; set; }
 

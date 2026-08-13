@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonEducationByAdminAsync(Guid personEducationGuid, bool trackChanges);
 
         Task<IEnumerable<PersonEducationDto>> SearchPersonEducationAsync(
-            string? srEducationLevel, string? srEducationLevelSearchType, string? institutionName, string? institutionNameSearchType,
+            string? institutionName, string? institutionNameSearchType,
             Guid personGuid, Guid personEducationGuid);
 
         // Detail (child) helpers

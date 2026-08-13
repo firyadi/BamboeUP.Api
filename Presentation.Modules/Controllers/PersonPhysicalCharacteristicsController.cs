@@ -80,9 +80,7 @@ namespace Presentation.Modules.Controllers
         public async Task<IActionResult> Search([FromQuery] PersonPhysicalCharacteristicSearchDto input, [FromQuery] Guid headerGuid, [FromQuery] Guid detailGuid)
         {
             var result = await _service.PersonPhysicalCharacteristicService.SearchPersonPhysicalCharacteristicAsync(
-                                input.SrPhysicalCharacteristic, input.SrPhysicalCharacteristicSearchType.ToString(),
-                input.PhysicalValue, input.PhysicalValueSearchType.ToString(),
-                input.SrMeasurementUnit, input.SrMeasurementUnitSearchType.ToString(),
+                                input.PhysicalValue, input.PhysicalValueSearchType.ToString(),
                 input.RecordedDate, input.RecordedDateSearchType.ToString(),
                 input.Remarks, input.RemarksSearchType.ToString(),
                 headerGuid, detailGuid);

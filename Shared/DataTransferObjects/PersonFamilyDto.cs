@@ -20,6 +20,12 @@ namespace Shared.DataTransferObjects
         public long? SrMaritalStatus { get; set; }
         public long? SrGender { get; set; }
 public string? PersonName { get; set; }
+public string? CityName { get; set; }
+public string? EducationLevelName { get; set; }
+public string? FamilyRelationName { get; set; }
+public string? GenderName { get; set; }
+public string? MaritalStatusName { get; set; }
+public string? StateName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -73,37 +79,19 @@ public string? PersonName { get; set; }
 
     public partial class PersonFamilySearchDto
     {
-        public string? SrFamilyRelation { get; set; }
-        public SearchType SrFamilyRelationSearchType { get; set; } = SearchType.Contains;
-
         public string? FamilyName { get; set; }
         public SearchType FamilyNameSearchType { get; set; } = SearchType.Contains;
 
         public string? DateBirth { get; set; }
         public SearchType DateBirthSearchType { get; set; } = SearchType.Contains;
 
-        public string? SrEducationLevel { get; set; }
-        public SearchType SrEducationLevelSearchType { get; set; } = SearchType.Contains;
-
         public string? Address { get; set; }
         public SearchType AddressSearchType { get; set; } = SearchType.Contains;
-
-        public string? StateId { get; set; }
-        public SearchType StateIdSearchType { get; set; } = SearchType.Contains;
-
-        public string? CityId { get; set; }
-        public SearchType CityIdSearchType { get; set; } = SearchType.Contains;
 
         public string? ZipCode { get; set; }
         public SearchType ZipCodeSearchType { get; set; } = SearchType.Contains;
 
         public string? Phone { get; set; }
         public SearchType PhoneSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrMaritalStatus { get; set; }
-        public SearchType SrMaritalStatusSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrGender { get; set; }
-        public SearchType SrGenderSearchType { get; set; } = SearchType.Contains;
     }
 }

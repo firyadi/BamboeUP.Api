@@ -52,7 +52,10 @@ namespace Service.Modules
             try
             {
                 var model = input.Adapt<Person>();
-
+            model.SrSalutation = input.SrSalutation is null or 0 ? null : input.SrSalutation;
+            model.SrBloodType = input.SrBloodType is null or 0 ? null : input.SrBloodType;
+            model.SrMaritalStatus = input.SrMaritalStatus is null or 0 ? null : input.SrMaritalStatus;
+            model.FileStorageId = input.FileStorageId is null or 0 ? null : input.FileStorageId;
 
                 model.StatusId = 1;
                 model.CreatedTime = DateTime.UtcNow;
@@ -309,7 +312,10 @@ namespace Service.Modules
             {
                 // 2. Update Header
                 var model = input.Adapt<Person>();
-
+            model.SrSalutation = input.SrSalutation is null or 0 ? null : input.SrSalutation;
+            model.SrBloodType = input.SrBloodType is null or 0 ? null : input.SrBloodType;
+            model.SrMaritalStatus = input.SrMaritalStatus is null or 0 ? null : input.SrMaritalStatus;
+            model.FileStorageId = input.FileStorageId is null or 0 ? null : input.FileStorageId;
                 model.PersonGuid = personGuid;
                 model.PersonId = oldPerson.PersonId;
 
@@ -1027,12 +1033,12 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonDto>> SearchPersonAsync(
-            string? firstName, string? firstNameSearchType, string? middleName, string? middleNameSearchType, string? lastName, string? lastNameSearchType, string? preTitle, string? preTitleSearchType, string? postTitle, string? postTitleSearchType, string? personName, string? personNameSearchType, string? birthName, string? birthNameSearchType, string? placeofBirth, string? placeofBirthSearchType, string? birthDate, string? birthDateSearchType, string? nationalIdNo, string? nationalIdNoSearchType, string? srGender, string? srGenderSearchType, string? srReligion, string? srReligionSearchType, string? srSalutation, string? srSalutationSearchType, string? srBloodType, string? srBloodTypeSearchType, string? srMaritalStatus, string? srMaritalStatusSearchType
+            string? firstName, string? firstNameSearchType, string? middleName, string? middleNameSearchType, string? lastName, string? lastNameSearchType, string? preTitle, string? preTitleSearchType, string? postTitle, string? postTitleSearchType, string? personName, string? personNameSearchType, string? birthName, string? birthNameSearchType, string? placeofBirth, string? placeofBirthSearchType, string? birthDate, string? birthDateSearchType, string? nationalIdNo, string? nationalIdNoSearchType
             // ── FK Virtual Search Params ──
         )
         {
             var data = await repository.Person.SearchPersonAsync(
-firstName, firstNameSearchType, middleName, middleNameSearchType, lastName, lastNameSearchType, preTitle, preTitleSearchType, postTitle, postTitleSearchType, personName, personNameSearchType, birthName, birthNameSearchType, placeofBirth, placeofBirthSearchType, birthDate, birthDateSearchType, nationalIdNo, nationalIdNoSearchType, srGender, srGenderSearchType, srReligion, srReligionSearchType, srSalutation, srSalutationSearchType, srBloodType, srBloodTypeSearchType, srMaritalStatus, srMaritalStatusSearchType
+firstName, firstNameSearchType, middleName, middleNameSearchType, lastName, lastNameSearchType, preTitle, preTitleSearchType, postTitle, postTitleSearchType, personName, personNameSearchType, birthName, birthNameSearchType, placeofBirth, placeofBirthSearchType, birthDate, birthDateSearchType, nationalIdNo, nationalIdNoSearchType
                 // ── FK Virtual Search Args ──
             );
             return data.Adapt<IEnumerable<PersonDto>>();

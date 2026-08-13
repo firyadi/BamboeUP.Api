@@ -19,12 +19,8 @@ namespace Contracts
         Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null);
 
         Task<IEnumerable<PersonPhysicalCharacteristic>> SearchPersonPhysicalCharacteristicAsync(
-            string? srPhysicalCharacteristic,
-            string? srPhysicalCharacteristicSearchType,
             string? physicalValue,
             string? physicalValueSearchType,
-            string? srMeasurementUnit,
-            string? srMeasurementUnitSearchType,
             string? recordedDate,
             string? recordedDateSearchType,
             string? remarks,

@@ -52,7 +52,8 @@ namespace Service.Modules
         {
             var entity = await _repository.PersonFamily.GetPersonFamilyAsync(personFamilyGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonFamilyDto>();
+            var dto = entity.Adapt<PersonFamilyDto>();
+            return dto;
         }
 
         public async Task<PersonFamilyDto> CreatePersonFamilyAsync(Guid personGuid, PersonFamilyForCreationDto input)
@@ -163,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonFamilyDto>> SearchPersonFamilyAsync(
-            string? srFamilyRelation, string? srFamilyRelationSearchType, string? familyName, string? familyNameSearchType, string? dateBirth, string? dateBirthSearchType, string? srEducationLevel, string? srEducationLevelSearchType, string? address, string? addressSearchType, string? stateId, string? stateIdSearchType, string? cityId, string? cityIdSearchType, string? zipCode, string? zipCodeSearchType, string? phone, string? phoneSearchType, string? srMaritalStatus, string? srMaritalStatusSearchType, string? srGender, string? srGenderSearchType,
+            string? familyName, string? familyNameSearchType, string? dateBirth, string? dateBirthSearchType, string? address, string? addressSearchType, string? zipCode, string? zipCodeSearchType, string? phone, string? phoneSearchType,
             Guid personGuid, Guid personFamilyGuid)
         {
             var data = await _repository.PersonFamily.SearchPersonFamilyAsync(
-                srFamilyRelation, srFamilyRelationSearchType, familyName, familyNameSearchType, dateBirth, dateBirthSearchType, srEducationLevel, srEducationLevelSearchType, address, addressSearchType, stateId, stateIdSearchType, cityId, cityIdSearchType, zipCode, zipCodeSearchType, phone, phoneSearchType, srMaritalStatus, srMaritalStatusSearchType, srGender, srGenderSearchType, 
+                familyName, familyNameSearchType, dateBirth, dateBirthSearchType, address, addressSearchType, zipCode, zipCodeSearchType, phone, phoneSearchType, 
                 personGuid, personFamilyGuid);
             return data.Adapt<IEnumerable<PersonFamilyDto>>();
         }

@@ -80,8 +80,7 @@ namespace Presentation.Modules.Controllers
         public async Task<IActionResult> Search([FromQuery] PersonAddressSearchDto input, [FromQuery] Guid headerGuid, [FromQuery] Guid detailGuid)
         {
             var result = await _service.PersonAddressService.SearchPersonAddressAsync(
-                                input.SrAddressType, input.SrAddressTypeSearchType.ToString(),
-                input.Address, input.AddressSearchType.ToString(),
+                                input.Address, input.AddressSearchType.ToString(),
                 headerGuid, detailGuid);
             return Ok(result);
         }

@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonPhysicalCharacteristicByAdminAsync(Guid personPhysicalCharacteristicGuid, bool trackChanges);
 
         Task<IEnumerable<PersonPhysicalCharacteristicDto>> SearchPersonPhysicalCharacteristicAsync(
-            string? srPhysicalCharacteristic, string? srPhysicalCharacteristicSearchType, string? physicalValue, string? physicalValueSearchType, string? srMeasurementUnit, string? srMeasurementUnitSearchType, string? recordedDate, string? recordedDateSearchType, string? remarks, string? remarksSearchType,
+            string? physicalValue, string? physicalValueSearchType, string? recordedDate, string? recordedDateSearchType, string? remarks, string? remarksSearchType,
             Guid personGuid, Guid personPhysicalCharacteristicGuid);
 
         // Detail (child) helpers

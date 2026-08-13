@@ -32,6 +32,21 @@ namespace Shared.DataTransferObjects
         public DateTime? UpdatedTime { get; set; }
         public long? DeletedById { get; set; }
         public DateTime? DeletedTime { get; set; }
+
+        // Compatibility properties for Blazor App (casing alignment)
+        [JsonIgnore]
+        public Guid ParameterScopeGuid
+        {
+            get => ParameterscopeGuid;
+            init => ParameterscopeGuid = value;
+        }
+
+        [JsonIgnore]
+        public string OverrideValue
+        {
+            get => Overridevalue;
+            set => Overridevalue = value;
+        }
     }
 
     public record ParameterscopeForCreationDto
@@ -45,6 +60,15 @@ namespace Shared.DataTransferObjects
         public string Overridevalue { get; set; } = string.Empty;
 
         public long CreatedById { get; set; } = 0;
+
+        [JsonIgnore]
+        public string OverrideValue
+        {
+            get => Overridevalue;
+            set => Overridevalue = value;
+        }
+
+        public int StatusId { get; set; } = 1;
     }
 
     public record ParameterscopeForUpdateDto
@@ -61,6 +85,23 @@ namespace Shared.DataTransferObjects
         public string Overridevalue { get; set; } = string.Empty;
 
         public long UpdatedById { get; set; }
+
+        [JsonIgnore]
+        public Guid ParameterScopeGuid
+        {
+            get => ParameterscopeGuid;
+            set => ParameterscopeGuid = value;
+        }
+
+        [JsonIgnore]
+        public string OverrideValue
+        {
+            get => Overridevalue;
+            set => Overridevalue = value;
+        }
+
+        public int StatusId { get; set; }
+        public byte[]? RowVersion { get; set; }
     }
 
     public record ParameterscopeForDeleteDto
@@ -73,6 +114,25 @@ namespace Shared.DataTransferObjects
         public string? Overridevalue { get; set; }
         public SearchType OverridevalueSearchType { get; set; } = SearchType.Contains;
 
+        [JsonIgnore]
+        public string? OverrideValue
+        {
+            get => Overridevalue;
+            set => Overridevalue = value;
+        }
 
+        [JsonIgnore]
+        public SearchType OverrideValueSearchType
+        {
+            get => OverridevalueSearchType;
+            set => OverridevalueSearchType = value;
+        }
     }
+
+    // Compatibility aliases for Blazor App (with uppercase 'S')
+    public record ParameterScopeDto : ParameterscopeDto;
+    public record ParameterScopeForCreationDto : ParameterscopeForCreationDto;
+    public record ParameterScopeForUpdateDto : ParameterscopeForUpdateDto;
+    public record ParameterScopeForDeleteDto : ParameterscopeForDeleteDto;
+    public class ParameterScopeSearchDto : ParameterscopeSearchDto;
 }

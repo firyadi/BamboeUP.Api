@@ -19,8 +19,6 @@ namespace Contracts
         Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null);
 
         Task<IEnumerable<PersonAddress>> SearchPersonAddressAsync(
-            string? srAddressType,
-            string? srAddressTypeSearchType,
             string? address,
             string? addressSearchType,
             Guid personGuid, Guid personAddressGuid,

@@ -10,22 +10,15 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class CostCenterRepository : ICostCenterRepository
+    public partial class CostCenterRepository(RepositoryContext context, IAuditService audit) : ICostCenterRepository
     {
-        private readonly RepositoryContext _context;
-        private readonly IAuditService _audit;
-
-        public CostCenterRepository(RepositoryContext context, IAuditService audit)
-        {
-            _context = context;
-            _audit = audit;
-        }
 
         public async Task<CostCenter?> GetCostCenterAsync(Guid costCenterGuid, bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+
 
                 FROM [app].[CostCenter] a
 
@@ -37,9 +30,10 @@ namespace Repository
 
         public async Task<CostCenter?> GetCostCenterByIdAsync(long costCenterId, bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+
 
                 FROM [app].[CostCenter] a
 
@@ -51,9 +45,10 @@ namespace Repository
 
         public async Task<IEnumerable<CostCenter>> GetAllCostCentersAsync(bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+
 
                 FROM [app].[CostCenter] a
 
@@ -65,7 +60,7 @@ namespace Repository
         public async Task CreateCostCenterAsync(CostCenter costCenter, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(costCenter);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[CostCenter]
                 (CostCenterGuid, CreatedById, StatusId, CreatedTime, CostCenterCode, CostCenterName, CostCenterDescription, ParentCostCenterId, LevelDepth, HierarchyPath)
@@ -78,7 +73,7 @@ namespace Repository
         public async Task UpdateCostCenterAsync(CostCenter costCenter, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(costCenter);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[CostCenter]
                 SET                     CostCenterCode = @CostCenterCode,
@@ -97,7 +92,7 @@ namespace Repository
         public async Task SoftDeleteCostCenterAsync(CostCenter costCenter, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(costCenter, deletedBy);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[CostCenter]
                 SET StatusId = 0,
@@ -110,7 +105,7 @@ namespace Repository
 
         public async Task DeleteCostCenterAsync(Guid costCenterGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"DELETE FROM [app].[CostCenter] WHERE CostCenterGuid = @costCenterGuid";
             await conn.ExecuteAsync(sql, new { costCenterGuid }, transaction);
         }
@@ -130,8 +125,8 @@ namespace Repository
             string? hierarchyPathSearchType,
             IDbTransaction? transaction = null)
         {
-            var connection = transaction?.Connection ?? _context.CreateConnection();
-            var whereClauses = new List<string> { "a.StatusId > 0", "a.DeletedTime IS NULL" };
+            var connection = transaction?.Connection ?? context.CreateConnection();
+            List<string> whereClauses = [ "a.StatusId > 0", "a.DeletedTime IS NULL" ];
             var parameters = new DynamicParameters();
 
             if (!string.IsNullOrWhiteSpace(costCenterCode))
@@ -174,6 +169,7 @@ namespace Repository
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+
 
                 FROM [app].[CostCenter] a
 

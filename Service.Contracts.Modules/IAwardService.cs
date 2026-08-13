@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeleteAwardByAdminAsync(Guid awardGuid, bool trackChanges);
 
         Task<IEnumerable<AwardDto>> SearchAwardAsync(
-            string? awardCode, string? awardCodeSearchType, string? awardName, string? awardNameSearchType, string? srAwardCriteria, string? srAwardCriteriaSearchType, string? srAwardType, string? srAwardTypeSearchType, string? validFrom, string? validFromSearchType, string? validto, string? validtoSearchType, string? awardPrize, string? awardPrizeSearchType, string? note, string? noteSearchType
+            string? awardCode, string? awardCodeSearchType, string? awardName, string? awardNameSearchType, string? validFrom, string? validFromSearchType, string? validto, string? validtoSearchType, string? awardPrize, string? awardPrizeSearchType, string? note, string? noteSearchType
 
         );
     }

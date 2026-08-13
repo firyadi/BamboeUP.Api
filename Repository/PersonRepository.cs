@@ -18,8 +18,39 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
+, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+
 
                 FROM [app].[Person] a
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
+    WHERE StandardReferenceItemId = a.SrBloodType
+) v_SrBloodType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
+    WHERE StandardReferenceItemId = a.SrReligion
+) v_SrReligion
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
+    WHERE StandardReferenceItemId = a.SrSalutation
+) v_SrSalutation
 
                 WHERE a.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -32,8 +63,39 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
+, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+
 
                 FROM [app].[Person] a
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
+    WHERE StandardReferenceItemId = a.SrBloodType
+) v_SrBloodType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
+    WHERE StandardReferenceItemId = a.SrReligion
+) v_SrReligion
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
+    WHERE StandardReferenceItemId = a.SrSalutation
+) v_SrSalutation
 
                 WHERE a.PersonId = @personId
                   AND a.StatusId > 0
@@ -46,8 +108,39 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
+, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+
 
                 FROM [app].[Person] a
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
+    WHERE StandardReferenceItemId = a.SrBloodType
+) v_SrBloodType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
+    WHERE StandardReferenceItemId = a.SrReligion
+) v_SrReligion
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
+    WHERE StandardReferenceItemId = a.SrSalutation
+) v_SrSalutation
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
                 ORDER BY a.PersonId DESC";
@@ -137,16 +230,6 @@ namespace Repository
             string? birthDateSearchType,
             string? nationalIdNo,
             string? nationalIdNoSearchType,
-            string? srGender,
-            string? srGenderSearchType,
-            string? srReligion,
-            string? srReligionSearchType,
-            string? srSalutation,
-            string? srSalutationSearchType,
-            string? srBloodType,
-            string? srBloodTypeSearchType,
-            string? srMaritalStatus,
-            string? srMaritalStatusSearchType,
             IDbTransaction? transaction = null)
         {
             var connection = transaction?.Connection ?? context.CreateConnection();
@@ -213,42 +296,43 @@ namespace Repository
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-            if (!string.IsNullOrWhiteSpace(srGender))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrGender", "@srGender", srGenderSearchType, parameters, "srGender", srGender);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srReligion))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrReligion", "@srReligion", srReligionSearchType, parameters, "srReligion", srReligion);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srSalutation))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrSalutation", "@srSalutation", srSalutationSearchType, parameters, "srSalutation", srSalutation);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srBloodType))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrBloodType", "@srBloodType", srBloodTypeSearchType, parameters, "srBloodType", srBloodType);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srMaritalStatus))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrMaritalStatus", "@srMaritalStatus", srMaritalStatusSearchType, parameters, "srMaritalStatus", srMaritalStatus);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
 
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
+, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+
 
                 FROM [app].[Person] a
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
+    WHERE StandardReferenceItemId = a.SrBloodType
+) v_SrBloodType
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
+    WHERE StandardReferenceItemId = a.SrReligion
+) v_SrReligion
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
+    WHERE StandardReferenceItemId = a.SrSalutation
+) v_SrSalutation
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonId DESC";

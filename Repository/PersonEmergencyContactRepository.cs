@@ -18,10 +18,17 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+
 
                 FROM [app].[PersonEmergencyContact] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
+    WHERE StandardReferenceItemId = a.SrRelationship
+) v_SrRelationship
 
                 WHERE a.PersonEmergencyContactGuid = @personEmergencyContactGuid
                   AND a.StatusId > 0
@@ -34,10 +41,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+
 
                 FROM [app].[PersonEmergencyContact] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
+    WHERE StandardReferenceItemId = a.SrRelationship
+) v_SrRelationship
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonEmergencyContactGuid = @personEmergencyContactGuid
@@ -51,10 +65,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+
 
                 FROM [app].[PersonEmergencyContact] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
+    WHERE StandardReferenceItemId = a.SrRelationship
+) v_SrRelationship
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -69,7 +90,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonEmergencyContact]
-                (PersonEmergencyContactGuid, PersonId, CreatedById, StatusId, CreatedTime, ContactName, SrRelationship, Phone, IsPrimary)
+                (PersonEmergencyContactGuid, PersonId, CreatedById, StatusId, CreatedTime, [ContactName], [SrRelationship], [Phone], [IsPrimary])
                 VALUES
                 (@PersonEmergencyContactGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @ContactName, @SrRelationship, @Phone, @IsPrimary);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -82,11 +103,11 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonEmergencyContact]
-                SET                     PersonId = @PersonId,
-                    ContactName = @ContactName,
-                    SrRelationship = @SrRelationship,
-                    Phone = @Phone,
-                    IsPrimary = @IsPrimary,
+                SET                     [PersonId] = @PersonId,
+                    [ContactName] = @ContactName,
+                    [SrRelationship] = @SrRelationship,
+                    [Phone] = @Phone,
+                    [IsPrimary] = @IsPrimary,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -125,8 +146,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         public async Task<IEnumerable<PersonEmergencyContact>> SearchPersonEmergencyContactAsync(
             string? contactName,
             string? contactNameSearchType,
-            string? srRelationship,
-            string? srRelationshipSearchType,
             string? phone,
             string? phoneSearchType,
             string? isPrimary,
@@ -155,12 +174,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-            if (!string.IsNullOrWhiteSpace(srRelationship))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrRelationship", "@srRelationship", srRelationshipSearchType, parameters, "srRelationship", srRelationship);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(phone))
             {
                 var param = SqlFilterHelper.BuildFilter("a.Phone", "@phone", phoneSearchType, parameters, "phone", phone);
@@ -175,10 +188,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+
 
                 FROM [app].[PersonEmergencyContact] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
+    WHERE StandardReferenceItemId = a.SrRelationship
+) v_SrRelationship
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonEmergencyContactId DESC";

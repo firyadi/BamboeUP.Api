@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using Shared.Settings.Enums;
 
 namespace Shared.DataTransferObjects
 {
-    public record CostCenterDto
+    public partial record CostCenterDto
     {
         public long CostCenterId { get; set; }
         public Guid CostCenterGuid { get; init; }
@@ -15,11 +14,12 @@ namespace Shared.DataTransferObjects
         public int LevelDepth { get; set; }
         public string? HierarchyPath { get; set; }
 
+
                 public IEnumerable<CostCenterScopeDto>? CostCenterScopes { get; set; }
         // ##HeaderDetailCollections##
         public IEnumerable<CostCenterAssignmentDto>? CostCenterAssignments { get; set; }
-        public int StatusId { get; set; }
-        public byte[]? RowVersion { get; set; }
+        public int StatusId { get; init; }
+        public byte[]? RowVersion { get; init; }
         public long CreatedById { get; set; }
         public DateTime CreatedTime { get; set; }
         public long? UpdatedById { get; set; }
@@ -28,7 +28,7 @@ namespace Shared.DataTransferObjects
         public DateTime? DeletedTime { get; set; }
     }
 
-    public record CostCenterForCreationDto
+    public partial record CostCenterForCreationDto
     {
         public string CostCenterCode { get; set; } = string.Empty;
         public string CostCenterName { get; set; } = string.Empty;
@@ -39,10 +39,11 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<CostCenterScopeForCreationDto>? CostCenterScopes { get; set; }
         // ##HeaderDetailCreateCollections##
         public IEnumerable<CostCenterAssignmentForCreationDto>? CostCenterAssignments { get; set; }
-        public long CreatedById { get; set; } = 0;
+        public long CreatedById { get; init; } = 0;
+        public int StatusId { get; init; } = 1;
     }
 
-    public record CostCenterForUpdateDto
+    public partial record CostCenterForUpdateDto
     {
         public string CostCenterCode { get; set; } = string.Empty;
         public string CostCenterName { get; set; } = string.Empty;
@@ -53,15 +54,17 @@ namespace Shared.DataTransferObjects
                 public IEnumerable<CostCenterScopeForUpdateDto>? CostCenterScopes { get; set; }
         // ##HeaderDetailUpdateCollections##
         public IEnumerable<CostCenterAssignmentForUpdateDto>? CostCenterAssignments { get; set; }
-        public long UpdatedById { get; set; }
+        public long UpdatedById { get; init; }
+        public int StatusId { get; init; }
+        public byte[]? RowVersion { get; init; }
     }
 
-    public record CostCenterForDeleteDto
+    public partial record CostCenterForDeleteDto
     {
-        public long DeletedById { get; set; }
+        public long DeletedById { get; init; }
     }
 
-    public class CostCenterSearchDto
+    public partial class CostCenterSearchDto
     {
         public string? CostCenterCode { get; set; }
         public SearchType CostCenterCodeSearchType { get; set; } = SearchType.Contains;

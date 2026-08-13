@@ -18,10 +18,39 @@ namespace Repository
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, j_CityId.CityName AS CityName
+, j_StateId.StateName AS StateName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, ISNULL(v_SrFamilyRelation.StandardReferenceItemName, '') AS FamilyRelationName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+
 
                 FROM [app].[PersonFamily] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[State] j_StateId ON a.StateId = j_StateId.StateId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FamilyRelation')
+    WHERE StandardReferenceItemId = a.SrFamilyRelation
+) v_SrFamilyRelation
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
 
                 WHERE a.PersonFamilyGuid = @personFamilyGuid
                   AND a.StatusId > 0
@@ -34,10 +63,39 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, j_CityId.CityName AS CityName
+, j_StateId.StateName AS StateName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, ISNULL(v_SrFamilyRelation.StandardReferenceItemName, '') AS FamilyRelationName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+
 
                 FROM [app].[PersonFamily] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[State] j_StateId ON a.StateId = j_StateId.StateId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FamilyRelation')
+    WHERE StandardReferenceItemId = a.SrFamilyRelation
+) v_SrFamilyRelation
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonFamilyGuid = @personFamilyGuid
@@ -51,10 +109,39 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, j_CityId.CityName AS CityName
+, j_StateId.StateName AS StateName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, ISNULL(v_SrFamilyRelation.StandardReferenceItemName, '') AS FamilyRelationName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+
 
                 FROM [app].[PersonFamily] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[State] j_StateId ON a.StateId = j_StateId.StateId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FamilyRelation')
+    WHERE StandardReferenceItemId = a.SrFamilyRelation
+) v_SrFamilyRelation
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -69,7 +156,7 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[PersonFamily]
-                (PersonFamilyGuid, PersonId, CreatedById, StatusId, CreatedTime, SrFamilyRelation, FamilyName, DateBirth, SrEducationLevel, Address, StateId, CityId, ZipCode, Phone, SrMaritalStatus, SrGender)
+                (PersonFamilyGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrFamilyRelation], [FamilyName], [DateBirth], [SrEducationLevel], [Address], [StateId], [CityId], [ZipCode], [Phone], [SrMaritalStatus], [SrGender])
                 VALUES
                 (@PersonFamilyGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrFamilyRelation, @FamilyName, @DateBirth, @SrEducationLevel, @Address, @StateId, @CityId, @ZipCode, @Phone, @SrMaritalStatus, @SrGender);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
@@ -82,18 +169,18 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
             var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[PersonFamily]
-                SET                     PersonId = @PersonId,
-                    SrFamilyRelation = @SrFamilyRelation,
-                    FamilyName = @FamilyName,
-                    DateBirth = @DateBirth,
-                    SrEducationLevel = @SrEducationLevel,
-                    Address = @Address,
-                    StateId = @StateId,
-                    CityId = @CityId,
-                    ZipCode = @ZipCode,
-                    Phone = @Phone,
-                    SrMaritalStatus = @SrMaritalStatus,
-                    SrGender = @SrGender,
+                SET                     [PersonId] = @PersonId,
+                    [SrFamilyRelation] = @SrFamilyRelation,
+                    [FamilyName] = @FamilyName,
+                    [DateBirth] = @DateBirth,
+                    [SrEducationLevel] = @SrEducationLevel,
+                    [Address] = @Address,
+                    [StateId] = @StateId,
+                    [CityId] = @CityId,
+                    [ZipCode] = @ZipCode,
+                    [Phone] = @Phone,
+                    [SrMaritalStatus] = @SrMaritalStatus,
+                    [SrGender] = @SrGender,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -130,28 +217,16 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         }
 
         public async Task<IEnumerable<PersonFamily>> SearchPersonFamilyAsync(
-            string? srFamilyRelation,
-            string? srFamilyRelationSearchType,
             string? familyName,
             string? familyNameSearchType,
             string? dateBirth,
             string? dateBirthSearchType,
-            string? srEducationLevel,
-            string? srEducationLevelSearchType,
             string? address,
             string? addressSearchType,
-            string? stateId,
-            string? stateIdSearchType,
-            string? cityId,
-            string? cityIdSearchType,
             string? zipCode,
             string? zipCodeSearchType,
             string? phone,
             string? phoneSearchType,
-            string? srMaritalStatus,
-            string? srMaritalStatusSearchType,
-            string? srGender,
-            string? srGenderSearchType,
             Guid personGuid, Guid personFamilyGuid,
             IDbTransaction? transaction = null)
         {
@@ -170,12 +245,6 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 parameters.Add("@personFamilyGuid", personFamilyGuid);
             }
 
-            if (!string.IsNullOrWhiteSpace(srFamilyRelation))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrFamilyRelation", "@srFamilyRelation", srFamilyRelationSearchType, parameters, "srFamilyRelation", srFamilyRelation);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(familyName))
             {
                 var param = SqlFilterHelper.BuildFilter("a.FamilyName", "@familyName", familyNameSearchType, parameters, "familyName", familyName);
@@ -188,27 +257,9 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-            if (!string.IsNullOrWhiteSpace(srEducationLevel))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrEducationLevel", "@srEducationLevel", srEducationLevelSearchType, parameters, "srEducationLevel", srEducationLevel);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(address))
             {
                 var param = SqlFilterHelper.BuildFilter("a.Address", "@address", addressSearchType, parameters, "address", address);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(stateId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.StateId", "@stateId", stateIdSearchType, parameters, "stateId", stateId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(cityId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CityId", "@cityId", cityIdSearchType, parameters, "cityId", cityId);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -224,24 +275,41 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-            if (!string.IsNullOrWhiteSpace(srMaritalStatus))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrMaritalStatus", "@srMaritalStatus", srMaritalStatusSearchType, parameters, "srMaritalStatus", srMaritalStatus);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srGender))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrGender", "@srGender", srGenderSearchType, parameters, "srGender", srGender);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_PersonId.FirstName AS PersonName
+, j_PersonId.PersonName AS PersonName
+, j_CityId.CityName AS CityName
+, j_StateId.StateName AS StateName
+, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, ISNULL(v_SrFamilyRelation.StandardReferenceItemName, '') AS FamilyRelationName
+, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
+, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
+
 
                 FROM [app].[PersonFamily] a
 LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN [app].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[State] j_StateId ON a.StateId = j_StateId.StateId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
+    WHERE StandardReferenceItemId = a.SrEducationLevel
+) v_SrEducationLevel
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'FamilyRelation')
+    WHERE StandardReferenceItemId = a.SrFamilyRelation
+) v_SrFamilyRelation
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
+    WHERE StandardReferenceItemId = a.SrGender
+) v_SrGender
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
+    WHERE StandardReferenceItemId = a.SrMaritalStatus
+) v_SrMaritalStatus
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonFamilyId DESC";

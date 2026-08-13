@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonEmergencyContactByAdminAsync(Guid personEmergencyContactGuid, bool trackChanges);
 
         Task<IEnumerable<PersonEmergencyContactDto>> SearchPersonEmergencyContactAsync(
-            string? contactName, string? contactNameSearchType, string? srRelationship, string? srRelationshipSearchType, string? phone, string? phoneSearchType, string? isPrimary, string? isPrimarySearchType,
+            string? contactName, string? contactNameSearchType, string? phone, string? phoneSearchType, string? isPrimary, string? isPrimarySearchType,
             Guid personGuid, Guid personEmergencyContactGuid);
 
         // Detail (child) helpers

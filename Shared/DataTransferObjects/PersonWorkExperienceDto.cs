@@ -23,6 +23,8 @@ namespace Shared.DataTransferObjects
         public string? ReasonforLeaving { get; set; }
         public string? Remarks { get; set; }
 public string? PersonName { get; set; }
+public string? EmploymentTypeName { get; set; }
+public string? IndustryName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -82,12 +84,6 @@ public string? PersonName { get; set; }
 
     public partial class PersonWorkExperienceSearchDto
     {
-        public string? SrIndustry { get; set; }
-        public SearchType SrIndustrySearchType { get; set; } = SearchType.Contains;
-
-        public string? SrEmploymentType { get; set; }
-        public SearchType SrEmploymentTypeSearchType { get; set; } = SearchType.Contains;
-
         public string? CompanyName { get; set; }
         public SearchType CompanyNameSearchType { get; set; } = SearchType.Contains;
 

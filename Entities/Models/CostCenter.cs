@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("CostCenter", Schema = "app")]
-    public class CostCenter
+    public partial class CostCenter
     {
         [Column("CostCenterId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -29,6 +29,7 @@ namespace Entities.Models
         public int LevelDepth { get; set; }
 
         public string? HierarchyPath { get; set; }
+
 
 
 

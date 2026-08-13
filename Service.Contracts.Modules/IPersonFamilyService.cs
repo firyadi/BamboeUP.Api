@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonFamilyByAdminAsync(Guid personFamilyGuid, bool trackChanges);
 
         Task<IEnumerable<PersonFamilyDto>> SearchPersonFamilyAsync(
-            string? srFamilyRelation, string? srFamilyRelationSearchType, string? familyName, string? familyNameSearchType, string? dateBirth, string? dateBirthSearchType, string? srEducationLevel, string? srEducationLevelSearchType, string? address, string? addressSearchType, string? stateId, string? stateIdSearchType, string? cityId, string? cityIdSearchType, string? zipCode, string? zipCodeSearchType, string? phone, string? phoneSearchType, string? srMaritalStatus, string? srMaritalStatusSearchType, string? srGender, string? srGenderSearchType,
+            string? familyName, string? familyNameSearchType, string? dateBirth, string? dateBirthSearchType, string? address, string? addressSearchType, string? zipCode, string? zipCodeSearchType, string? phone, string? phoneSearchType,
             Guid personGuid, Guid personFamilyGuid);
 
         // Detail (child) helpers

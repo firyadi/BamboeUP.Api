@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("CostCenterAssignment", Schema = "app")]
-    public class CostCenterAssignment
+    public partial class CostCenterAssignment
     {
         [Column("CostCenterAssignmentId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,6 +17,8 @@ namespace Entities.Models
         public Guid CostCenterAssignmentGuid { get; set; } = Guid.NewGuid();
 
         [Required]
+        public long CostCenterManagerEmployeeId { get; set; }
+
         public long CostCenterId { get; set; }
 
         public long CompanyId { get; set; }
@@ -25,14 +27,16 @@ namespace Entities.Models
 
         public long? ProfitCenterId { get; set; }
 
-        public long? CostCenterManagerEmployeeId { get; set; }
-
         public byte BudgetControlType { get; set; }
 
         public DateTime EffectiveDate { get; set; }
 
         public DateTime? ExpiredDate { get; set; }
 
+public string? CostCenterName { get; set; }
+public string? CompanyName { get; set; }
+public string? CompanyOfficeName { get; set; }
+public string? ProfitCenterName { get; set; }
 
 
         [Column("StatusId")]

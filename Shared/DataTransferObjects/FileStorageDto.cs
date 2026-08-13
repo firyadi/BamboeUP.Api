@@ -55,6 +55,7 @@ public string? FileCategoryName { get; set; }
         public bool IsTemporary { get; set; }
         public string? Description { get; set; }
         public long CreatedById { get; set; } = 0;
+        public int StatusId { get; set; } = 1;
     }
 
     public partial record FileStorageForUpdateDto
@@ -76,6 +77,8 @@ public string? FileCategoryName { get; set; }
         public bool IsTemporary { get; set; }
         public string? Description { get; set; }
         public long UpdatedById { get; set; }
+        public int StatusId { get; set; }
+        public byte[]? RowVersion { get; set; }
     }
 
     public partial record FileStorageForDeleteDto

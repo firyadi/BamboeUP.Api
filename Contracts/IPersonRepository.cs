@@ -38,16 +38,6 @@ namespace Contracts
             string? birthDateSearchType,
             string? nationalIdNo,
             string? nationalIdNoSearchType,
-            string? srGender,
-            string? srGenderSearchType,
-            string? srReligion,
-            string? srReligionSearchType,
-            string? srSalutation,
-            string? srSalutationSearchType,
-            string? srBloodType,
-            string? srBloodTypeSearchType,
-            string? srMaritalStatus,
-            string? srMaritalStatusSearchType,
             IDbTransaction? transaction = null);
     }
 }

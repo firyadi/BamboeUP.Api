@@ -1,4 +1,4 @@
-﻿using Shared.DataTransferObjects;
+using Shared.DataTransferObjects;
 
 namespace Service.Contracts.Shell
 {
@@ -13,7 +13,12 @@ namespace Service.Contracts.Shell
         Task DeleteStandardReferenceByAdminAsync(Guid standardReferenceGuid, bool trackChanges);
 
         Task<IEnumerable<StandardReferenceDto>> SearchStandardReferenceAsync(
-            string? standardReferenceInitial, string? standardReferenceInitialSearchType, string? standardReferenceName, string? standardReferenceNameSearchType, string? note, string? noteSearchType, Guid companyGuid, Guid companyOfficeGuid
+            string? standardReferenceInitial, string? standardReferenceInitialSearchType,
+            string? standardReferenceName, string? standardReferenceNameSearchType,
+            string? note, string? noteSearchType,
+            string? standardReferenceItemInitial, string? standardReferenceItemInitialSearchType,
+            string? standardReferenceItemName, string? standardReferenceItemNameSearchType,
+            Guid companyGuid, Guid companyOfficeGuid
         );
 
     }

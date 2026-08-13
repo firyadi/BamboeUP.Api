@@ -87,7 +87,12 @@ namespace Presentation.Shell.Controllers
         public async Task<IActionResult> Search([FromQuery] StandardReferenceSearchDto input, [FromQuery] Guid companyGuid, [FromQuery] Guid companyOfficeGuid)
         {
             var result = await _service.StandardReferenceService.SearchStandardReferenceAsync(
-                input.StandardReferenceInitial, input.StandardReferenceInitialSearchType.ToString(), input.StandardReferenceName, input.StandardReferenceNameSearchType.ToString(), input.Description, input.DescriptionSearchType.ToString(), companyGuid, companyOfficeGuid
+                input.StandardReferenceInitial, input.StandardReferenceInitialSearchType.ToString(),
+                input.StandardReferenceName, input.StandardReferenceNameSearchType.ToString(),
+                input.Description, input.DescriptionSearchType.ToString(),
+                input.StandardReferenceItemInitial, input.StandardReferenceItemInitialSearchType.ToString(),
+                input.StandardReferenceItemName, input.StandardReferenceItemNameSearchType.ToString(),
+                companyGuid, companyOfficeGuid
             );
             return Ok(result);
         }

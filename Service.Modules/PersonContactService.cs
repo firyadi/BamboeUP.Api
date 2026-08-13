@@ -52,7 +52,8 @@ namespace Service.Modules
         {
             var entity = await _repository.PersonContact.GetPersonContactAsync(personContactGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonContactDto>();
+            var dto = entity.Adapt<PersonContactDto>();
+            return dto;
         }
 
         public async Task<PersonContactDto> CreatePersonContactAsync(Guid personGuid, PersonContactForCreationDto input)
@@ -163,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonContactDto>> SearchPersonContactAsync(
-            string? srContactType, string? srContactTypeSearchType, string? contactValue, string? contactValueSearchType, string? isPrimary, string? isPrimarySearchType, string? remark, string? remarkSearchType,
+            string? contactValue, string? contactValueSearchType, string? isPrimary, string? isPrimarySearchType, string? remark, string? remarkSearchType,
             Guid personGuid, Guid personContactGuid)
         {
             var data = await _repository.PersonContact.SearchPersonContactAsync(
-                srContactType, srContactTypeSearchType, contactValue, contactValueSearchType, isPrimary, isPrimarySearchType, remark, remarkSearchType, 
+                contactValue, contactValueSearchType, isPrimary, isPrimarySearchType, remark, remarkSearchType, 
                 personGuid, personContactGuid);
             return data.Adapt<IEnumerable<PersonContactDto>>();
         }

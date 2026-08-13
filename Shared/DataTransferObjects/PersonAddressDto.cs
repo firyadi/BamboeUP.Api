@@ -17,6 +17,7 @@ public string? CityName { get; set; }
 public string? CountryName { get; set; }
 public string? PersonName { get; set; }
 public string? ProvinceName { get; set; }
+public string? AddressTypeName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -58,9 +59,6 @@ public string? ProvinceName { get; set; }
 
     public partial class PersonAddressSearchDto
     {
-        public string? SrAddressType { get; set; }
-        public SearchType SrAddressTypeSearchType { get; set; } = SearchType.Contains;
-
         public string? Address { get; set; }
         public SearchType AddressSearchType { get; set; } = SearchType.Contains;
     }

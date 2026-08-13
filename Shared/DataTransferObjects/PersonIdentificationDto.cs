@@ -10,7 +10,8 @@ namespace Shared.DataTransferObjects
         public long PersonId { get; set; }
         public long SrIdentificationType { get; set; }
         public string IdentificationValue { get; set; } = string.Empty;
-public string? PersonName { get; set; }
+public string? FirstName { get; set; }
+public string? IdentificationTypeName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -46,9 +47,6 @@ public string? PersonName { get; set; }
 
     public partial class PersonIdentificationSearchDto
     {
-        public string? SrIdentificationType { get; set; }
-        public SearchType SrIdentificationTypeSearchType { get; set; } = SearchType.Contains;
-
         public string? IdentificationValue { get; set; }
         public SearchType IdentificationValueSearchType { get; set; } = SearchType.Contains;
     }

@@ -97,7 +97,7 @@ builder.Services.ConfigureSwagger();
 
 var app = builder.Build();
 
-app.UseExceptionHandler(_ => { });
+app.ConfigureExceptionHandler(app.Services.GetRequiredService<ILoggerManager>());
 
 if (app.Environment.IsProduction())
     app.UseHsts();

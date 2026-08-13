@@ -5,24 +5,18 @@ using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Threading.Tasks;
 
-namespace BamboeUp.Api.Controllers
+namespace Presentation.Modules.Controllers
 {
     [Route("api/awards")]
     [ApiController]
-    public partial class AwardsController : ControllerBase
+    public partial class AwardsController(IServiceModulesManager service) : ControllerBase
     {
-        private readonly IServiceModulesManager _service;
-
-        public AwardsController(IServiceModulesManager service)
-        {
-            _service = service;
-        }
 
         [HttpGet]
         [SwaggerOperation(Summary = "Get All")]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _service.AwardService.GetAllAwardsAsync(trackChanges: false);
+            var data = await service.AwardService.GetAllAwardsAsync(trackChanges: false);
             return Ok(data);
         }
 
@@ -30,7 +24,8 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Get By Guid")]
         public async Task<IActionResult> GetByGuid(Guid guid)
         {
-            var data = await _service.AwardService.GetAwardByGuidAsync(guid, trackChanges: false);
+            var data = await service.AwardService.GetAwardByGuidAsync(guid, trackChanges: false);
+            if (data is null) return NotFound();
             return Ok(data);
         }
 
@@ -38,7 +33,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Create")]
         public async Task<IActionResult> Create([FromBody] AwardForCreationDto input)
         {
-            var created = await _service.AwardService.CreateAwardAsync(input);
+            var created = await service.AwardService.CreateAwardAsync(input);
             return CreatedAtAction(nameof(GetByGuid), new { guid = created.AwardGuid }, created);
         }
 
@@ -46,7 +41,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Update")]
         public async Task<IActionResult> Update(Guid guid, [FromBody] AwardForUpdateDto input)
         {
-            await _service.AwardService.UpdateAwardAsync(guid, input, trackChanges: true);
+            await service.AwardService.UpdateAwardAsync(guid, input, trackChanges: true);
             return NoContent();
         }
 
@@ -54,7 +49,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Soft Delete")]
         public async Task<IActionResult> SoftDelete(Guid guid, [FromBody] AwardForDeleteDto input)
         {
-            await _service.AwardService.DeleteAwardAsync(guid, input, trackChanges: true);
+            await service.AwardService.DeleteAwardAsync(guid, input, trackChanges: true);
             return NoContent();
         }
 
@@ -62,7 +57,7 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Hard Delete (Admin)")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {
-            await _service.AwardService.DeleteAwardByAdminAsync(guid, trackChanges: false);
+            await service.AwardService.DeleteAwardByAdminAsync(guid, trackChanges: false);
             return NoContent();
         }
 
@@ -70,16 +65,14 @@ namespace BamboeUp.Api.Controllers
         [SwaggerOperation(Summary = "Search")]
         public async Task<IActionResult> Search([FromQuery] AwardSearchDto input)
         {
-            var result = await _service.AwardService.SearchAwardAsync(
+            var result = await service.AwardService.SearchAwardAsync(
                 input.AwardCode, input.AwardCodeSearchType.ToString(),
                 input.AwardName, input.AwardNameSearchType.ToString(),
-                input.SrAwardCriteria, input.SrAwardCriteriaSearchType.ToString(),
-                input.SrAwardType, input.SrAwardTypeSearchType.ToString(),
                 input.ValidFrom, input.ValidFromSearchType.ToString(),
                 input.Validto, input.ValidtoSearchType.ToString(),
                 input.AwardPrize, input.AwardPrizeSearchType.ToString(),
                 input.Note, input.NoteSearchType.ToString()
-
+                // ── FK Search pass-through ──
             );
             return Ok(result);
         }

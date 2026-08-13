@@ -7,3 +7,4 @@ namespace Shared.DataTransferObjects
         public required LoginContext Context { get; set; }
     }
 }
+

@@ -20,6 +20,7 @@ namespace BamboeUp.Api.Extensions
                     if (contextFeature != null)
                     {
                         logger.LogError($"Something went wrong: {contextFeature.Error}");
+                        Console.Error.WriteLine(contextFeature.Error);
 
                         await context.Response.WriteAsync(new ErrorDetails()
                         {

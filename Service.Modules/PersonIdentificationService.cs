@@ -52,7 +52,8 @@ namespace Service.Modules
         {
             var entity = await _repository.PersonIdentification.GetPersonIdentificationAsync(personIdentificationGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonIdentificationDto>();
+            var dto = entity.Adapt<PersonIdentificationDto>();
+            return dto;
         }
 
         public async Task<PersonIdentificationDto> CreatePersonIdentificationAsync(Guid personGuid, PersonIdentificationForCreationDto input)
@@ -163,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonIdentificationDto>> SearchPersonIdentificationAsync(
-            string? srIdentificationType, string? srIdentificationTypeSearchType, string? identificationValue, string? identificationValueSearchType,
+            string? identificationValue, string? identificationValueSearchType,
             Guid personGuid, Guid personIdentificationGuid)
         {
             var data = await _repository.PersonIdentification.SearchPersonIdentificationAsync(
-                srIdentificationType, srIdentificationTypeSearchType, identificationValue, identificationValueSearchType, 
+                identificationValue, identificationValueSearchType, 
                 personGuid, personIdentificationGuid);
             return data.Adapt<IEnumerable<PersonIdentificationDto>>();
         }

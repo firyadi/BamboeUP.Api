@@ -10,26 +10,27 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class CostCenterAssignmentRepository : ICostCenterAssignmentRepository
+    public partial class CostCenterAssignmentRepository(RepositoryContext context, IAuditService audit) : ICostCenterAssignmentRepository
     {
-        private readonly RepositoryContext _context;
-        private readonly IAuditService _audit;
-
-        public CostCenterAssignmentRepository(RepositoryContext context, IAuditService audit)
-        {
-            _context = context;
-            _audit = audit;
-        }
 
         public async Task<CostCenterAssignment?> GetCostCenterAssignmentAsync(Guid costCenterAssignmentGuid, bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
+, j_CostCenterManagerEmployeeId.CostCenterManagerEmployeeName AS CostCenterManagerEmployeeName
+, j_ProfitCenterId.ProfitCenterName AS ProfitCenterName
+
 
                 FROM [app].[CostCenterAssignment] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+LEFT JOIN [app].[Person] j_CostCenterManagerEmployeeId ON a.CostCenterManagerEmployeeId = j_CostCenterManagerEmployeeId.PersonId
+LEFT JOIN [app].[ProfitCenter] j_ProfitCenterId ON a.ProfitCenterId = j_ProfitCenterId.ProfitCenterId
 
                 WHERE a.CostCenterAssignmentGuid = @costCenterAssignmentGuid
                   AND a.StatusId > 0
@@ -37,49 +38,67 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
             return await connection.QuerySingleOrDefaultAsync<CostCenterAssignment>(sql, new { costCenterAssignmentGuid });
         }
 
-        public async Task<CostCenterAssignment?> GetByCostCenterGuidAndCostCenterAssignmentGuidAsync(Guid costCenterGuid, Guid costCenterAssignmentGuid)
+        public async Task<CostCenterAssignment?> GetByPersonGuidAndCostCenterAssignmentGuidAsync(Guid personGuid, Guid costCenterAssignmentGuid)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
+, j_CostCenterManagerEmployeeId.CostCenterManagerEmployeeName AS CostCenterManagerEmployeeName
+, j_ProfitCenterId.ProfitCenterName AS ProfitCenterName
+
 
                 FROM [app].[CostCenterAssignment] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+LEFT JOIN [app].[Person] j_CostCenterManagerEmployeeId ON a.CostCenterManagerEmployeeId = j_CostCenterManagerEmployeeId.PersonId
+LEFT JOIN [app].[ProfitCenter] j_ProfitCenterId ON a.ProfitCenterId = j_ProfitCenterId.ProfitCenterId
 
-                WHERE j_CostCenterId.CostCenterGuid = @costCenterGuid
+                WHERE j_CostCenterManagerEmployeeId.PersonGuid = @personGuid
                   AND a.CostCenterAssignmentGuid = @costCenterAssignmentGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
-            return await connection.QuerySingleOrDefaultAsync<CostCenterAssignment>(sql, new { costCenterGuid, costCenterAssignmentGuid });
+            return await connection.QuerySingleOrDefaultAsync<CostCenterAssignment>(sql, new { personGuid, costCenterAssignmentGuid });
         }
 
-        public async Task<IEnumerable<CostCenterAssignment>> GetAllByCostCenterGuidAsync(Guid costCenterGuid)
+        public async Task<IEnumerable<CostCenterAssignment>> GetAllByPersonGuidAsync(Guid personGuid)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
+, j_CostCenterManagerEmployeeId.CostCenterManagerEmployeeName AS CostCenterManagerEmployeeName
+, j_ProfitCenterId.ProfitCenterName AS ProfitCenterName
+
 
                 FROM [app].[CostCenterAssignment] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+LEFT JOIN [app].[Person] j_CostCenterManagerEmployeeId ON a.CostCenterManagerEmployeeId = j_CostCenterManagerEmployeeId.PersonId
+LEFT JOIN [app].[ProfitCenter] j_ProfitCenterId ON a.ProfitCenterId = j_ProfitCenterId.ProfitCenterId
 
-                WHERE j_CostCenterId.CostCenterGuid = @costCenterGuid
+                WHERE j_CostCenterManagerEmployeeId.PersonGuid = @personGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
                 ORDER BY a.CostCenterAssignmentId DESC";
-            return await connection.QueryAsync<CostCenterAssignment>(sql, new { costCenterGuid });
+            return await connection.QueryAsync<CostCenterAssignment>(sql, new { personGuid });
         }
 
         public async Task CreateCostCenterAssignmentAsync(CostCenterAssignment costCenterAssignment, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(costCenterAssignment);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 INSERT INTO [app].[CostCenterAssignment]
-                (CostCenterAssignmentGuid, CostCenterId, CreatedById, StatusId, CreatedTime, CompanyId, CompanyOfficeId, ProfitCenterId, CostCenterManagerEmployeeId, BudgetControlType, EffectiveDate, ExpiredDate)
+                (CostCenterAssignmentGuid, CostCenterManagerEmployeeId, CreatedById, StatusId, CreatedTime, [CostCenterId], [CompanyId], [CompanyOfficeId], [ProfitCenterId], [BudgetControlType], [EffectiveDate], [ExpiredDate])
                 VALUES
-                (@CostCenterAssignmentGuid, @CostCenterId, @CreatedById, @StatusId, @CreatedTime, @CompanyId, @CompanyOfficeId, @ProfitCenterId, @CostCenterManagerEmployeeId, @BudgetControlType, @EffectiveDate, @ExpiredDate);
+                (@CostCenterAssignmentGuid, @CostCenterManagerEmployeeId, @CreatedById, @StatusId, @CreatedTime, @CostCenterId, @CompanyId, @CompanyOfficeId, @ProfitCenterId, @BudgetControlType, @EffectiveDate, @ExpiredDate);
                 SELECT CAST(SCOPE_IDENTITY() as bigint);";
             costCenterAssignment.CostCenterAssignmentId = await conn.QuerySingleAsync<long>(sql, costCenterAssignment, transaction);
         }
@@ -87,17 +106,17 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         public async Task UpdateCostCenterAssignmentAsync(CostCenterAssignment costCenterAssignment, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(costCenterAssignment);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[CostCenterAssignment]
-                SET                     CostCenterId = @CostCenterId,
-                    CompanyId = @CompanyId,
-                    CompanyOfficeId = @CompanyOfficeId,
-                    ProfitCenterId = @ProfitCenterId,
-                    CostCenterManagerEmployeeId = @CostCenterManagerEmployeeId,
-                    BudgetControlType = @BudgetControlType,
-                    EffectiveDate = @EffectiveDate,
-                    ExpiredDate = @ExpiredDate,
+                SET                     [CostCenterManagerEmployeeId] = @CostCenterManagerEmployeeId,
+                    [CostCenterId] = @CostCenterId,
+                    [CompanyId] = @CompanyId,
+                    [CompanyOfficeId] = @CompanyOfficeId,
+                    [ProfitCenterId] = @ProfitCenterId,
+                    [BudgetControlType] = @BudgetControlType,
+                    [EffectiveDate] = @EffectiveDate,
+                    [ExpiredDate] = @ExpiredDate,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -108,7 +127,7 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         public async Task SoftDeleteCostCenterAssignmentAsync(CostCenterAssignment costCenterAssignment, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(costCenterAssignment, deletedBy);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"
                 UPDATE [app].[CostCenterAssignment]
                 SET StatusId = 0,
@@ -121,73 +140,41 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
 
         public async Task DeleteCostCenterAssignmentAsync(Guid costCenterAssignmentGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var conn = transaction?.Connection ?? context.CreateConnection();
             const string sql = @"DELETE FROM [app].[CostCenterAssignment] WHERE CostCenterAssignmentGuid = @costCenterAssignmentGuid";
             await conn.ExecuteAsync(sql, new { costCenterAssignmentGuid }, transaction);
         }
 
-        public async Task DeleteByCostCenterGuidAsync(Guid costCenterGuid, IDbTransaction? transaction = null)
+        public async Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[CostCenterAssignment] WHERE CostCenterId IN (SELECT CostCenterId FROM [app].[CostCenter] WHERE CostCenterGuid = @costCenterGuid)";
-            await conn.ExecuteAsync(sql, new { costCenterGuid }, transaction);
+            var conn = transaction?.Connection ?? context.CreateConnection();
+            const string sql = @"DELETE FROM [app].[CostCenterAssignment] WHERE CostCenterManagerEmployeeId IN (SELECT PersonId FROM [app].[Person] WHERE PersonGuid = @personGuid)";
+            await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
         public async Task<IEnumerable<CostCenterAssignment>> SearchCostCenterAssignmentAsync(
-            string? companyId,
-            string? companyIdSearchType,
-            string? companyOfficeId,
-            string? companyOfficeIdSearchType,
-            string? profitCenterId,
-            string? profitCenterIdSearchType,
-            string? costCenterManagerEmployeeId,
-            string? costCenterManagerEmployeeIdSearchType,
             string? budgetControlType,
             string? budgetControlTypeSearchType,
             string? effectiveDate,
             string? effectiveDateSearchType,
             string? expiredDate,
             string? expiredDateSearchType,
-            Guid costCenterGuid, Guid costCenterAssignmentGuid,
+            Guid personGuid, Guid costCenterAssignmentGuid,
             IDbTransaction? transaction = null)
         {
-            var connection = transaction?.Connection ?? _context.CreateConnection();
-            var whereClauses = new List<string> { "a.StatusId > 0", "a.DeletedTime IS NULL" };
+            var connection = transaction?.Connection ?? context.CreateConnection();
+            List<string> whereClauses = [ "a.StatusId > 0", "a.DeletedTime IS NULL" ];
             var parameters = new DynamicParameters();
 
-            if (costCenterGuid != Guid.Empty)
+            if (personGuid != Guid.Empty)
             {
-                whereClauses.Add("j_CostCenterId.CostCenterGuid = @costCenterGuid");
-                parameters.Add("@costCenterGuid", costCenterGuid);
+                whereClauses.Add("j_CostCenterManagerEmployeeId.PersonGuid = @personGuid");
+                parameters.Add("@personGuid", personGuid);
             }
             if (costCenterAssignmentGuid != Guid.Empty)
             {
                 whereClauses.Add("a.CostCenterAssignmentGuid = @costCenterAssignmentGuid");
                 parameters.Add("@costCenterAssignmentGuid", costCenterAssignmentGuid);
-            }
-
-            if (!string.IsNullOrWhiteSpace(companyId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyId", "@companyId", companyIdSearchType, parameters, "companyId", companyId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(companyOfficeId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeId", "@companyOfficeId", companyOfficeIdSearchType, parameters, "companyOfficeId", companyOfficeId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(profitCenterId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.ProfitCenterId", "@profitCenterId", profitCenterIdSearchType, parameters, "profitCenterId", profitCenterId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(costCenterManagerEmployeeId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CostCenterManagerEmployeeId", "@costCenterManagerEmployeeId", costCenterManagerEmployeeIdSearchType, parameters, "costCenterManagerEmployeeId", costCenterManagerEmployeeId);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(budgetControlType))
@@ -211,9 +198,18 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
             var sql = $@"
                 SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
 , j_CostCenterId.CostCenterName AS CostCenterName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
+, j_CostCenterManagerEmployeeId.CostCenterManagerEmployeeName AS CostCenterManagerEmployeeName
+, j_ProfitCenterId.ProfitCenterName AS ProfitCenterName
+
 
                 FROM [app].[CostCenterAssignment] a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+LEFT JOIN [app].[Person] j_CostCenterManagerEmployeeId ON a.CostCenterManagerEmployeeId = j_CostCenterManagerEmployeeId.PersonId
+LEFT JOIN [app].[ProfitCenter] j_ProfitCenterId ON a.ProfitCenterId = j_ProfitCenterId.ProfitCenterId
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.CostCenterAssignmentId DESC";

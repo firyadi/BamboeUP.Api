@@ -16,10 +16,12 @@ namespace Contracts
         
         Task<IEnumerable<StandardReference>> SearchStandardReferenceAsync(
             string? standardReferenceInitial, string? standardReferenceInitialSearchType,
-string? standardReferenceName, string? standardReferenceNameSearchType,
-string? note, string? noteSearchType,
-Guid companyGuid, Guid companyOfficeGuid,
-IDbTransaction? transaction = null);
+            string? standardReferenceName, string? standardReferenceNameSearchType,
+            string? note, string? noteSearchType,
+            string? standardReferenceItemInitial, string? standardReferenceItemInitialSearchType,
+            string? standardReferenceItemName, string? standardReferenceItemNameSearchType,
+            Guid companyGuid, Guid companyOfficeGuid,
+            IDbTransaction? transaction = null);
 
         // Detail helpers (only if entity has a parent)
         

@@ -21,8 +21,6 @@ namespace Contracts
         Task<IEnumerable<PersonEmergencyContact>> SearchPersonEmergencyContactAsync(
             string? contactName,
             string? contactNameSearchType,
-            string? srRelationship,
-            string? srRelationshipSearchType,
             string? phone,
             string? phoneSearchType,
             string? isPrimary,

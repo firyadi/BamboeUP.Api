@@ -24,6 +24,7 @@ namespace Entities.Models
         [Required]
         public string IdentificationValue { get; set; } = string.Empty;
 
+public string? IdentificationTypeName { get; set; }
 
 
         [Column("StatusId")]

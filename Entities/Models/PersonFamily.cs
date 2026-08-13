@@ -42,6 +42,12 @@ namespace Entities.Models
 
         public long? SrGender { get; set; }
 
+public string? CityName { get; set; }
+public string? EducationLevelName { get; set; }
+public string? FamilyRelationName { get; set; }
+public string? GenderName { get; set; }
+public string? MaritalStatusName { get; set; }
+public string? StateName { get; set; }
 
 
         [Column("StatusId")]

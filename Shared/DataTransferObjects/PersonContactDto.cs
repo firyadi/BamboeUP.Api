@@ -13,6 +13,7 @@ namespace Shared.DataTransferObjects
         public bool IsPrimary { get; set; }
         public string? Remark { get; set; }
 public string? PersonName { get; set; }
+public string? ContactTypeName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -52,9 +53,6 @@ public string? PersonName { get; set; }
 
     public partial class PersonContactSearchDto
     {
-        public string? SrContactType { get; set; }
-        public SearchType SrContactTypeSearchType { get; set; } = SearchType.Contains;
-
         public string? ContactValue { get; set; }
         public SearchType ContactValueSearchType { get; set; } = SearchType.Contains;
 

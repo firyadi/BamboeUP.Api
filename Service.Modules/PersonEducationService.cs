@@ -52,7 +52,8 @@ namespace Service.Modules
         {
             var entity = await _repository.PersonEducation.GetPersonEducationAsync(personEducationGuid, trackChanges);
             if (entity == null) return null;
-            return entity.Adapt<PersonEducationDto>();
+            var dto = entity.Adapt<PersonEducationDto>();
+            return dto;
         }
 
         public async Task<PersonEducationDto> CreatePersonEducationAsync(Guid personGuid, PersonEducationForCreationDto input)
@@ -163,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonEducationDto>> SearchPersonEducationAsync(
-            string? srEducationLevel, string? srEducationLevelSearchType, string? institutionName, string? institutionNameSearchType,
+            string? institutionName, string? institutionNameSearchType,
             Guid personGuid, Guid personEducationGuid)
         {
             var data = await _repository.PersonEducation.SearchPersonEducationAsync(
-                srEducationLevel, srEducationLevelSearchType, institutionName, institutionNameSearchType, 
+                institutionName, institutionNameSearchType, 
                 personGuid, personEducationGuid);
             return data.Adapt<IEnumerable<PersonEducationDto>>();
         }

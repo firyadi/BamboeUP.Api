@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Modules;
 using Shared.DataTransferObjects;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Presentation.Modules.Controllers
@@ -77,57 +75,9 @@ namespace Presentation.Modules.Controllers
                 input.BirthName, input.BirthNameSearchType.ToString(),
                 input.PlaceofBirth, input.PlaceofBirthSearchType.ToString(),
                 input.BirthDate, input.BirthDateSearchType.ToString(),
-                input.NationalIdNo, input.NationalIdNoSearchType.ToString(),
-                input.SrGender, input.SrGenderSearchType.ToString(),
-                input.SrReligion, input.SrReligionSearchType.ToString(),
-                input.SrSalutation, input.SrSalutationSearchType.ToString(),
-                input.SrBloodType, input.SrBloodTypeSearchType.ToString(),
-                input.SrMaritalStatus, input.SrMaritalStatusSearchType.ToString()
+                input.NationalIdNo, input.NationalIdNoSearchType.ToString()
                 // ── FK Search pass-through ──
             );
-            return Ok(result);
-        }
-
-        [HttpPost("{personGuid:guid}/photo")]
-        [SwaggerOperation(Summary = "Upload person photo via FileStorage")]
-        [RequestSizeLimit(20_000_000)]
-        public async Task<IActionResult> UploadPhoto(Guid personGuid, IFormFile file, CancellationToken cancellationToken)
-        {
-            if (file is null || file.Length == 0)
-                return BadRequest(FileOperationResult.Fail("File is required.", "VALIDATION", ["File is empty."]));
-
-            await using var stream = file.OpenReadStream();
-            var request = new FileUploadRequest
-            {
-                Content = stream,
-                OriginalFileName = file.FileName,
-                ContentType = file.ContentType,
-                Length = file.Length
-            };
-
-            var result = await service.PersonService.UploadPhotoAsync(personGuid, request, cancellationToken);
-            if (!result.Success)
-            {
-                if (string.Equals(result.ErrorCode, "NOT_FOUND", StringComparison.OrdinalIgnoreCase))
-                    return NotFound(result);
-                return BadRequest(result);
-            }
-
-            return Ok(result);
-        }
-
-        [HttpDelete("{personGuid:guid}/photo")]
-        [SwaggerOperation(Summary = "Remove person photo")]
-        public async Task<IActionResult> RemovePhoto(Guid personGuid, CancellationToken cancellationToken)
-        {
-            var result = await service.PersonService.RemovePhotoAsync(personGuid, deletePhysicalFile: true, cancellationToken);
-            if (!result.Success)
-            {
-                if (string.Equals(result.ErrorCode, "NOT_FOUND", StringComparison.OrdinalIgnoreCase))
-                    return NotFound(result);
-                return BadRequest(result);
-            }
-
             return Ok(result);
         }
     }

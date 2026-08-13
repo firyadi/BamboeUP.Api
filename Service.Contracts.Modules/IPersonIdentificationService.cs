@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonIdentificationByAdminAsync(Guid personIdentificationGuid, bool trackChanges);
 
         Task<IEnumerable<PersonIdentificationDto>> SearchPersonIdentificationAsync(
-            string? srIdentificationType, string? srIdentificationTypeSearchType, string? identificationValue, string? identificationValueSearchType,
+            string? identificationValue, string? identificationValueSearchType,
             Guid personGuid, Guid personIdentificationGuid);
 
         // Detail (child) helpers

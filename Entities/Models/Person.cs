@@ -50,6 +50,12 @@ namespace Entities.Models
 
         public long? FileStorageId { get; set; }
 
+public string? BloodTypeName { get; set; }
+public string? GenderName { get; set; }
+public string? MaritalStatusName { get; set; }
+public string? ReligionName { get; set; }
+public string? SalutationName { get; set; }
+
 
 
         [Column("StatusId")]

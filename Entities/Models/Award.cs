@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("Award", Schema = "app")]
-    public class Award
+    public partial class Award
     {
         [Column("AwardId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -22,8 +22,6 @@ namespace Entities.Models
         [Required]
         public string AwardName { get; set; } = string.Empty;
 
-        public long SrAwardCriteria { get; set; }
-
         public long SrAwardType { get; set; }
 
         public DateTime ValidFrom { get; set; }
@@ -33,6 +31,9 @@ namespace Entities.Models
         public string? AwardPrize { get; set; }
 
         public string? Note { get; set; }
+
+public string? AwardTypeName { get; set; }
+
 
 
         [Column("StatusId")]

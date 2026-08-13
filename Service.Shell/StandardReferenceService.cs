@@ -534,10 +534,20 @@ namespace Service.Shell
         }
 
         public async Task<IEnumerable<StandardReferenceDto>> SearchStandardReferenceAsync(
-            string? standardReferenceInitial, string? standardReferenceInitialSearchType, string? standardReferenceName, string? standardReferenceNameSearchType, string? note, string? noteSearchType, Guid companyGuid, Guid companyOfficeGuid)
+            string? standardReferenceInitial, string? standardReferenceInitialSearchType,
+            string? standardReferenceName, string? standardReferenceNameSearchType,
+            string? note, string? noteSearchType,
+            string? standardReferenceItemInitial, string? standardReferenceItemInitialSearchType,
+            string? standardReferenceItemName, string? standardReferenceItemNameSearchType,
+            Guid companyGuid, Guid companyOfficeGuid)
         {
             var data = await _repository.StandardReference.SearchStandardReferenceAsync(
-                standardReferenceInitial, standardReferenceInitialSearchType, standardReferenceName, standardReferenceNameSearchType, note, noteSearchType, companyGuid, companyOfficeGuid);
+                standardReferenceInitial, standardReferenceInitialSearchType,
+                standardReferenceName, standardReferenceNameSearchType,
+                note, noteSearchType,
+                standardReferenceItemInitial, standardReferenceItemInitialSearchType,
+                standardReferenceItemName, standardReferenceItemNameSearchType,
+                companyGuid, companyOfficeGuid);
             return data.Adapt<IEnumerable<StandardReferenceDto>>();
         }
     }

@@ -3,6 +3,8 @@ using Mapster;
 using Contracts;
 using Service.Contracts.Modules;
 using Service.Contracts.Shell;
+using ICompanyService = Service.Contracts.Modules.ICompanyService;
+using ICostCenterAssignmentService = Service.Contracts.Modules.ICostCenterAssignmentService;
 
 namespace Service.Modules;
 
@@ -21,7 +23,124 @@ public sealed class ServiceModulesManager : IServiceModulesManager
 
             private readonly Lazy<IHospitalService> _hospitalService;
 
+
+
+
+
+
+
+
+
+
+
+
+
+        private readonly Lazy<IPersonBankAccountService> _personBankAccountService;
+
+        private readonly Lazy<ISkillService> _skillService;
+
+        private readonly Lazy<ITrainingService> _trainingService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        private readonly Lazy<IAssetService> _assetService;
+
+        private readonly Lazy<ICertificationService> _certificationService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private readonly Lazy<IAwardService> _awardService;
+
+        private readonly Lazy<IAwardCriteriaService> _awardCriteriaService;
+
+        private readonly Lazy<IAwardCriteriaRuleService> _awardCriteriaRuleService;
+
+
+        private readonly Lazy<ICompanyService> _companyService;
+
+        private readonly Lazy<ICostCenterAssignmentService> _costCenterAssignmentService;
+
+
+
+
+
+
+
+
 
         private readonly Lazy<IPersonService> _personService;
 
@@ -41,6 +160,24 @@ public sealed class ServiceModulesManager : IServiceModulesManager
 
         private readonly Lazy<IPersonWorkExperienceService> _personWorkExperienceService;
 
+        private readonly Lazy<IEmployeeService> _employeeService;
+
+        private readonly Lazy<IEmployeeAssetService> _employeeAssetService;
+
+        private readonly Lazy<IEmployeeAssignmentService> _employeeAssignmentService;
+
+        private readonly Lazy<IEmployeeCareerService> _employeeCareerService;
+
+        private readonly Lazy<IEmployeeCertificationService> _employeeCertificationService;
+
+        private readonly Lazy<IEmployeeContractService> _employeeContractService;
+
+        private readonly Lazy<IEmployeeLanguageService> _employeeLanguageService;
+
+        private readonly Lazy<IEmployeeSkillService> _employeeSkillService;
+
+        private readonly Lazy<IEmployeeTrainingService> _employeeTrainingService;
+
 public ServiceModulesManager(
         IRepositoryManager repositoryManager,
         ILoggerManager logger,
@@ -49,6 +186,15 @@ public ServiceModulesManager(
         IUserContext userContext,
         IServiceShellManager shellManager)
     {
+            _employeeTrainingService = new Lazy<IEmployeeTrainingService>(() => new EmployeeTrainingService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _employeeSkillService = new Lazy<IEmployeeSkillService>(() => new EmployeeSkillService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _employeeLanguageService = new Lazy<IEmployeeLanguageService>(() => new EmployeeLanguageService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _employeeContractService = new Lazy<IEmployeeContractService>(() => new EmployeeContractService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _employeeCertificationService = new Lazy<IEmployeeCertificationService>(() => new EmployeeCertificationService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _employeeCareerService = new Lazy<IEmployeeCareerService>(() => new EmployeeCareerService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _employeeAssignmentService = new Lazy<IEmployeeAssignmentService>(() => new EmployeeAssignmentService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _employeeAssetService = new Lazy<IEmployeeAssetService>(() => new EmployeeAssetService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personWorkExperienceService = new Lazy<IPersonWorkExperienceService>(() => new PersonWorkExperienceService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personPhysicalCharacteristicService = new Lazy<IPersonPhysicalCharacteristicService>(() => new PersonPhysicalCharacteristicService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personFamilyService = new Lazy<IPersonFamilyService>(() => new PersonFamilyService(repositoryManager, logger, transactionManager, auditService, userContext));
@@ -58,7 +204,16 @@ public ServiceModulesManager(
             _personIdentificationService = new Lazy<IPersonIdentificationService>(() => new PersonIdentificationService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personAddressService = new Lazy<IPersonAddressService>(() => new PersonAddressService(repositoryManager, logger, transactionManager, auditService, userContext));
             _personService = new Lazy<IPersonService>(() => new PersonService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _costCenterAssignmentService = new Lazy<ICostCenterAssignmentService>(() => new CostCenterAssignmentService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _awardCriteriaRuleService = new Lazy<IAwardCriteriaRuleService>(() => new AwardCriteriaRuleService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _awardCriteriaService = new Lazy<IAwardCriteriaService>(() => new AwardCriteriaService(repositoryManager, logger, transactionManager, auditService, userContext));
             _awardService = new Lazy<IAwardService>(() => new AwardService(repositoryManager, logger, transactionManager, auditService, userContext));
+            _certificationService = new Lazy<ICertificationService>(() => new CertificationService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _assetService = new Lazy<IAssetService>(() => new AssetService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _trainingService = new Lazy<ITrainingService>(() => new TrainingService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _skillService = new Lazy<ISkillService>(() => new SkillService(repositoryManager, logger, transactionManager, auditService, userContext, shellManager.FileStorageService));
+            _personBankAccountService = new Lazy<IPersonBankAccountService>(() => new PersonBankAccountService(repositoryManager, logger, transactionManager, auditService, userContext));
             _hospitalService = new Lazy<IHospitalService>(() => new HospitalService(repositoryManager, logger, transactionManager, auditService, userContext));
         _bankService = new Lazy<IBankService>(() =>
             new BankService(repositoryManager, logger, transactionManager, auditService, userContext));
@@ -75,7 +230,7 @@ public ServiceModulesManager(
         _postalCodeService = new Lazy<IPostalCodeService>(() =>
             new PostalCodeService(repositoryManager, logger, transactionManager));
         _holidayService = new Lazy<IHolidayService>(() =>
-            new HolidayService(repositoryManager, logger, transactionManager));
+            new HolidayService(repositoryManager, logger, transactionManager, auditService, userContext));
         _administrativeAreaDisplayService = new Lazy<IAdministrativeAreaDisplayService>(() =>
             new AdministrativeAreaDisplayService(repositoryManager));
         _standardReferenceItemDisplayService = new Lazy<IStandardReferenceItemDisplayService>(() =>
@@ -93,7 +248,16 @@ public ServiceModulesManager(
     public IAdministrativeAreaDisplayService AdministrativeAreaDisplayService => _administrativeAreaDisplayService.Value;
     public IStandardReferenceItemDisplayService StandardReferenceItemDisplayService => _standardReferenceItemDisplayService.Value;
         public IHospitalService HospitalService => _hospitalService.Value;
+        public IPersonBankAccountService PersonBankAccountService => _personBankAccountService.Value;
+        public ISkillService SkillService => _skillService.Value;
+        public ITrainingService TrainingService => _trainingService.Value;
+        public IAssetService AssetService => _assetService.Value;
+        public ICertificationService CertificationService => _certificationService.Value;
         public IAwardService AwardService => _awardService.Value;
+        public IAwardCriteriaService AwardCriteriaService => _awardCriteriaService.Value;
+        public IAwardCriteriaRuleService AwardCriteriaRuleService => _awardCriteriaRuleService.Value;
+        public ICompanyService CompanyService => _companyService.Value;
+        public ICostCenterAssignmentService CostCenterAssignmentService => _costCenterAssignmentService.Value;
         public IPersonService PersonService => _personService.Value;
         public IPersonAddressService PersonAddressService => _personAddressService.Value;
         public IPersonIdentificationService PersonIdentificationService => _personIdentificationService.Value;
@@ -103,4 +267,13 @@ public ServiceModulesManager(
         public IPersonFamilyService PersonFamilyService => _personFamilyService.Value;
         public IPersonPhysicalCharacteristicService PersonPhysicalCharacteristicService => _personPhysicalCharacteristicService.Value;
         public IPersonWorkExperienceService PersonWorkExperienceService => _personWorkExperienceService.Value;
+        public IEmployeeService EmployeeService => _employeeService.Value;
+        public IEmployeeAssetService EmployeeAssetService => _employeeAssetService.Value;
+        public IEmployeeAssignmentService EmployeeAssignmentService => _employeeAssignmentService.Value;
+        public IEmployeeCareerService EmployeeCareerService => _employeeCareerService.Value;
+        public IEmployeeCertificationService EmployeeCertificationService => _employeeCertificationService.Value;
+        public IEmployeeContractService EmployeeContractService => _employeeContractService.Value;
+        public IEmployeeLanguageService EmployeeLanguageService => _employeeLanguageService.Value;
+        public IEmployeeSkillService EmployeeSkillService => _employeeSkillService.Value;
+        public IEmployeeTrainingService EmployeeTrainingService => _employeeTrainingService.Value;
 }
