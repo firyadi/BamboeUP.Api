@@ -2,9 +2,13 @@
 
 Dokumen ini merupakan panduan arsitektur dan cetak biru (blueprint) lengkap untuk pembuatan API baru di proyek **BamboeUp.Api**. Dokumentasi ini didasarkan pada analisis kode riil dari entitas **Bank** (Kasus 1 Tabel) serta **Company & CompanyOffice** (Kasus Header-Detail).
 
+> **Sumber generate resmi:** SchemaStudio `Templates/Api/*.md` (SS-PG3 dialect-aware).
+> Repository baru **wajib** inject `ISqlDialect` dan memakai `SqlDialectQueryHelper` / `BuildFilter(..., dialect)` — jangan copy pola lama `SELECT TOP` / `SCOPE_IDENTITY` / `fn_GetStandardReferenceItems` dari contoh historis di bawah.
+> Mirror docs: [Document/Template/TemplateApi1Table.md](Document/Template/TemplateApi1Table.md).
+
 ---
 
-## 🏗️ Struktur Arsitektur & Alur Data
+## Struktur Arsitektur & Alur Data
 Proyek ini menggunakan arsitektur berlapis (Clean Architecture/Onion style) dengan data access menggunakan **Dapper** (Raw SQL) dan pemetaan objek menggunakan **Mapster**. Dependency Injection dikelola secara terpusat melalui class **Manager** (`RepositoryManager`, `ServiceShellManager`, `ServiceModulesManager`) yang diinstansiasi secara *lazy-loaded* (`Lazy<T>`) untuk menghindari pembengkakan constructor.
 
 Untuk mendukung generator kode otomatis (*code generator*) tanpa menimpa kode kustom, **seluruh kelas repository, service, dan controller serta interface mereka dideklarasikan sebagai `partial`**.
@@ -16,13 +20,13 @@ graph TD
     ServiceImpl -->|Mapping| Mapster[Mapster DTO to Entity]
     ServiceImpl -->|Transaksi & Query| RepoManager[RepositoryManager / Lazy Repositories]
     RepoManager -->|Query/Execute| RepoImpl[Repository Implementation]
-    RepoImpl -->|Koneksi SQL| RepoContext[RepositoryContext - SqlConnection]
-    RepoImpl -->|Filter Dinamis| SqlFilter[SqlFilterHelper / SqlScopeHelper]
+    RepoImpl -->|Koneksi SQL| RepoContext[RepositoryContext + ISqlDialect]
+    RepoImpl -->|Filter Dinamis| SqlFilter[SqlFilterHelper + dialect]
 ```
 
 ---
 
-## 🧩 Pola Kustomisasi Partial (Partial Extension Pattern)
+## Pola Kustomisasi Partial (Partial Extension Pattern)
 Semua class generator dideklarasikan dengan kata kunci `partial`. Untuk menambahkan kode kustom (seperti query tambahan, method bisnis baru, atau endpoint API baru), developer tidak boleh mengubah file generator. Sebaliknya, gunakan subfolder `Custom/` di masing-masing layer dengan namespace yang sama.
 
 ### Aturan Utama Partial:

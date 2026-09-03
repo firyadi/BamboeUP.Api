@@ -272,7 +272,7 @@ namespace Service.Shell
 
             var data = await _repository.Company.SearchCompanyAsync(
                 companyName, companyNameSearchType, initialName, initialNameSearchType, taxCompulsionNo, taxCompulsionNoSearchType, registrationNo, registrationNoSearchType, defaultCurrency, defaultCurrencySearchType,
-                null, null, Guid.Empty, Guid.Empty);
+                null, null);
 
             return data
                 .Where(c => accessibleIds.Contains(c.CompanyId))

@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,25 +11,23 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class PersonEmergencyContactRepository(RepositoryContext context, IAuditService audit) : IPersonEmergencyContactRepository
+    public partial class PersonEmergencyContactRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonEmergencyContactRepository
     {
+        private readonly string _table = dialect.Qualify("app", "PersonEmergencyContact");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<PersonEmergencyContact?> GetPersonEmergencyContactAsync(Guid personEmergencyContactGuid, bool trackChanges)
+public async Task<PersonEmergencyContact?> GetPersonEmergencyContactAsync(Guid personEmergencyContactGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRelationship.StandardReferenceItemName")} AS RelationshipName
 
 
-                FROM [app].[PersonEmergencyContact] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
-    WHERE StandardReferenceItemId = a.SrRelationship
-) v_SrRelationship
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRelationship", "SrRelationship", "Relationship")}
 
                 WHERE a.PersonEmergencyContactGuid = @personEmergencyContactGuid
                   AND a.StatusId > 0
@@ -40,18 +39,14 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRelationship.StandardReferenceItemName")} AS RelationshipName
 
 
-                FROM [app].[PersonEmergencyContact] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
-    WHERE StandardReferenceItemId = a.SrRelationship
-) v_SrRelationship
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRelationship", "SrRelationship", "Relationship")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonEmergencyContactGuid = @personEmergencyContactGuid
@@ -64,23 +59,19 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRelationship.StandardReferenceItemName")} AS RelationshipName
 
 
-                FROM [app].[PersonEmergencyContact] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
-    WHERE StandardReferenceItemId = a.SrRelationship
-) v_SrRelationship
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRelationship", "SrRelationship", "Relationship")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.PersonEmergencyContactId DESC";
+                ORDER BY a.PersonEmergencyContactId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<PersonEmergencyContact>(sql, new { personGuid });
         }
 
@@ -88,12 +79,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(personEmergencyContact);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[PersonEmergencyContact]
+            var sql = $@"
+                INSERT INTO {_table}
                 (PersonEmergencyContactGuid, PersonId, CreatedById, StatusId, CreatedTime, [ContactName], [SrRelationship], [Phone], [IsPrimary])
                 VALUES
-                (@PersonEmergencyContactGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @ContactName, @SrRelationship, @Phone, @IsPrimary);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@PersonEmergencyContactGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @ContactName, @SrRelationship, @Phone, @IsPrimary){dialect.ReturnIdentitySuffix("PersonEmergencyContactId")}";
             personEmergencyContact.PersonEmergencyContactId = await conn.QuerySingleAsync<long>(sql, personEmergencyContact, transaction);
         }
 
@@ -101,8 +91,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(personEmergencyContact);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonEmergencyContact]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [PersonId] = @PersonId,
                     [ContactName] = @ContactName,
                     [SrRelationship] = @SrRelationship,
@@ -119,8 +109,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(personEmergencyContact, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonEmergencyContact]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -132,14 +122,14 @@ OUTER APPLY (
         public async Task DeletePersonEmergencyContactAsync(Guid personEmergencyContactGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonEmergencyContact] WHERE PersonEmergencyContactGuid = @personEmergencyContactGuid";
+            var sql = $@"DELETE FROM {_table} WHERE PersonEmergencyContactGuid = @personEmergencyContactGuid";
             await conn.ExecuteAsync(sql, new { personEmergencyContactGuid }, transaction);
         }
 
         public async Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonEmergencyContact] WHERE PersonId IN (SELECT PersonId FROM [app].[Person] WHERE PersonGuid = @personGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE PersonId IN (SELECT PersonId FROM {dialect.Qualify("app", "Person")} WHERE PersonGuid = @personGuid)";
             await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
@@ -170,38 +160,34 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(contactName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ContactName", "@contactName", contactNameSearchType, parameters, "contactName", contactName);
+                var param = SqlFilterHelper.BuildFilter("a.ContactName", "@contactName", contactNameSearchType, parameters, "contactName", contactName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(phone))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Phone", "@phone", phoneSearchType, parameters, "phone", phone);
+                var param = SqlFilterHelper.BuildFilter("a.Phone", "@phone", phoneSearchType, parameters, "phone", phone, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isPrimary))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary);
+                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrRelationship.StandardReferenceItemName, '') AS RelationshipName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRelationship.StandardReferenceItemName")} AS RelationshipName
 
 
-                FROM [app].[PersonEmergencyContact] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Relationship')
-    WHERE StandardReferenceItemId = a.SrRelationship
-) v_SrRelationship
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRelationship", "SrRelationship", "Relationship")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.PersonEmergencyContactId DESC";
+                ORDER BY a.PersonEmergencyContactId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<PersonEmergencyContact>(sql, parameters, transaction);
         }

@@ -4,6 +4,7 @@ using Dapper;
 using Entities.Models;
 using System.Data;
 using System.Text;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -12,19 +13,25 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public PostalCodeRepository(RepositoryContext context, IAuditService auditService)
+
+        public PostalCodeRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
             _auditService = auditService;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "PostalCode");
         }
 
         public async Task<PostalCode?> GetPostalCodeAsync(Guid subDistrictGuid, Guid postalCodeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            const string sql = @"
+            var sql = $@"
                 SELECT p.PostalCodeId, p.PostalCodeGuid, p.SubDistrictId, p.PostalCode AS PostalCodeValue, p.StatusId, p.RowVersion, p.CreatedById, p.CreatedTime, p.UpdatedById, p.UpdatedTime, p.DeletedById, p.DeletedTime 
-                FROM [core].[PostalCode] p
+                FROM {_table} p
                 INNER JOIN [core].[SubDistrict] s ON p.SubDistrictId = s.SubDistrictId
                 WHERE p.PostalCodeGuid = @postalCodeGuid AND s.SubDistrictGuid = @subDistrictGuid AND p.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<PostalCode>(sql, new { postalCodeGuid, subDistrictGuid });
@@ -33,9 +40,9 @@ namespace Repository
         public async Task<IEnumerable<PostalCode>> GetAllPostalCodesAsync(Guid subDistrictGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            const string sql = @"
+            var sql = $@"
                 SELECT p.PostalCodeId, p.PostalCodeGuid, p.SubDistrictId, p.PostalCode AS PostalCodeValue, p.StatusId, p.RowVersion, p.CreatedById, p.CreatedTime, p.UpdatedById, p.UpdatedTime, p.DeletedById, p.DeletedTime
-                FROM [core].[PostalCode] p
+                FROM {_table} p
                 INNER JOIN [core].[SubDistrict] s ON p.SubDistrictId = s.SubDistrictId
                 WHERE s.SubDistrictGuid = @subDistrictGuid AND p.StatusId > 0 AND p.DeletedTime IS NULL
                 ORDER BY p.PostalCodeId DESC";
@@ -47,7 +54,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(postalCode);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[PostalCode]
+            var sql = $@"INSERT INTO {_table}
                                  (PostalCodeGuid, PostalCode, SubDistrictId, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@PostalCodeGuid, @PostalCodeValue, @SubDistrictId, @StatusId, @CreatedById, @CreatedTime)";
@@ -67,10 +74,10 @@ namespace Repository
             AuditTimestampHelper.StampUpdate(postalCode);
             var conn = transaction?.Connection ?? _context.CreateConnection();
             
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[PostalCode] WHERE PostalCodeGuid = @PostalCodeGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE PostalCodeGuid = @PostalCodeGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<PostalCode>(getSql, new { postalCode.PostalCodeGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[PostalCode]
+            var sql = $@"UPDATE {_table}
                                  SET PostalCode = @PostalCodeValue,
                                      StatusId = @StatusId,
                                      UpdatedById = @UpdatedById,
@@ -91,10 +98,10 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(postalCode, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[PostalCode] WHERE PostalCodeGuid = @PostalCodeGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE PostalCodeGuid = @PostalCodeGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<PostalCode>(getSql, new { postalCode.PostalCodeGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[PostalCode]
+            var sql = $@"UPDATE {_table}
                          SET StatusId = 0,
                              DeletedById = @DeletedById,
                              DeletedTime = @DeletedTime
@@ -114,10 +121,10 @@ namespace Repository
         public async Task DeletePostalCodeAsync(Guid postalCodeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[PostalCode] WHERE PostalCodeGuid = @PostalCodeGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE PostalCodeGuid = @PostalCodeGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<PostalCode>(getSql, new { postalCodeGuid }, transaction);
 
-            const string sql = @"DELETE FROM [core].[PostalCode]
+            var sql = $@"DELETE FROM {_table}
                                  WHERE PostalCodeGuid = @postalCodeGuid";
             await conn.ExecuteAsync(sql, new { postalCodeGuid }, transaction);
 
@@ -149,16 +156,16 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(postalCodeValue))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PostalCode", "@postalCodeValue", postalCodeValueSearchType, parameters, "postalCodeValue", postalCodeValue);
+                var param = SqlFilterHelper.BuildFilter("a.PostalCode", "@postalCodeValue", postalCodeValueSearchType, parameters, "postalCodeValue", postalCodeValue, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
             SELECT a.PostalCodeId, a.PostalCodeGuid, a.SubDistrictId, a.PostalCode AS PostalCodeValue, a.StatusId, a.RowVersion, a.CreatedById, a.CreatedTime, a.UpdatedById, a.UpdatedTime, a.DeletedById, a.DeletedTime
-            FROM [core].[PostalCode] a
+            FROM {_table} a
             INNER JOIN [core].[SubDistrict] s ON a.SubDistrictId = s.SubDistrictId
             WHERE {string.Join(" AND ", whereClauses)}
-            ORDER BY a.PostalCodeId DESC";
+            ORDER BY a.PostalCodeId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<PostalCode>(sql, parameters, transaction);
         }

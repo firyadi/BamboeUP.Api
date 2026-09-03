@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts.Approval;
 using Dapper;
 using Entities.Models.Approval;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,27 @@ namespace Repository.Approval
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public ApprovalTemplateRepository(RepositoryContext context, IAuditService auditService)
+        public ApprovalTemplateRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _auditService = auditService;
         }
 
         public async Task<ApprovalTemplate?> GetAsync(Guid guid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [apv].[ApprovalTemplate] WHERE ApprovalTemplateGuid = @guid AND StatusId > 0 AND DeletedTime IS NULL";
+            var sql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("apv", "ApprovalTemplate")} WHERE ApprovalTemplateGuid = @guid AND StatusId > 0 AND DeletedTime IS NULL";
             return await connection.QuerySingleOrDefaultAsync<ApprovalTemplate>(sql, new { guid });
         }
 
         public async Task<IEnumerable<ApprovalTemplate>> GetAllAsync(bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [apv].[ApprovalTemplate] WHERE StatusId > 0 AND DeletedTime IS NULL ORDER BY TemplateName";
+            var sql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("apv", "ApprovalTemplate")} WHERE StatusId > 0 AND DeletedTime IS NULL ORDER BY TemplateName";
             return await connection.QueryAsync<ApprovalTemplate>(sql);
         }
 
@@ -39,12 +43,11 @@ namespace Repository.Approval
         {
             AuditTimestampHelper.StampCreate(template);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [apv].[ApprovalTemplate]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("apv", "ApprovalTemplate")}
                 (ApprovalTemplateGuid, TemplateName, ModuleCode, Description, IsActive, StatusId, CreatedById, CreatedTime)
-                OUTPUT INSERTED.ApprovalTemplateId
                 VALUES
-                (@ApprovalTemplateGuid, @TemplateName, @ModuleCode, @Description, @IsActive, @StatusId, @CreatedById, @CreatedTime)";
+                (@ApprovalTemplateGuid, @TemplateName, @ModuleCode, @Description, @IsActive, @StatusId, @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("ApprovalTemplateId")}";
             
             template.ApprovalTemplateId = await conn.ExecuteScalarAsync<long>(sql, template, transaction);
 
@@ -55,8 +58,8 @@ namespace Repository.Approval
         {
             AuditTimestampHelper.StampUpdate(template);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [apv].[ApprovalTemplate]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("apv", "ApprovalTemplate")}
                 SET TemplateName = @TemplateName, ModuleCode = @ModuleCode, Description = @Description, 
                     IsActive = @IsActive, StatusId = @StatusId, UpdatedById = @UpdatedById, UpdatedTime = @UpdatedTime
                 WHERE ApprovalTemplateId = @ApprovalTemplateId";
@@ -69,8 +72,8 @@ namespace Repository.Approval
         {
             AuditTimestampHelper.StampSoftDelete(template, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [apv].[ApprovalTemplate]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("apv", "ApprovalTemplate")}
                 SET StatusId = 0, DeletedById = @DeletedById, DeletedTime = @DeletedTime
                 WHERE ApprovalTemplateId = @ApprovalTemplateId";
             
@@ -81,7 +84,7 @@ namespace Repository.Approval
         public async Task DeleteAsync(Guid guid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = "DELETE FROM [apv].[ApprovalTemplate] WHERE ApprovalTemplateGuid = @guid";
+            var sql = $"DELETE FROM {_dialect.Qualify("apv", "ApprovalTemplate")} WHERE ApprovalTemplateGuid = @guid";
             await conn.ExecuteAsync(sql, new { guid }, transaction);
         }
     }

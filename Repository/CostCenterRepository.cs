@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,19 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class CostCenterRepository(RepositoryContext context, IAuditService audit) : ICostCenterRepository
+    public partial class CostCenterRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : ICostCenterRepository
     {
+        private readonly string _table = dialect.Qualify("app", "CostCenter");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
         public async Task<CostCenter?> GetCostCenterAsync(Guid costCenterGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[CostCenter] a
+                FROM {_table} a
 
                 WHERE a.CostCenterGuid = @costCenterGuid
                   AND a.StatusId > 0
@@ -32,10 +35,10 @@ namespace Repository
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[CostCenter] a
+                FROM {_table} a
 
                 WHERE a.CostCenterId = @costCenterId
                   AND a.StatusId > 0
@@ -47,13 +50,13 @@ namespace Repository
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[CostCenter] a
+                FROM {_table} a
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.CostCenterId DESC";
+                ORDER BY a.CostCenterId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<CostCenter>(sql);
         }
 
@@ -61,12 +64,12 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(costCenter);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[CostCenter]
+            var sql = $@"
+                INSERT INTO {_table}
                 (CostCenterGuid, CreatedById, StatusId, CreatedTime, CostCenterCode, CostCenterName, CostCenterDescription, ParentCostCenterId, LevelDepth, HierarchyPath)
                 VALUES
                 (@CostCenterGuid, @CreatedById, @StatusId, @CreatedTime, @CostCenterCode, @CostCenterName, @CostCenterDescription, @ParentCostCenterId, @LevelDepth, @HierarchyPath);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {dialect.ReturnIdentitySuffix("CostCenterId")}";
             costCenter.CostCenterId = await conn.QuerySingleAsync<long>(sql, costCenter, transaction);
         }
 
@@ -74,8 +77,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampUpdate(costCenter);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[CostCenter]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     CostCenterCode = @CostCenterCode,
                     CostCenterName = @CostCenterName,
                     CostCenterDescription = @CostCenterDescription,
@@ -93,8 +96,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(costCenter, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[CostCenter]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -106,7 +109,7 @@ namespace Repository
         public async Task DeleteCostCenterAsync(Guid costCenterGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[CostCenter] WHERE CostCenterGuid = @costCenterGuid";
+            var sql = $@"DELETE FROM {_table} WHERE CostCenterGuid = @costCenterGuid";
             await conn.ExecuteAsync(sql, new { costCenterGuid }, transaction);
         }
 
@@ -131,50 +134,50 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(costCenterCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CostCenterCode", "@costCenterCode", costCenterCodeSearchType, parameters, "costCenterCode", costCenterCode);
+                var param = SqlFilterHelper.BuildFilter("a.CostCenterCode", "@costCenterCode", costCenterCodeSearchType, parameters, "costCenterCode", costCenterCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(costCenterName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CostCenterName", "@costCenterName", costCenterNameSearchType, parameters, "costCenterName", costCenterName);
+                var param = SqlFilterHelper.BuildFilter("a.CostCenterName", "@costCenterName", costCenterNameSearchType, parameters, "costCenterName", costCenterName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(costCenterDescription))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CostCenterDescription", "@costCenterDescription", costCenterDescriptionSearchType, parameters, "costCenterDescription", costCenterDescription);
+                var param = SqlFilterHelper.BuildFilter("a.CostCenterDescription", "@costCenterDescription", costCenterDescriptionSearchType, parameters, "costCenterDescription", costCenterDescription, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(parentCostCenterId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ParentCostCenterId", "@parentCostCenterId", parentCostCenterIdSearchType, parameters, "parentCostCenterId", parentCostCenterId);
+                var param = SqlFilterHelper.BuildFilter("a.ParentCostCenterId", "@parentCostCenterId", parentCostCenterIdSearchType, parameters, "parentCostCenterId", parentCostCenterId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(levelDepth))
             {
-                var param = SqlFilterHelper.BuildFilter("a.LevelDepth", "@levelDepth", levelDepthSearchType, parameters, "levelDepth", levelDepth);
+                var param = SqlFilterHelper.BuildFilter("a.LevelDepth", "@levelDepth", levelDepthSearchType, parameters, "levelDepth", levelDepth, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(hierarchyPath))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HierarchyPath", "@hierarchyPath", hierarchyPathSearchType, parameters, "hierarchyPath", hierarchyPath);
+                var param = SqlFilterHelper.BuildFilter("a.HierarchyPath", "@hierarchyPath", hierarchyPathSearchType, parameters, "hierarchyPath", hierarchyPath, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[CostCenter] a
+                FROM {_table} a
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.CostCenterId DESC";
+                ORDER BY a.CostCenterId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<CostCenter>(sql, parameters, transaction);
         }

@@ -126,7 +126,7 @@ namespace Service.Shell
                 throw new KeyNotFoundException($"CompanyOffice with GUID {companyOfficeGuid} not found.");
             await _userScope.EnsureCanAccessCompanyAsync(oldOffice.CompanyId);
             var model = new CompanyOffice { CompanyOfficeGuid = companyOfficeGuid };
-            await _repository.CompanyOffice.SoftDeleteCompanyOfficeAsync(model, input.DeletedById ?? 0);
+            await _repository.CompanyOffice.SoftDeleteCompanyOfficeAsync(model, input.DeletedById);
 
             await _audit.LogSessionAsync(new AuditSessionInput
             {
@@ -134,7 +134,7 @@ namespace Service.Shell
                 RootTableName = "CompanyOffice",
                 RootEntityKey = companyOfficeGuid.ToString(),
                 RootDisplayName = oldOffice?.CompanyOfficeName,
-                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : (input.DeletedById ?? 0).ToString(),
+                UserId = _userContext.UserGuid != Guid.Empty ? _userContext.UserGuid.ToString() : input.DeletedById.ToString(),
                 Entries = new()
                 {
                     new AuditLogEntry

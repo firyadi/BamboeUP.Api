@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts.Approval;
 using Dapper;
 using Entities.Models.Approval;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,27 @@ namespace Repository.Approval
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public ApprovalRequestRepository(RepositoryContext context, IAuditService auditService)
+        public ApprovalRequestRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _auditService = auditService;
         }
 
         public async Task<ApprovalRequest?> GetAsync(Guid guid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [apv].[ApprovalRequest] WHERE ApprovalRequestGuid = @guid";
+            var sql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("apv", "ApprovalRequest")} WHERE ApprovalRequestGuid = @guid";
             return await connection.QuerySingleOrDefaultAsync<ApprovalRequest>(sql, new { guid });
         }
 
         public async Task<ApprovalRequest?> GetByDocumentAsync(string moduleCode, Guid referenceGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [apv].[ApprovalRequest] WHERE ModuleCode = @moduleCode AND ReferenceGuid = @referenceGuid AND StatusId != 5"; // 5 = Cancelled
+            var sql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("apv", "ApprovalRequest")} WHERE ModuleCode = @moduleCode AND ReferenceGuid = @referenceGuid AND StatusId != 5"; // 5 = Cancelled
             return await connection.QuerySingleOrDefaultAsync<ApprovalRequest>(sql, new { moduleCode, referenceGuid });
         }
 
@@ -39,10 +43,10 @@ namespace Repository.Approval
         {
             using var connection = _context.CreateConnection();
             // Cari ApprovalRequest yang memiliki ApprovalStep (status Pending=1) untuk user tersebut
-            const string sql = @"
+            var sql = $@"
                 SELECT DISTINCT r.* 
-                FROM [apv].[ApprovalRequest] r
-                INNER JOIN [apv].[ApprovalStep] s ON r.ApprovalRequestId = s.ApprovalRequestId
+                FROM {_dialect.Qualify("apv", "ApprovalRequest")} r
+                INNER JOIN {_dialect.Qualify("apv", "ApprovalStep")} s ON r.ApprovalRequestId = s.ApprovalRequestId
                 WHERE s.StatusId = 1 
                   AND r.StatusId IN (1, 2) 
                   AND (s.ApproverUserId = @userId OR s.DelegatedFromUserId = @userId)";
@@ -54,14 +58,13 @@ namespace Repository.Approval
         {
             AuditTimestampHelper.StampCreate(request);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [apv].[ApprovalRequest]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("apv", "ApprovalRequest")}
                 (ApprovalRequestGuid, ApprovalTemplateId, RequestNumber, ModuleCode, ReferenceGuid, ReferenceNumber, 
                  RequestedByUserId, CurrentLevelOrder, StatusId, Notes, RequestedTime, CreatedById, CreatedTime)
-                OUTPUT INSERTED.ApprovalRequestId
                 VALUES
                 (@ApprovalRequestGuid, @ApprovalTemplateId, @RequestNumber, @ModuleCode, @ReferenceGuid, @ReferenceNumber, 
-                 @RequestedByUserId, @CurrentLevelOrder, @StatusId, @Notes, @RequestedTime, @CreatedById, @CreatedTime)";
+                 @RequestedByUserId, @CurrentLevelOrder, @StatusId, @Notes, @RequestedTime, @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("ApprovalRequestId")}";
                  
             request.ApprovalRequestId = await conn.ExecuteScalarAsync<long>(sql, request, transaction);
             await _auditService.LogAsync("CREATE", "ApprovalRequest", request.ApprovalRequestGuid.ToString(), request.CreatedById.ToString(), null, request);
@@ -71,8 +74,8 @@ namespace Repository.Approval
         {
             AuditTimestampHelper.StampUpdate(request);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [apv].[ApprovalRequest]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("apv", "ApprovalRequest")}
                 SET CurrentLevelOrder = @CurrentLevelOrder, StatusId = @StatusId, Notes = @Notes, 
                     CompletedTime = @CompletedTime, UpdatedById = @UpdatedById, UpdatedTime = @UpdatedTime
                 WHERE ApprovalRequestId = @ApprovalRequestId";

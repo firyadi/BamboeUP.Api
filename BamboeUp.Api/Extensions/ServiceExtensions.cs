@@ -4,10 +4,10 @@ using Entities.ConfigurationModels;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Data.SqlClient;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Repository;
+using Repository.Extensions;
 using Service.Contracts.Shell;
 using Service.Contracts.Modules;
 using Service.Shell;
@@ -23,17 +23,14 @@ namespace BamboeUp.Api.Extensions
 
         public static void ConfigureDapperServices(this IServiceCollection services, IConfiguration config)
         {
-            // Database
-            var sqlConn = config.GetConnectionString("sqlConnection") 
-                ?? throw new InvalidOperationException("Connection string 'sqlConnection' not found.");
-            services.AddScoped<RepositoryContext>(_ =>
-                new RepositoryContext(sqlConn));
+            services.AddBamboeUpDatabase(config);
 
             // Repository Services
             services.AddScoped<ITransactionManager, DapperTransactionManager>();
             services.AddScoped<IServiceShellManager, ServiceShellManager>();
             services.AddScoped<IServiceModulesManager, ServiceModulesManager>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<ISharedParameterCatalogService, SharedParameterCatalogService>();
             services.AddScoped<IUserContext, BamboeUp.Api.Context.UserContext>();
             services.AddHttpContextAccessor();
             services.Configure<FileStorageOptions>(config.GetSection(FileStorageOptions.SectionName));
@@ -82,10 +79,7 @@ namespace BamboeUp.Api.Extensions
         // Extensions/ServiceExtensions.cs
         public static void ConfigureDapperContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var sqlConn = configuration.GetConnectionString("sqlConnection") 
-                ?? throw new InvalidOperationException("Connection string 'sqlConnection' not found.");
-            services.AddScoped<RepositoryContext>(_ =>
-                new RepositoryContext(sqlConn));
+            services.AddBamboeUpDatabase(configuration);
         }
 
         // Extensions/ServiceExtensions.cs

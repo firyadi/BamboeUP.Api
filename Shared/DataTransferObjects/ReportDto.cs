@@ -105,6 +105,9 @@ namespace Shared.DataTransferObjects
         public string? OutputContentType { get; init; }
         public string? OutputFileName { get; init; }
         public string? OutputBase64 { get; init; }
+        public string? RendererType { get; init; }
+        /// <summary>JSON payload for PVT multi-engine viewers.</summary>
+        public string? PivotPayloadJson { get; init; }
     }
 
     public record ReportExecutionLogDto

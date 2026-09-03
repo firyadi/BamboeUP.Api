@@ -4,6 +4,7 @@ using Dapper;
 using Entities.Models;
 using System.Data;
 using System.Text;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -12,17 +13,23 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public CountryRepository(RepositoryContext context, IAuditService auditService)
+
+        public CountryRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
             _auditService = auditService;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "Country");
         }
 
         public async Task<Country?> GetCountryAsync(Guid countryGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Country] 
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} 
                                  WHERE CountryGuid = @countryGuid AND StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<Country>(sql, new { countryGuid });
         }
@@ -31,10 +38,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[Country] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.CountryId DESC";
+                ORDER BY a.CountryId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Country>(sql);
         }
@@ -43,7 +50,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(country);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[Country]
+            var sql = $@"INSERT INTO {_table}
                                  (CountryGuid, CountryIso, CountryName, CountryIso3, PhoneCode, CurrencyCode, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@CountryGuid, @CountryIso, @CountryName, @CountryIso3, @PhoneCode, @CurrencyCode, @StatusId, @CreatedById, @CreatedTime)";
@@ -64,7 +71,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetCountryAsync(country.CountryGuid, false);
 
-            const string sql = @"UPDATE [core].[Country]
+            var sql = $@"UPDATE {_table}
                                  SET CountryIso = @CountryIso,
                                      CountryName = @CountryName,
                                      CountryIso3 = @CountryIso3,
@@ -91,7 +98,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetCountryAsync(country.CountryGuid, false);
 
-            const string sql = @"UPDATE [core].[Country]
+            var sql = $@"UPDATE {_table}
                          SET StatusId = 0,
                              DeletedById = @DeletedById,
                              DeletedTime = @DeletedTime
@@ -113,7 +120,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetCountryAsync(countryGuid, false);
 
-            const string sql = @"DELETE FROM [core].[Country]
+            var sql = $@"DELETE FROM {_table}
                                  WHERE CountryGuid = @countryGuid";
             await conn.ExecuteAsync(sql, new { countryGuid }, transaction);
 
@@ -143,21 +150,21 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(countryName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CountryName", "@countryName", countryNameSearchType, parameters, "countryName", countryName);
+                var param = SqlFilterHelper.BuildFilter("a.CountryName", "@countryName", countryNameSearchType, parameters, "countryName", countryName, _dialect);
                 whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(countryIso))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CountryIso", "@countryIso", countryIsoSearchType, parameters, "countryIso", countryIso);
+                var param = SqlFilterHelper.BuildFilter("a.CountryIso", "@countryIso", countryIsoSearchType, parameters, "countryIso", countryIso, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
             SELECT a.*
-            FROM [core].[Country] a
+            FROM {_table} a
             WHERE {string.Join(" AND ", whereClauses)}
-            ORDER BY a.CountryId DESC";
+            ORDER BY a.CountryId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Country>(sql, parameters, transaction);
         }

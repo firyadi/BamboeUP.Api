@@ -1,21 +1,25 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
 namespace Repository
 {
-    public partial class TrainingRepository(RepositoryContext context) : ITrainingRepository
+    public partial class TrainingRepository(RepositoryContext context, ISqlDialect dialect) : ITrainingRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Training");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
+
         public async Task<Training?> GetTrainingAsync(Guid trainingGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[Training] a
+                FROM {_table} a
 
 
                 WHERE a.TrainingGuid = @trainingGuid
@@ -28,37 +32,37 @@ namespace Repository
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
 
-                FROM [app].[Training] a
+                FROM {_table} a
 
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.TrainingId DESC";
+                ORDER BY a.TrainingId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Training>(sql);
         }
 
         public async Task CreateTrainingAsync(Training training, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Training]
+            var sql = $@"
+                INSERT INTO {_table}
                 (TrainingGuid, CreatedById, StatusId, CreatedTime, TrainingCode, TrainingName, TrainingShortName, SrTrainingCategory, SrTrainingType, SrTrainingLevel, DurationHour, ValidityMonth, SrTrainingProvider, IsMandatory, IsCertification, IsExternal, FileStorageId, Description, IsActive
                 )
                 VALUES
                 (@TrainingGuid, @CreatedById, @StatusId, @CreatedTime, @TrainingCode, @TrainingName, @TrainingShortName, @SrTrainingCategory, @SrTrainingType, @SrTrainingLevel, @DurationHour, @ValidityMonth, @SrTrainingProvider, @IsMandatory, @IsCertification, @IsExternal, @FileStorageId, @Description, @IsActive
                 );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {dialect.ReturnIdentitySuffix("TrainingId")}";
             training.TrainingId = await conn.QuerySingleAsync<long>(sql, training, transaction);
         }
 
         public async Task UpdateTrainingAsync(Training training, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Training]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     TrainingCode = @TrainingCode,
                     TrainingName = @TrainingName,
                     TrainingShortName = @TrainingShortName,
@@ -84,8 +88,8 @@ namespace Repository
         public async Task SoftDeleteTrainingAsync(Training training, long deletedBy, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Training]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -97,7 +101,7 @@ namespace Repository
         public async Task DeleteTrainingAsync(Guid trainingGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Training] WHERE TrainingGuid = @trainingGuid";
+            var sql = $@"DELETE FROM {_table} WHERE TrainingGuid = @trainingGuid";
             await conn.ExecuteAsync(sql, new { trainingGuid }, transaction);
         }
 
@@ -139,98 +143,98 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(trainingCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.TrainingCode", "@trainingCode", trainingCodeSearchType, parameters, "trainingCode", trainingCode);
+                var param = SqlFilterHelper.BuildFilter("a.TrainingCode", "@trainingCode", trainingCodeSearchType, parameters, "trainingCode", trainingCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(trainingName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.TrainingName", "@trainingName", trainingNameSearchType, parameters, "trainingName", trainingName);
+                var param = SqlFilterHelper.BuildFilter("a.TrainingName", "@trainingName", trainingNameSearchType, parameters, "trainingName", trainingName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(trainingShortName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.TrainingShortName", "@trainingShortName", trainingShortNameSearchType, parameters, "trainingShortName", trainingShortName);
+                var param = SqlFilterHelper.BuildFilter("a.TrainingShortName", "@trainingShortName", trainingShortNameSearchType, parameters, "trainingShortName", trainingShortName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srTrainingCategory))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrTrainingCategory", "@srTrainingCategory", srTrainingCategorySearchType, parameters, "srTrainingCategory", srTrainingCategory);
+                var param = SqlFilterHelper.BuildFilter("a.SrTrainingCategory", "@srTrainingCategory", srTrainingCategorySearchType, parameters, "srTrainingCategory", srTrainingCategory, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srTrainingType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrTrainingType", "@srTrainingType", srTrainingTypeSearchType, parameters, "srTrainingType", srTrainingType);
+                var param = SqlFilterHelper.BuildFilter("a.SrTrainingType", "@srTrainingType", srTrainingTypeSearchType, parameters, "srTrainingType", srTrainingType, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srTrainingLevel))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrTrainingLevel", "@srTrainingLevel", srTrainingLevelSearchType, parameters, "srTrainingLevel", srTrainingLevel);
+                var param = SqlFilterHelper.BuildFilter("a.SrTrainingLevel", "@srTrainingLevel", srTrainingLevelSearchType, parameters, "srTrainingLevel", srTrainingLevel, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(durationHour))
             {
-                var param = SqlFilterHelper.BuildFilter("a.DurationHour", "@durationHour", durationHourSearchType, parameters, "durationHour", durationHour);
+                var param = SqlFilterHelper.BuildFilter("a.DurationHour", "@durationHour", durationHourSearchType, parameters, "durationHour", durationHour, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(validityMonth))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ValidityMonth", "@validityMonth", validityMonthSearchType, parameters, "validityMonth", validityMonth);
+                var param = SqlFilterHelper.BuildFilter("a.ValidityMonth", "@validityMonth", validityMonthSearchType, parameters, "validityMonth", validityMonth, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srTrainingProvider))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrTrainingProvider", "@srTrainingProvider", srTrainingProviderSearchType, parameters, "srTrainingProvider", srTrainingProvider);
+                var param = SqlFilterHelper.BuildFilter("a.SrTrainingProvider", "@srTrainingProvider", srTrainingProviderSearchType, parameters, "srTrainingProvider", srTrainingProvider, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isMandatory))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsMandatory", "@isMandatory", isMandatorySearchType, parameters, "isMandatory", isMandatory);
+                var param = SqlFilterHelper.BuildFilter("a.IsMandatory", "@isMandatory", isMandatorySearchType, parameters, "isMandatory", isMandatory, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isCertification))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsCertification", "@isCertification", isCertificationSearchType, parameters, "isCertification", isCertification);
+                var param = SqlFilterHelper.BuildFilter("a.IsCertification", "@isCertification", isCertificationSearchType, parameters, "isCertification", isCertification, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isExternal))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsExternal", "@isExternal", isExternalSearchType, parameters, "isExternal", isExternal);
+                var param = SqlFilterHelper.BuildFilter("a.IsExternal", "@isExternal", isExternalSearchType, parameters, "isExternal", isExternal, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(description))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description);
+                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isActive))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsActive", "@isActive", isActiveSearchType, parameters, "isActive", isActive);
+                var param = SqlFilterHelper.BuildFilter("a.IsActive", "@isActive", isActiveSearchType, parameters, "isActive", isActive, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[Training] a
+                FROM {_table} a
 
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.TrainingId DESC";
+                ORDER BY a.TrainingId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Training>(sql, parameters, transaction);
         }

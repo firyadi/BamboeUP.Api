@@ -15,20 +15,24 @@ namespace Contracts
         IEmployeeAssignmentRepository EmployeeAssignment { get; }
         IEmployeeAssetRepository EmployeeAsset { get; }
         IEmployeeRepository Employee { get; }
+        IWorkItemRepository WorkItem { get; }
+        IRoomBookingRepository RoomBooking { get; }
         IPersonWorkExperienceRepository PersonWorkExperience { get; }
         IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic { get; }
+        IPersonIdentificationRepository PersonIdentification { get; }
         IPersonFamilyRepository PersonFamily { get; }
-        IPersonContactRepository PersonContact { get; }
         IPersonEmergencyContactRepository PersonEmergencyContact { get; }
         IPersonEducationRepository PersonEducation { get; }
-        IPersonIdentificationRepository PersonIdentification { get; }
+        IPersonContactRepository PersonContact { get; }
         IPersonAddressRepository PersonAddress { get; }
-        IPersonRepository Person { get; }
         ICostCenterAssignmentRepository CostCenterAssignment { get; }
         ICompanyRepository Company { get; }
+        IPersonRepository Person { get; }
+        IMeetingRoomRepository MeetingRoom { get; }
         IAwardCriteriaRuleRepository AwardCriteriaRule { get; }
         IAwardCriteriaRepository AwardCriteria { get; }
         IAwardRepository Award { get; }
+        ICompanyOfficeRepository CompanyOffice { get; }
         IHolidayRepository Holiday { get; }
         ICertificationRepository Certification { get; }
         IAssetRepository Asset { get; }
@@ -56,7 +60,6 @@ namespace Contracts
         IAutoNumberGenerateRepository AutoNumberGenerate { get; }
         IBankRepository Bank { get; }
         ICityRepository City { get; }
-        ICompanyOfficeRepository CompanyOffice { get; }
         ICountryRepository Country { get; }
         IDistrictRepository District { get; }
         IDocumentNumberRequestRepository DocumentNumberRequest { get; }

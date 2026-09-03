@@ -19,6 +19,20 @@ namespace BamboeUp.Api.Controllers
             return Ok(data);
         }
 
+        [HttpGet("calendar/events")]
+        [SwaggerOperation(Summary = "Calendar events by date range (UI-08)")]
+        public async Task<IActionResult> GetCalendarEvents(
+            [FromQuery] DateTime start,
+            [FromQuery] DateTime end,
+            [FromQuery] string? category = null,
+            [FromQuery] string? search = null)
+        {
+            if (end <= start)
+                return BadRequest("end must be greater than start.");
+            var data = await service.HolidayService.GetCalendarEventsAsync(start, end, category, search);
+            return Ok(data);
+        }
+
         [HttpGet("{guid:guid}")]
         [SwaggerOperation(Summary = "Get By Guid")]
         public async Task<IActionResult> GetByGuid(Guid guid)

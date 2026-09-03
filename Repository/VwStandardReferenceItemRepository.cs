@@ -2,21 +2,25 @@ using Contracts;
 using Dapper;
 using Entities.Models;
 
+using Repository.Database;
 namespace Repository
 {
     public class VwStandardReferenceItemRepository : IVwStandardReferenceItemRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public VwStandardReferenceItemRepository(RepositoryContext context)
+        public VwStandardReferenceItemRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         public async Task<IEnumerable<VwStandardReferenceItem>> GetAllAsync(string? standardReferenceInitial, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            string sql = @"
+            var sql = $@"
                 SELECT 
                     StandardReferenceItemId,
                     StandardReferenceItemGuid,
@@ -30,7 +34,7 @@ namespace Repository
                     StandardReferenceItemInitial,
                     StandardReferenceItemName,
                     Note
-                FROM [app].[vw_StandardReferenceItem] ";
+                FROM {_dialect.Qualify("app", "vw_StandardReferenceItem")} ";
 
             if (!string.IsNullOrEmpty(standardReferenceInitial))
             {
@@ -45,7 +49,7 @@ namespace Repository
         public async Task<VwStandardReferenceItem?> GetOneAsync(long id, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            const string sql = @"
+            var sql = $@"
                 SELECT 
                     StandardReferenceItemId,
                     StandardReferenceItemGuid,
@@ -59,7 +63,7 @@ namespace Repository
                     StandardReferenceItemInitial,
                     StandardReferenceItemName,
                     Note
-                FROM [app].[vw_StandardReferenceItem]
+                FROM {_dialect.Qualify("app", "vw_StandardReferenceItem")}
                 WHERE StandardReferenceItemId = @Id";
 
             return await connection.QuerySingleOrDefaultAsync<VwStandardReferenceItem>(sql, new { Id = id });

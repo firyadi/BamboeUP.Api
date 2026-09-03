@@ -4,6 +4,7 @@ using Dapper;
 using Entities.Models;
 using System.Data;
 using System.Text;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -12,17 +13,23 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public CityRepository(RepositoryContext context, IAuditService auditService)
+
+        public CityRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
             _auditService = auditService;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "Province");
         }
 
         public async Task<long?> GetProvinceIdByGuidAsync(Guid provinceGuid)
         {
             using var connection = _context.CreateConnection();
-            const string sql = "SELECT ProvinceId FROM [core].[Province] WHERE ProvinceGuid = @provinceGuid";
+            const string sql = "SELECT ProvinceId FROM {_table} WHERE ProvinceGuid = @provinceGuid";
             return await connection.QuerySingleOrDefaultAsync<long?>(sql, new { provinceGuid });
         }
 
@@ -37,9 +44,9 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ci.* 
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} 
                 FROM [core].[City] ci
-                INNER JOIN [core].[Province] p ON ci.ProvinceId = p.ProvinceId
+                INNER JOIN {_table} p ON ci.ProvinceId = p.ProvinceId
                 WHERE ci.CityGuid = @cityGuid AND p.ProvinceGuid = @provinceGuid AND ci.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<City>(sql, new { cityGuid, provinceGuid });
         }
@@ -48,11 +55,11 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
                 FROM [core].[City] a
-                INNER JOIN [core].[Province] p ON a.ProvinceId = p.ProvinceId
+                INNER JOIN {_table} p ON a.ProvinceId = p.ProvinceId
                 WHERE p.ProvinceGuid = @provinceGuid AND a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.CityId DESC";
+                ORDER BY a.CityId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<City>(sql, new { provinceGuid });
         }
@@ -61,7 +68,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(city);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[City]
+            var sql = $@"INSERT INTO [core].[City]
                                  (CityGuid, CityName, ProvinceId, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@CityGuid, @CityName, @ProvinceId, @StatusId, @CreatedById, @CreatedTime)";
@@ -81,10 +88,10 @@ namespace Repository
             AuditTimestampHelper.StampUpdate(city);
             var conn = transaction?.Connection ?? _context.CreateConnection();
             
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[City] WHERE CityGuid = @CityGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM [core].[City] WHERE CityGuid = @CityGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<City>(getSql, new { city.CityGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[City]
+            var sql = $@"UPDATE [core].[City]
                                  SET CityName = @CityName,
                                      StatusId = @StatusId,
                                      UpdatedById = @UpdatedById,
@@ -105,10 +112,10 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(city, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[City] WHERE CityGuid = @CityGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM [core].[City] WHERE CityGuid = @CityGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<City>(getSql, new { city.CityGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[City]
+            var sql = $@"UPDATE [core].[City]
                          SET StatusId = 0,
                              DeletedById = @DeletedById,
                              DeletedTime = @DeletedTime
@@ -128,10 +135,10 @@ namespace Repository
         public async Task DeleteCityAsync(Guid cityGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[City] WHERE CityGuid = @CityGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM [core].[City] WHERE CityGuid = @CityGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<City>(getSql, new { cityGuid }, transaction);
 
-            const string sql = @"DELETE FROM [core].[City]
+            var sql = $@"DELETE FROM [core].[City]
                                  WHERE CityGuid = @cityGuid";
             await conn.ExecuteAsync(sql, new { cityGuid }, transaction);
 
@@ -163,16 +170,16 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(cityName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CityName", "@cityName", cityNameSearchType, parameters, "cityName", cityName);
+                var param = SqlFilterHelper.BuildFilter("a.CityName", "@cityName", cityNameSearchType, parameters, "cityName", cityName, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
             SELECT a.*
             FROM [core].[City] a
-            INNER JOIN [core].[Province] p ON a.ProvinceId = p.ProvinceId
+            INNER JOIN {_table} p ON a.ProvinceId = p.ProvinceId
             WHERE {string.Join(" AND ", whereClauses)}
-            ORDER BY a.CityId DESC";
+            ORDER BY a.CityId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<City>(sql, parameters, transaction);
         }

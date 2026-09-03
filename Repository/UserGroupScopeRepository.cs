@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -11,10 +12,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public UserGroupScopeRepository(RepositoryContext context, IAuditService auditService)
+        public UserGroupScopeRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -22,16 +26,16 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ugs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ugs.*")},
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserGroupScope]   ugs
-                JOIN    [core].[Users]             u   ON u.UserId           = ugs.UserId
-                JOIN    [core].[UserGroup]         ug  ON ug.UserGroupId     = ugs.UserGroupId
-                JOIN    [app].[Company]            c   ON c.CompanyId        = ugs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
+                JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
+                JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
+                JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
                 WHERE   ugs.UserGroupScopeGuid = @userGroupScopeGuid
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL";
@@ -42,16 +46,16 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ugs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ugs.*")},
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserGroupScope]   ugs
-                JOIN    [core].[Users]             u   ON u.UserId           = ugs.UserId
-                JOIN    [core].[UserGroup]         ug  ON ug.UserGroupId     = ugs.UserGroupId
-                JOIN    [app].[Company]            c   ON c.CompanyId        = ugs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
+                JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
+                JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
+                JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
                 WHERE   ug.UserGroupGuid = @userGroupGuid
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL
@@ -63,16 +67,16 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ugs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ugs.*")},
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserGroupScope]   ugs
-                JOIN    [core].[Users]             u   ON u.UserId           = ugs.UserId
-                JOIN    [core].[UserGroup]         ug  ON ug.UserGroupId     = ugs.UserGroupId
-                JOIN    [app].[Company]            c   ON c.CompanyId        = ugs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
+                JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
+                JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
+                JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
                 WHERE   ugs.UserId = @userId
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL
@@ -84,16 +88,16 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ugs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ugs.*")},
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserGroupScope]   ugs
-                JOIN    [core].[Users]             u   ON u.UserId           = ugs.UserId
-                JOIN    [core].[UserGroup]         ug  ON ug.UserGroupId     = ugs.UserGroupId
-                JOIN    [app].[Company]            c   ON c.CompanyId        = ugs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
+                JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
+                JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
+                JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
                 WHERE   ugs.CompanyId = @companyId
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL
@@ -105,16 +109,16 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ugs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ugs.*")},
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserGroupScope]   ugs
-                JOIN    [core].[Users]             u   ON u.UserId           = ugs.UserId
-                JOIN    [core].[UserGroup]         ug  ON ug.UserGroupId     = ugs.UserGroupId
-                JOIN    [app].[Company]            c   ON c.CompanyId        = ugs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
+                JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
+                JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
+                JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
                 WHERE   ug.UserGroupGuid = @userGroupGuid
                   AND   ugs.UserGroupScopeGuid = @userGroupScopeGuid
                   AND   ugs.StatusId > 0
@@ -137,8 +141,8 @@ namespace Repository
                 try
                 {
                     var updatedTime = DateTime.UtcNow;
-                    const string unsetSql = @"
-                        UPDATE [core].[UserGroupScope]
+                    var unsetSql = $@"
+                        UPDATE {_dialect.Qualify("core", "UserGroupScope")}
                         SET    IsDefault   = 0,
                                UpdatedById = @CreatedById,
                                UpdatedTime = @UpdatedTime
@@ -147,14 +151,13 @@ namespace Repository
                           AND  DeletedTime IS NULL";
                     await conn.ExecuteAsync(unsetSql, new { entity.UserId, entity.CreatedById, UpdatedTime = updatedTime }, localTran);
 
-                    const string insertSql = @"
-                        INSERT INTO [core].[UserGroupScope]
+                    var insertSql = $@"
+                        INSERT INTO {_dialect.Qualify("core", "UserGroupScope")}
                             (UserGroupScopeGuid, UserId, UserGuid, UserGroupId, UserGroupGuid, CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid,
                              IsDefault, StatusId, CreatedById, CreatedTime)
                         VALUES
                             (@UserGroupScopeGuid, @UserId, @UserGuid, @UserGroupId, @UserGroupGuid, @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid,
-                             @IsDefault, @StatusId, @CreatedById, @CreatedTime);
-                        SELECT SCOPE_IDENTITY();";
+                             @IsDefault, @StatusId, @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("UserGroupScopeId")}";
                     entity.UserGroupScopeId = await conn.ExecuteScalarAsync<long>(insertSql, entity, localTran);
 
                     localTran.Commit();
@@ -167,14 +170,13 @@ namespace Repository
             }
             else
             {
-                const string sql = @"
-                    INSERT INTO [core].[UserGroupScope]
+                var sql = $@"
+                    INSERT INTO {_dialect.Qualify("core", "UserGroupScope")}
                         (UserGroupScopeGuid, UserId, UserGuid, UserGroupId, UserGroupGuid, CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid,
                          IsDefault, StatusId, CreatedById, CreatedTime)
                     VALUES
                         (@UserGroupScopeGuid, @UserId, @UserGuid, @UserGroupId, @UserGroupGuid, @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid,
-                         @IsDefault, @StatusId, @CreatedById, @CreatedTime);
-                    SELECT SCOPE_IDENTITY();";
+                         @IsDefault, @StatusId, @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("UserGroupScopeId")}";
                 entity.UserGroupScopeId = await conn.ExecuteScalarAsync<long>(sql, entity, transaction);
             }
 
@@ -189,8 +191,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAsync(entity.UserGroupScopeGuid, false);
 
-            const string sql = @"
-                UPDATE [core].[UserGroupScope]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("core", "UserGroupScope")}
                 SET    StatusId    = 0,
                        DeletedById = @DeletedById,
                        DeletedTime = @DeletedTime
@@ -207,8 +209,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAsync(userGroupScopeGuid, false);
 
-            const string sql = @"
-                DELETE FROM [core].[UserGroupScope]
+            var sql = $@"
+                DELETE FROM {_dialect.Qualify("core", "UserGroupScope")}
                 WHERE UserGroupScopeGuid = @userGroupScopeGuid";
             await conn.ExecuteAsync(sql, new { userGroupScopeGuid }, transaction);
 
@@ -229,8 +231,8 @@ namespace Repository
             try
             {
                 // Langkah 1: Unset semua scope default milik userId ini
-                const string unsetSql = @"
-                    UPDATE [core].[UserGroupScope]
+                var unsetSql = $@"
+                    UPDATE {_dialect.Qualify("core", "UserGroupScope")}
                     SET    IsDefault   = 0,
                            UpdatedById = @updatedBy,
                            UpdatedTime = @UpdatedTime
@@ -240,8 +242,8 @@ namespace Repository
                 await conn.ExecuteAsync(unsetSql, new { userId, updatedBy, UpdatedTime = updatedTime }, localTran);
 
                 // Langkah 2: Set scope yang diminta sebagai default
-                const string setSql = @"
-                    UPDATE [core].[UserGroupScope]
+                var setSql = $@"
+                    UPDATE {_dialect.Qualify("core", "UserGroupScope")}
                     SET    IsDefault   = 1,
                            UpdatedById = @updatedBy,
                            UpdatedTime = @UpdatedTime

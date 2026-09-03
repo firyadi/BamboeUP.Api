@@ -4,6 +4,7 @@ using Dapper;
 using Entities.Models;
 using System.Data;
 using System.Text;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -12,19 +13,25 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public SubDistrictRepository(RepositoryContext context, IAuditService auditService)
+
+        public SubDistrictRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
             _auditService = auditService;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "SubDistrict");
         }
 
         public async Task<SubDistrict?> GetSubDistrictAsync(Guid districtGuid, Guid subDistrictGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) s.* 
-                FROM [core].[SubDistrict] s
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} 
+                FROM {_table} s
                 INNER JOIN [core].[District] d ON s.DistrictId = d.DistrictId
                 WHERE s.SubDistrictGuid = @subDistrictGuid AND d.DistrictGuid = @districtGuid AND s.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<SubDistrict>(sql, new { subDistrictGuid, districtGuid });
@@ -34,8 +41,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) s.*
-                FROM [core].[SubDistrict] s
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} s
                 INNER JOIN [core].[District] d ON s.DistrictId = d.DistrictId
                 WHERE d.DistrictGuid = @districtGuid AND s.StatusId > 0 AND s.DeletedTime IS NULL
                 ORDER BY s.SubDistrictId DESC";
@@ -47,7 +54,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(subDistrict);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[SubDistrict]
+            var sql = $@"INSERT INTO {_table}
                                  (SubDistrictGuid, SubDistrictName, DistrictId, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@SubDistrictGuid, @SubDistrictName, @DistrictId, @StatusId, @CreatedById, @CreatedTime)";
@@ -67,10 +74,10 @@ namespace Repository
             AuditTimestampHelper.StampUpdate(subDistrict);
             var conn = transaction?.Connection ?? _context.CreateConnection();
             
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[SubDistrict] WHERE SubDistrictGuid = @SubDistrictGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE SubDistrictGuid = @SubDistrictGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<SubDistrict>(getSql, new { subDistrict.SubDistrictGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[SubDistrict]
+            var sql = $@"UPDATE {_table}
                                  SET SubDistrictName = @SubDistrictName,
                                      StatusId = @StatusId,
                                      UpdatedById = @UpdatedById,
@@ -91,10 +98,10 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(subDistrict, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[SubDistrict] WHERE SubDistrictGuid = @SubDistrictGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE SubDistrictGuid = @SubDistrictGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<SubDistrict>(getSql, new { subDistrict.SubDistrictGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[SubDistrict]
+            var sql = $@"UPDATE {_table}
                          SET StatusId = 0,
                              DeletedById = @DeletedById,
                              DeletedTime = @DeletedTime
@@ -121,17 +128,17 @@ namespace Repository
         public async Task<long?> GetSubDistrictIdByGuidAsync(Guid subDistrictGuid)
         {
             using var connection = _context.CreateConnection();
-            const string sql = "SELECT SubDistrictId FROM [core].[SubDistrict] WHERE SubDistrictGuid = @subDistrictGuid";
+            const string sql = "SELECT SubDistrictId FROM {_table} WHERE SubDistrictGuid = @subDistrictGuid";
             return await connection.QuerySingleOrDefaultAsync<long?>(sql, new { subDistrictGuid });
         }
 
         public async Task DeleteSubDistrictAsync(Guid subDistrictGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[SubDistrict] WHERE SubDistrictGuid = @SubDistrictGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE SubDistrictGuid = @SubDistrictGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<SubDistrict>(getSql, new { subDistrictGuid }, transaction);
 
-            const string sql = @"DELETE FROM [core].[SubDistrict]
+            var sql = $@"DELETE FROM {_table}
                                  WHERE SubDistrictGuid = @subDistrictGuid";
             await conn.ExecuteAsync(sql, new { subDistrictGuid }, transaction);
 
@@ -163,16 +170,16 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(subDistrictName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SubDistrictName", "@subDistrictName", subDistrictNameSearchType, parameters, "subDistrictName", subDistrictName);
+                var param = SqlFilterHelper.BuildFilter("a.SubDistrictName", "@subDistrictName", subDistrictNameSearchType, parameters, "subDistrictName", subDistrictName, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
             SELECT a.*
-            FROM [core].[SubDistrict] a
+            FROM {_table} a
             INNER JOIN [core].[District] d ON a.DistrictId = d.DistrictId
             WHERE {string.Join(" AND ", whereClauses)}
-            ORDER BY a.SubDistrictId DESC";
+            ORDER BY a.SubDistrictId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<SubDistrict>(sql, parameters, transaction);
         }

@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,47 +11,29 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class EmployeeLanguageRepository(RepositoryContext context, IAuditService audit) : IEmployeeLanguageRepository
+    public partial class EmployeeLanguageRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IEmployeeLanguageRepository
     {
+        private readonly string _table = dialect.Qualify("app", "EmployeeLanguage");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<EmployeeLanguage?> GetEmployeeLanguageAsync(Guid employeeLanguageGuid, bool trackChanges)
+public async Task<EmployeeLanguage?> GetEmployeeLanguageAsync(Guid employeeLanguageGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrLanguage.StandardReferenceItemName, '') AS LanguageName
-, ISNULL(v_SrListeningLevel.StandardReferenceItemName, '') AS ListeningLevelName
-, ISNULL(v_SrReadingLevel.StandardReferenceItemName, '') AS ReadingLevelName
-, ISNULL(v_SrSpeakingLevel.StandardReferenceItemName, '') AS SpeakingLevelName
-, ISNULL(v_SrWritingLevel.StandardReferenceItemName, '') AS WritingLevelName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrLanguage.StandardReferenceItemName")} AS LanguageName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrListeningLevel.StandardReferenceItemName")} AS ListeningLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReadingLevel.StandardReferenceItemName")} AS ReadingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSpeakingLevel.StandardReferenceItemName")} AS SpeakingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrWritingLevel.StandardReferenceItemName")} AS WritingLevelName
 
 
-                FROM [app].[EmployeeLanguage] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Language')
-    WHERE StandardReferenceItemId = a.SrLanguage
-) v_SrLanguage
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrListeningLevel
-) v_SrListeningLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrReadingLevel
-) v_SrReadingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSpeakingLevel
-) v_SrSpeakingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrWritingLevel
-) v_SrWritingLevel
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrLanguage", "SrLanguage", "Language")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrListeningLevel", "SrListeningLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReadingLevel", "SrReadingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSpeakingLevel", "SrSpeakingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrWritingLevel", "SrWritingLevel", "LanguageLevel")}
 
                 WHERE a.EmployeeLanguageGuid = @employeeLanguageGuid
                   AND a.StatusId > 0
@@ -62,40 +45,20 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrLanguage.StandardReferenceItemName, '') AS LanguageName
-, ISNULL(v_SrListeningLevel.StandardReferenceItemName, '') AS ListeningLevelName
-, ISNULL(v_SrReadingLevel.StandardReferenceItemName, '') AS ReadingLevelName
-, ISNULL(v_SrSpeakingLevel.StandardReferenceItemName, '') AS SpeakingLevelName
-, ISNULL(v_SrWritingLevel.StandardReferenceItemName, '') AS WritingLevelName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrLanguage.StandardReferenceItemName")} AS LanguageName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrListeningLevel.StandardReferenceItemName")} AS ListeningLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReadingLevel.StandardReferenceItemName")} AS ReadingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSpeakingLevel.StandardReferenceItemName")} AS SpeakingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrWritingLevel.StandardReferenceItemName")} AS WritingLevelName
 
 
-                FROM [app].[EmployeeLanguage] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Language')
-    WHERE StandardReferenceItemId = a.SrLanguage
-) v_SrLanguage
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrListeningLevel
-) v_SrListeningLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrReadingLevel
-) v_SrReadingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSpeakingLevel
-) v_SrSpeakingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrWritingLevel
-) v_SrWritingLevel
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrLanguage", "SrLanguage", "Language")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrListeningLevel", "SrListeningLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReadingLevel", "SrReadingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSpeakingLevel", "SrSpeakingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrWritingLevel", "SrWritingLevel", "LanguageLevel")}
 
                 WHERE j_EmployeeId.EmployeeGuid = @employeeGuid
                   AND a.EmployeeLanguageGuid = @employeeLanguageGuid
@@ -108,45 +71,25 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrLanguage.StandardReferenceItemName, '') AS LanguageName
-, ISNULL(v_SrListeningLevel.StandardReferenceItemName, '') AS ListeningLevelName
-, ISNULL(v_SrReadingLevel.StandardReferenceItemName, '') AS ReadingLevelName
-, ISNULL(v_SrSpeakingLevel.StandardReferenceItemName, '') AS SpeakingLevelName
-, ISNULL(v_SrWritingLevel.StandardReferenceItemName, '') AS WritingLevelName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrLanguage.StandardReferenceItemName")} AS LanguageName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrListeningLevel.StandardReferenceItemName")} AS ListeningLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReadingLevel.StandardReferenceItemName")} AS ReadingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSpeakingLevel.StandardReferenceItemName")} AS SpeakingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrWritingLevel.StandardReferenceItemName")} AS WritingLevelName
 
 
-                FROM [app].[EmployeeLanguage] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Language')
-    WHERE StandardReferenceItemId = a.SrLanguage
-) v_SrLanguage
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrListeningLevel
-) v_SrListeningLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrReadingLevel
-) v_SrReadingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSpeakingLevel
-) v_SrSpeakingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrWritingLevel
-) v_SrWritingLevel
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrLanguage", "SrLanguage", "Language")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrListeningLevel", "SrListeningLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReadingLevel", "SrReadingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSpeakingLevel", "SrSpeakingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrWritingLevel", "SrWritingLevel", "LanguageLevel")}
 
                 WHERE j_EmployeeId.EmployeeGuid = @employeeGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.EmployeeLanguageId DESC";
+                ORDER BY a.EmployeeLanguageId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<EmployeeLanguage>(sql, new { employeeGuid });
         }
 
@@ -154,12 +97,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(employeeLanguage);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[EmployeeLanguage]
+            var sql = $@"
+                INSERT INTO {_table}
                 (EmployeeLanguageGuid, EmployeeId, CreatedById, StatusId, CreatedTime, [SrLanguage], [SrReadingLevel], [SrWritingLevel], [SrListeningLevel], [SrSpeakingLevel], [CertificationName], [Score], [IssuedDate], [ExpiredDate], [FileStorageId], [IsPrimary], [Remarks])
                 VALUES
-                (@EmployeeLanguageGuid, @EmployeeId, @CreatedById, @StatusId, @CreatedTime, @SrLanguage, @SrReadingLevel, @SrWritingLevel, @SrListeningLevel, @SrSpeakingLevel, @CertificationName, @Score, @IssuedDate, @ExpiredDate, @FileStorageId, @IsPrimary, @Remarks);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@EmployeeLanguageGuid, @EmployeeId, @CreatedById, @StatusId, @CreatedTime, @SrLanguage, @SrReadingLevel, @SrWritingLevel, @SrListeningLevel, @SrSpeakingLevel, @CertificationName, @Score, @IssuedDate, @ExpiredDate, @FileStorageId, @IsPrimary, @Remarks){dialect.ReturnIdentitySuffix("EmployeeLanguageId")}";
             employeeLanguage.EmployeeLanguageId = await conn.QuerySingleAsync<long>(sql, employeeLanguage, transaction);
         }
 
@@ -167,8 +109,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(employeeLanguage);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[EmployeeLanguage]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [EmployeeId] = @EmployeeId,
                     [SrLanguage] = @SrLanguage,
                     [SrReadingLevel] = @SrReadingLevel,
@@ -193,8 +135,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(employeeLanguage, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[EmployeeLanguage]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -206,14 +148,14 @@ OUTER APPLY (
         public async Task DeleteEmployeeLanguageAsync(Guid employeeLanguageGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[EmployeeLanguage] WHERE EmployeeLanguageGuid = @employeeLanguageGuid";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeLanguageGuid = @employeeLanguageGuid";
             await conn.ExecuteAsync(sql, new { employeeLanguageGuid }, transaction);
         }
 
         public async Task DeleteByEmployeeGuidAsync(Guid employeeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[EmployeeLanguage] WHERE EmployeeId IN (SELECT EmployeeId FROM [app].[Employee] WHERE EmployeeGuid = @employeeGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeId IN (SELECT EmployeeId FROM {dialect.Qualify("app", "Employee")} WHERE EmployeeGuid = @employeeGuid)";
             await conn.ExecuteAsync(sql, new { employeeGuid }, transaction);
         }
 
@@ -250,78 +192,58 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(certificationName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificationName", "@certificationName", certificationNameSearchType, parameters, "certificationName", certificationName);
+                var param = SqlFilterHelper.BuildFilter("a.CertificationName", "@certificationName", certificationNameSearchType, parameters, "certificationName", certificationName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(score))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Score", "@score", scoreSearchType, parameters, "score", score);
+                var param = SqlFilterHelper.BuildFilter("a.Score", "@score", scoreSearchType, parameters, "score", score, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(issuedDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IssuedDate", "@issuedDate", issuedDateSearchType, parameters, "issuedDate", issuedDate);
+                var param = SqlFilterHelper.BuildFilter("a.IssuedDate", "@issuedDate", issuedDateSearchType, parameters, "issuedDate", issuedDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(expiredDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ExpiredDate", "@expiredDate", expiredDateSearchType, parameters, "expiredDate", expiredDate);
+                var param = SqlFilterHelper.BuildFilter("a.ExpiredDate", "@expiredDate", expiredDateSearchType, parameters, "expiredDate", expiredDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isPrimary))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary);
+                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(remarks))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks);
+                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrLanguage.StandardReferenceItemName, '') AS LanguageName
-, ISNULL(v_SrListeningLevel.StandardReferenceItemName, '') AS ListeningLevelName
-, ISNULL(v_SrReadingLevel.StandardReferenceItemName, '') AS ReadingLevelName
-, ISNULL(v_SrSpeakingLevel.StandardReferenceItemName, '') AS SpeakingLevelName
-, ISNULL(v_SrWritingLevel.StandardReferenceItemName, '') AS WritingLevelName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrLanguage.StandardReferenceItemName")} AS LanguageName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrListeningLevel.StandardReferenceItemName")} AS ListeningLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReadingLevel.StandardReferenceItemName")} AS ReadingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSpeakingLevel.StandardReferenceItemName")} AS SpeakingLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrWritingLevel.StandardReferenceItemName")} AS WritingLevelName
 
 
-                FROM [app].[EmployeeLanguage] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Language')
-    WHERE StandardReferenceItemId = a.SrLanguage
-) v_SrLanguage
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrListeningLevel
-) v_SrListeningLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrReadingLevel
-) v_SrReadingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSpeakingLevel
-) v_SrSpeakingLevel
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrWritingLevel
-) v_SrWritingLevel
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrLanguage", "SrLanguage", "Language")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrListeningLevel", "SrListeningLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReadingLevel", "SrReadingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSpeakingLevel", "SrSpeakingLevel", "LanguageLevel")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrWritingLevel", "SrWritingLevel", "LanguageLevel")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.EmployeeLanguageId DESC";
+                ORDER BY a.EmployeeLanguageId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<EmployeeLanguage>(sql, parameters, transaction);
         }

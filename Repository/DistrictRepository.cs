@@ -4,6 +4,7 @@ using Dapper;
 using Entities.Models;
 using System.Data;
 using System.Text;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -12,19 +13,25 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public DistrictRepository(RepositoryContext context, IAuditService auditService)
+
+        public DistrictRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
             _auditService = auditService;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "District");
         }
 
         public async Task<District?> GetDistrictAsync(Guid cityGuid, Guid districtGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) d.* 
-                FROM [core].[District] d
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} 
+                FROM {_table} d
                 INNER JOIN [core].[City] c ON d.CityId = c.CityId
                 WHERE d.DistrictGuid = @districtGuid AND c.CityGuid = @cityGuid AND d.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<District>(sql, new { districtGuid, cityGuid });
@@ -34,8 +41,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) d.*
-                FROM [core].[District] d
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} d
                 INNER JOIN [core].[City] c ON d.CityId = c.CityId
                 WHERE c.CityGuid = @cityGuid AND d.StatusId > 0 AND d.DeletedTime IS NULL
                 ORDER BY d.DistrictId DESC";
@@ -47,7 +54,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(district);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[District]
+            var sql = $@"INSERT INTO {_table}
                                  (DistrictGuid, DistrictName, CityId, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@DistrictGuid, @DistrictName, @CityId, @StatusId, @CreatedById, @CreatedTime)";
@@ -67,10 +74,10 @@ namespace Repository
             AuditTimestampHelper.StampUpdate(district);
             var conn = transaction?.Connection ?? _context.CreateConnection();
             
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[District] WHERE DistrictGuid = @DistrictGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE DistrictGuid = @DistrictGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<District>(getSql, new { district.DistrictGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[District]
+            var sql = $@"UPDATE {_table}
                                  SET DistrictName = @DistrictName,
                                      StatusId = @StatusId,
                                      UpdatedById = @UpdatedById,
@@ -91,10 +98,10 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(district, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[District] WHERE DistrictGuid = @DistrictGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE DistrictGuid = @DistrictGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<District>(getSql, new { district.DistrictGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[District]
+            var sql = $@"UPDATE {_table}
                          SET StatusId = 0,
                              DeletedById = @DeletedById,
                              DeletedTime = @DeletedTime
@@ -121,17 +128,17 @@ namespace Repository
         public async Task<long?> GetDistrictIdByGuidAsync(Guid districtGuid)
         {
             using var connection = _context.CreateConnection();
-            const string sql = "SELECT DistrictId FROM [core].[District] WHERE DistrictGuid = @districtGuid";
+            const string sql = "SELECT DistrictId FROM {_table} WHERE DistrictGuid = @districtGuid";
             return await connection.QuerySingleOrDefaultAsync<long?>(sql, new { districtGuid });
         }
 
         public async Task DeleteDistrictAsync(Guid districtGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[District] WHERE DistrictGuid = @DistrictGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE DistrictGuid = @DistrictGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<District>(getSql, new { districtGuid }, transaction);
 
-            const string sql = @"DELETE FROM [core].[District]
+            var sql = $@"DELETE FROM {_table}
                                  WHERE DistrictGuid = @districtGuid";
             await conn.ExecuteAsync(sql, new { districtGuid }, transaction);
 
@@ -163,16 +170,16 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(districtName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.DistrictName", "@districtName", districtNameSearchType, parameters, "districtName", districtName);
+                var param = SqlFilterHelper.BuildFilter("a.DistrictName", "@districtName", districtNameSearchType, parameters, "districtName", districtName, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
             SELECT a.*
-            FROM [core].[District] a
+            FROM {_table} a
             INNER JOIN [core].[City] c ON a.CityId = c.CityId
             WHERE {string.Join(" AND ", whereClauses)}
-            ORDER BY a.DistrictId DESC";
+            ORDER BY a.DistrictId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<District>(sql, parameters, transaction);
         }

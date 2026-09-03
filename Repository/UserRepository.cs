@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 using System.Text;
@@ -12,17 +13,20 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public UserRepository(RepositoryContext context, IAuditService auditService)
+        public UserRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _auditService = auditService;
         }
 
         public async Task<User?> GetUserByUserNameAsync(string userName, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Users] 
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("core", "Users")} 
                                  WHERE UserName = @userName AND StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<User>(sql, new { userName });
         }
@@ -30,7 +34,7 @@ namespace Repository
         public async Task<User?> GetUserAsync(Guid userGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Users] 
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("core", "Users")} 
                                  WHERE UserGuid = @userGuid AND StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<User>(sql, new { userGuid });
         }
@@ -39,11 +43,11 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[Users] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("core", "Users")} a
                 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.UserId DESC";
+                ORDER BY a.UserId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<User>(sql);
         }
@@ -52,7 +56,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(user);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[Users]
+            var sql = $@"INSERT INTO {_dialect.Qualify("core", "Users")}
                                  (UserGuid, CreatedById, StatusId, CreatedTime, UserName, PasswordHash, PasswordSalt, FullName, Email, IsAdmin)
                                  VALUES
                                  (@UserGuid, @CreatedById, @StatusId, @CreatedTime, @UserName, @PasswordHash, @PasswordSalt, @FullName, @Email, @IsAdmin)";
@@ -73,7 +77,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserAsync(user.UserGuid, false);
 
-            const string sql = @"UPDATE [core].[Users]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "Users")}
                      SET
                          UserName = @UserName,
                                       PasswordHash = @PasswordHash,
@@ -102,7 +106,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserAsync(user.UserGuid, false);
 
-            const string sql = @"UPDATE [core].[Users]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "Users")}
                                  SET StatusId = 0,
                                      DeletedById = @DeletedById,
                                      DeletedTime = @DeletedTime
@@ -121,7 +125,7 @@ namespace Repository
         public async Task UpgradePasswordHashAsync(long userId, string newBcryptHash, string newSalt, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"UPDATE [core].[Users]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "Users")}
                                  SET PasswordHash = @newBcryptHash,
                                      PasswordSalt = @newSalt,
                                      UpdatedTime  = @UpdatedTime
@@ -134,7 +138,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserAsync(userGuid, false);
 
-            const string sql = @"DELETE FROM [core].[Users]
+            var sql = $@"DELETE FROM {_dialect.Qualify("core", "Users")}
                                  WHERE UserGuid = @userGuid";
             await conn.ExecuteAsync(sql, new { userGuid }, transaction);
 
@@ -155,15 +159,20 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[Users] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("core", "Users")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                  AND (@userName IS NULL OR ISNULL(UserName, '') LIKE '%' + @userName + '%')
-                  AND (@fullName IS NULL OR ISNULL(FullName, '') LIKE '%' + @fullName + '%')
-                  AND (@email   IS NULL OR a.Email LIKE '%' + @email + '%')
-                ORDER BY a.UserId DESC";
+                  AND (@userName IS NULL OR {_dialect.LikeContains("UserName", "@userName")})
+                  AND (@fullName IS NULL OR {_dialect.LikeContains("FullName", "@fullName")})
+                  AND (@email   IS NULL OR {_dialect.LikeContains("a.Email", "@email")})
+                ORDER BY a.UserId DESC{_dialect.AppendLimit(_maxRows)}";
 
-            return await connection.QueryAsync<User>(sql, new { userName, fullName, email }, transaction);
+            return await connection.QueryAsync<User>(sql, new
+            {
+                userName = string.IsNullOrWhiteSpace(userName) ? null : $"%{userName}%",
+                fullName = string.IsNullOrWhiteSpace(fullName) ? null : $"%{fullName}%",
+                email = string.IsNullOrWhiteSpace(email) ? null : $"%{email}%"
+            }, transaction);
         }
 
     }

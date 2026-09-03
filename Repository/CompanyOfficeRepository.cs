@@ -1,129 +1,134 @@
+using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
-using System.Data;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 
 namespace Repository
 {
-    // Detail version (child-aware): unified style with whereClauses + parameters
-    public partial class CompanyOfficeRepository : ICompanyOfficeRepository
+    public partial class CompanyOfficeRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : ICompanyOfficeRepository
     {
-        private readonly RepositoryContext _context;
-        private readonly IUserContext _userContext;
-
-        public CompanyOfficeRepository(RepositoryContext context, IUserContext userContext)
-        {
-            _context = context;
-            _userContext = userContext;
-        }
+        private readonly string _table = dialect.Qualify("app", "CompanyOffice");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
         public async Task<CompanyOffice?> GetCompanyOfficeAsync(Guid companyOfficeGuid, bool trackChanges)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                , ISNULL(sri0.StandardReferenceItemName, '') AS AddressTypeName
-                , ISNULL(c.CityName, '') AS CityName
-                , ISNULL(p.ProvinceName, '') AS StateName
-                , ISNULL(co.CountryName, '') AS CountryName
-                FROM [app].[CompanyOffice] a
-                OUTER APPLY (
-                    SELECT StandardReferenceItemName
-                    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
-                    WHERE StandardReferenceItemId = a.SrAddressType
-                ) sri0
-                LEFT JOIN [core].[City] c ON a.CityId = c.CityId
-                LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
-                LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_CityId.CityName AS CityName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CountryId.CountryName AS CountryName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAddressType.StandardReferenceItemName")} AS AddressTypeName
+
+
+                FROM {_table} a
+LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
+
                 WHERE a.CompanyOfficeGuid = @companyOfficeGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
             return await connection.QuerySingleOrDefaultAsync<CompanyOffice>(sql, new { companyOfficeGuid });
         }
 
-        public async Task<CompanyOffice?> GetCompanyOfficeByIdAsync(long companyOfficeId, bool trackChanges)
+        public async Task<CompanyOffice?> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid)
         {
-            using var connection = _context.CreateConnection();
+            using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                , ISNULL(sri0.StandardReferenceItemName, '') AS AddressTypeName
-                , ISNULL(c.CityName, '') AS CityName
-                , ISNULL(p.ProvinceName, '') AS StateName
-                , ISNULL(co.CountryName, '') AS CountryName
-                FROM [app].[CompanyOffice] a
-                OUTER APPLY (
-                    SELECT StandardReferenceItemName
-                    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
-                    WHERE StandardReferenceItemId = a.SrAddressType
-                ) sri0
-                LEFT JOIN [core].[City] c ON a.CityId = c.CityId
-                LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
-                LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
-                WHERE a.CompanyOfficeId = @companyOfficeId
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_CityId.CityName AS CityName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CountryId.CountryName AS CountryName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAddressType.StandardReferenceItemName")} AS AddressTypeName
+
+
+                FROM {_table} a
+LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
+
+                WHERE j_CompanyId.CompanyGuid = @companyGuid
+                  AND a.CompanyOfficeGuid = @companyOfficeGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
-            return await connection.QuerySingleOrDefaultAsync<CompanyOffice>(sql, new { companyOfficeId });
+            return await connection.QuerySingleOrDefaultAsync<CompanyOffice>(sql, new { companyGuid, companyOfficeGuid });
         }
 
-        public async Task<IEnumerable<CompanyOffice>> GetAllCompanyOfficesAsync(bool trackChanges)
+        public async Task<IEnumerable<CompanyOffice>> GetAllByCompanyGuidAsync(Guid companyGuid)
         {
-            using var connection = _context.CreateConnection();
-            var sql = @"
-                SELECT a.*
-                , ISNULL(sri0.StandardReferenceItemName, '') AS AddressTypeName
-                , ISNULL(c.CityName, '') AS CityName
-                , ISNULL(p.ProvinceName, '') AS StateName
-                , ISNULL(co.CountryName, '') AS CountryName
-                FROM [app].[CompanyOffice] a
-                OUTER APPLY (
-                    SELECT StandardReferenceItemName
-                    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
-                    WHERE StandardReferenceItemId = a.SrAddressType
-                ) sri0
-                LEFT JOIN [core].[City] c ON a.CityId = c.CityId
-                LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
-                LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
-                WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.CompanyOfficeId DESC";
-            return await connection.QueryAsync<CompanyOffice>(sql);
+            using var connection = context.CreateConnection();
+            var sql = $@"
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_CityId.CityName AS CityName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CountryId.CountryName AS CountryName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAddressType.StandardReferenceItemName")} AS AddressTypeName
+
+
+                FROM {_table} a
+LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
+
+                WHERE j_CompanyId.CompanyGuid = @companyGuid
+                  AND a.StatusId > 0
+                  AND a.DeletedTime IS NULL
+                ORDER BY a.CompanyOfficeId DESC{dialect.AppendLimit(_maxRows)}";
+            return await connection.QueryAsync<CompanyOffice>(sql, new { companyGuid });
         }
 
         public async Task CreateCompanyOfficeAsync(CompanyOffice companyOffice, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampCreate(companyOffice);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[CompanyOffice]
-                (CompanyOfficeGuid, CreatedById, StatusId, CreatedTime, CompanyId, CompanyGuid, CompanyOfficeName, SrAddressType, CountryId, StateId, CityId, PostalCodeId, Address)
+            var conn = transaction?.Connection ?? context.CreateConnection();
+            var sql = $@"
+                INSERT INTO {_table}
+                (CompanyOfficeGuid, CompanyId, CompanyGuid, CreatedById, StatusId, CreatedTime, [CompanyOfficeName], [SrAddressType], [CountryId], [StateId], [CityId], [PostalCodeId], [Address])
                 VALUES
-                (@CompanyOfficeGuid, @CreatedById, @StatusId, @CreatedTime, @CompanyId, @CompanyGuid, @CompanyOfficeName, @SrAddressType, @CountryId, @StateId, @CityId, @PostalCodeId, @Address);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@CompanyOfficeGuid, @CompanyId, @CompanyGuid, @CreatedById, @StatusId, @CreatedTime, @CompanyOfficeName, @SrAddressType, @CountryId, @StateId, @CityId, @PostalCodeId, @Address);
+                {dialect.ReturnIdentitySuffix("CompanyOfficeId")}";
             companyOffice.CompanyOfficeId = await conn.QuerySingleAsync<long>(sql, companyOffice, transaction);
         }
 
         public async Task UpdateCompanyOfficeAsync(CompanyOffice companyOffice, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampUpdate(companyOffice);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-
-            const string sql = @"
-                UPDATE [app].[CompanyOffice]
-                SET CompanyId = @CompanyId,
-                                      CompanyGuid = @CompanyGuid,
-                                      CompanyOfficeName = @CompanyOfficeName,
-                                      SrAddressType = @SrAddressType,
-                                      CountryId = @CountryId,
-                                      StateId = @StateId,
-                                      CityId = @CityId,
-                                      PostalCodeId = @PostalCodeId,
-                                      Address = @Address,
-                                      UpdatedById = @UpdatedById,
-                                      UpdatedTime = @UpdatedTime,
-                                      StatusId = @StatusId
+            var conn = transaction?.Connection ?? context.CreateConnection();
+            var sql = $@"
+                UPDATE {_table}
+                SET                     [CompanyId] = @CompanyId,
+                    [CompanyOfficeName] = @CompanyOfficeName,
+                    [SrAddressType] = @SrAddressType,
+                    [CountryId] = @CountryId,
+                    [StateId] = @StateId,
+                    [CityId] = @CityId,
+                    [PostalCodeId] = @PostalCodeId,
+                    [Address] = @Address,
+                    StatusId = @StatusId,
+                    UpdatedById = @UpdatedById,
+                    UpdatedTime = @UpdatedTime
                 WHERE CompanyOfficeGuid = @CompanyOfficeGuid";
             await conn.ExecuteAsync(sql, companyOffice, transaction);
         }
@@ -131,10 +136,9 @@ namespace Repository
         public async Task SoftDeleteCompanyOfficeAsync(CompanyOffice companyOffice, long deletedBy, IDbTransaction? transaction = null)
         {
             AuditTimestampHelper.StampSoftDelete(companyOffice, deletedBy);
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-
-            const string sql = @"
-                UPDATE [app].[CompanyOffice]
+            var conn = transaction?.Connection ?? context.CreateConnection();
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -145,162 +149,75 @@ namespace Repository
 
         public async Task DeleteCompanyOfficeAsync(Guid companyOfficeGuid, IDbTransaction? transaction = null)
         {
-            var conn = transaction?.Connection ?? _context.CreateConnection();
-
-            const string sql = @"
-                DELETE FROM [app].[CompanyOffice]
-                WHERE CompanyOfficeGuid = @companyOfficeGuid";
+            var conn = transaction?.Connection ?? context.CreateConnection();
+            var sql = $@"DELETE FROM {_table} WHERE CompanyOfficeGuid = @companyOfficeGuid";
             await conn.ExecuteAsync(sql, new { companyOfficeGuid }, transaction);
         }
 
+        public async Task DeleteByCompanyGuidAsync(Guid companyGuid, IDbTransaction? transaction = null)
+        {
+            var conn = transaction?.Connection ?? context.CreateConnection();
+            var sql = $@"DELETE FROM {_table} WHERE CompanyId IN (SELECT CompanyId FROM [app].[Company] WHERE CompanyGuid = @companyGuid)";
+            await conn.ExecuteAsync(sql, new { companyGuid }, transaction);
+        }
+
         public async Task<IEnumerable<CompanyOffice>> SearchCompanyOfficeAsync(
-            string? companyOfficeName, string? companyOfficeNameSearchType,
-            long? srAddressType,
-            long? countryId, 
-            long? stateId, 
-            long? cityId, 
-            string? postalCodeId, string? postalCodeIdSearchType,
-            string? address, string? addressSearchType, 
+            string? companyOfficeName,
+            string? companyOfficeNameSearchType,
+            string? address,
+            string? addressSearchType,
             Guid companyGuid, Guid companyOfficeGuid,
             IDbTransaction? transaction = null)
         {
-            using var connection = _context.CreateConnection();
-
-            var whereClauses = new List<string>
-            {
-                "a.StatusId > 0",
-                "a.DeletedTime IS NULL"
-            };
+            var connection = transaction?.Connection ?? context.CreateConnection();
+            List<string> whereClauses = [ "a.StatusId > 0", "a.DeletedTime IS NULL" ];
             var parameters = new DynamicParameters();
 
-            // 🔍 CompanyOfficeName
-if (!string.IsNullOrWhiteSpace(companyOfficeName))
-{
-    var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeName", "@companyOfficeName", companyOfficeNameSearchType, parameters, "companyOfficeName", companyOfficeName);
-    if (!string.IsNullOrWhiteSpace(param))
-        whereClauses.Add(param);
-}
-
-// 🔍 Address
-if (!string.IsNullOrWhiteSpace(address))
-{
-    var param = SqlFilterHelper.BuildFilter("a.Address", "@address", addressSearchType, parameters, "address", address);
-    if (!string.IsNullOrWhiteSpace(param))
-        whereClauses.Add(param);
-}
-
-// 🔍 PostalCodeId
-if (!string.IsNullOrWhiteSpace(postalCodeId))
-{
-    var param = SqlFilterHelper.BuildFilter("a.PostalCodeId", "@postalCodeId", postalCodeIdSearchType, parameters, "postalCodeId", postalCodeId);
-    if (!string.IsNullOrWhiteSpace(param))
-        whereClauses.Add(param);
-}
-
-// 🔍 Exact matches
-if (srAddressType.HasValue) { whereClauses.Add("a.SrAddressType = @srAddressType"); parameters.Add("srAddressType", srAddressType.Value); }
-if (countryId.HasValue) { whereClauses.Add("a.CountryId = @countryId"); parameters.Add("countryId", countryId.Value); }
-if (stateId.HasValue) { whereClauses.Add("a.StateId = @stateId"); parameters.Add("stateId", stateId.Value); }
-if (cityId.HasValue) { whereClauses.Add("a.CityId = @cityId"); parameters.Add("cityId", cityId.Value); }
-
-            // 🔒 Scope: Company/Office/Global
-            if (_userContext.IsAdmin)
+            if (companyGuid != Guid.Empty)
             {
-                whereClauses.Add(@"(
-                    (a.CompanyGuid = @companyGuid AND a.CompanyOfficeGuid = @companyOfficeGuid)
-                    OR (a.CompanyGuid = @companyGuid AND a.CompanyOfficeGuid = '00000000-0000-0000-0000-000000000000')
-                    OR (a.CompanyGuid = '00000000-0000-0000-0000-000000000000' AND a.CompanyOfficeGuid = '00000000-0000-0000-0000-000000000000'))");
-                parameters.Add("companyGuid", companyGuid);
-                parameters.Add("companyOfficeGuid", companyOfficeGuid);
+                whereClauses.Add("j_CompanyId.CompanyGuid = @companyGuid");
+                parameters.Add("@companyGuid", companyGuid);
             }
-            else if (_userContext.CompanyId.HasValue)
+            if (companyOfficeGuid != Guid.Empty)
             {
-                whereClauses.Add("a.CompanyId = @contextCompanyId");
-                parameters.Add("contextCompanyId", _userContext.CompanyId.Value);
-
-                if (_userContext.OfficeId.HasValue)
-                {
-                    whereClauses.Add("(a.CompanyOfficeId = @contextOfficeId OR a.CompanyOfficeId = 0)");
-                    parameters.Add("contextOfficeId", _userContext.OfficeId.Value);
-                }
+                whereClauses.Add("a.CompanyOfficeGuid = @companyOfficeGuid");
+                parameters.Add("@companyOfficeGuid", companyOfficeGuid);
             }
-            else
+
+            if (!string.IsNullOrWhiteSpace(companyOfficeName))
             {
-                // Non-admin without any company scope selected = should see nothing or only global
-                whereClauses.Add("a.CompanyId = -1"); 
+                var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeName", "@companyOfficeName", companyOfficeNameSearchType, parameters, "companyOfficeName", companyOfficeName, dialect);
+                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
+            }
+
+            if (!string.IsNullOrWhiteSpace(address))
+            {
+                var param = SqlFilterHelper.BuildFilter("a.Address", "@address", addressSearchType, parameters, "address", address, dialect);
+                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT a.*
-                , ISNULL(sri0.StandardReferenceItemName, '') AS AddressTypeName
-                , ISNULL(c.CityName, '') AS CityName
-                , ISNULL(p.ProvinceName, '') AS StateName
-                , ISNULL(co.CountryName, '') AS CountryName
-                FROM [app].[CompanyOffice] a
-                OUTER APPLY (
-                    SELECT StandardReferenceItemName
-                    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
-                    WHERE StandardReferenceItemId = a.SrAddressType
-                ) sri0
-                LEFT JOIN [core].[City] c ON a.CityId = c.CityId
-                LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
-                LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_CityId.CityName AS CityName
+, j_CompanyId.CompanyName AS CompanyName
+, j_CountryId.CountryName AS CountryName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAddressType.StandardReferenceItemName")} AS AddressTypeName
+
+
+                FROM {_table} a
+LEFT JOIN [core].[City] j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN [core].[Country] j_CountryId ON a.CountryId = j_CountryId.CountryId
+OUTER APPLY (
+    SELECT StandardReferenceItemName
+    FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
+    WHERE StandardReferenceItemId = a.SrAddressType
+) v_SrAddressType
+
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.CompanyOfficeId DESC";
+                ORDER BY a.CompanyOfficeId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<CompanyOffice>(sql, parameters, transaction);
         }
-
-        // Detail helpers (only emitted if entity has a parent)
-        public async Task<IEnumerable<CompanyOffice>> GetAllByCompanyGuidAsync(Guid companyGuid)
-        {
-            using var connection = _context.CreateConnection();
-            var sql = $@"SELECT a.*
-                        , ISNULL(sri0.StandardReferenceItemName, '') AS AddressTypeName
-                        , ISNULL(c.CityName, '') AS CityName
-                        , ISNULL(p.ProvinceName, '') AS StateName
-                        , ISNULL(co.CountryName, '') AS CountryName
-                        FROM [app].[CompanyOffice] a
-                        OUTER APPLY (
-                            SELECT StandardReferenceItemName
-                            FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
-                            WHERE StandardReferenceItemId = a.SrAddressType
-                        ) sri0
-                        LEFT JOIN [core].[City] c ON a.CityId = c.CityId
-                        LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
-                        LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
-                        WHERE a.CompanyGuid = @companyGuid AND a.StatusId > 0 AND a.DeletedTime IS NULL
-                        ORDER BY a.CompanyOfficeId DESC";
-            return await connection.QueryAsync<CompanyOffice>(sql, new { companyGuid });
-        }
-
-        public async Task<CompanyOffice?> GetByCompanyGuidAndCompanyOfficeGuidAsync(Guid companyGuid, Guid companyOfficeGuid)
-        {
-            using var connection = _context.CreateConnection();
-            var sql = $@"SELECT a.*
-                        , ISNULL(sri0.StandardReferenceItemName, '') AS AddressTypeName
-                        , ISNULL(c.CityName, '') AS CityName
-                        , ISNULL(p.ProvinceName, '') AS StateName
-                        , ISNULL(co.CountryName, '') AS CountryName
-                        FROM [app].[CompanyOffice] a
-                        OUTER APPLY (
-                            SELECT StandardReferenceItemName
-                            FROM [app].[fn_GetStandardReferenceItems](a.CompanyId, a.CompanyOfficeId, NULL, 'AddressType')
-                            WHERE StandardReferenceItemId = a.SrAddressType
-                        ) sri0
-                        LEFT JOIN [core].[City] c ON a.CityId = c.CityId
-                        LEFT JOIN [core].[Province] p ON a.StateId = p.ProvinceId
-                        LEFT JOIN [core].[Country] co ON a.CountryId = co.CountryId
-                        WHERE a.CompanyGuid = @companyGuid
-                          AND a.CompanyOfficeGuid = @companyOfficeGuid
-                          AND a.StatusId > 0 AND a.DeletedTime IS NULL";
-
-            return await connection.QuerySingleOrDefaultAsync<CompanyOffice>(sql, new {
-                companyGuid,
-                companyOfficeGuid
-            });
-        }
     }
 }
-
-

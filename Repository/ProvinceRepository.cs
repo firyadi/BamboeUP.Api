@@ -4,6 +4,7 @@ using Dapper;
 using Entities.Models;
 using System.Data;
 using System.Text;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -12,19 +13,25 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public ProvinceRepository(RepositoryContext context, IAuditService auditService)
+
+        public ProvinceRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
             _auditService = auditService;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "Province");
         }
 
         public async Task<Province?> GetProvinceAsync(Guid countryGuid, Guid provinceGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) p.* 
-                FROM [core].[Province] p
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} 
+                FROM {_table} p
                 INNER JOIN [core].[Country] c ON p.CountryId = c.CountryId
                 WHERE p.ProvinceGuid = @provinceGuid AND c.CountryGuid = @countryGuid AND p.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<Province>(sql, new { provinceGuid, countryGuid });
@@ -34,11 +41,11 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[Province] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 INNER JOIN [core].[Country] c ON a.CountryId = c.CountryId
                 WHERE c.CountryGuid = @countryGuid AND a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.ProvinceId DESC";
+                ORDER BY a.ProvinceId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Province>(sql, new { countryGuid });
         }
@@ -47,7 +54,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(province);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[Province]
+            var sql = $@"INSERT INTO {_table}
                                  (ProvinceGuid, ProvinceName, CountryId, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@ProvinceGuid, @ProvinceName, @CountryId, @StatusId, @CreatedById, @CreatedTime)";
@@ -67,10 +74,10 @@ namespace Repository
             AuditTimestampHelper.StampUpdate(province);
             var conn = transaction?.Connection ?? _context.CreateConnection();
             
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Province] WHERE ProvinceGuid = @ProvinceGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE ProvinceGuid = @ProvinceGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<Province>(getSql, new { province.ProvinceGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[Province]
+            var sql = $@"UPDATE {_table}
                                  SET ProvinceName = @ProvinceName,
                                      StatusId = @StatusId,
                                      UpdatedById = @UpdatedById,
@@ -91,10 +98,10 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(province, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Province] WHERE ProvinceGuid = @ProvinceGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE ProvinceGuid = @ProvinceGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<Province>(getSql, new { province.ProvinceGuid }, transaction);
 
-            const string sql = @"UPDATE [core].[Province]
+            var sql = $@"UPDATE {_table}
                          SET StatusId = 0,
                              DeletedById = @DeletedById,
                              DeletedTime = @DeletedTime
@@ -114,10 +121,10 @@ namespace Repository
         public async Task DeleteProvinceAsync(Guid provinceGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            var getSql = $"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Province] WHERE ProvinceGuid = @ProvinceGuid";
+            var getSql = $"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} FROM {_table} WHERE ProvinceGuid = @ProvinceGuid";
             var oldData = await conn.QuerySingleOrDefaultAsync<Province>(getSql, new { provinceGuid }, transaction);
 
-            const string sql = @"DELETE FROM [core].[Province]
+            var sql = $@"DELETE FROM {_table}
                                  WHERE ProvinceGuid = @provinceGuid";
             await conn.ExecuteAsync(sql, new { provinceGuid }, transaction);
 
@@ -149,16 +156,16 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(provinceName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ProvinceName", "@provinceName", provinceNameSearchType, parameters, "provinceName", provinceName);
+                var param = SqlFilterHelper.BuildFilter("a.ProvinceName", "@provinceName", provinceNameSearchType, parameters, "provinceName", provinceName, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
             SELECT a.*
-            FROM [core].[Province] a
+            FROM {_table} a
             INNER JOIN [core].[Country] c ON a.CountryId = c.CountryId
             WHERE {string.Join(" AND ", whereClauses)}
-            ORDER BY a.ProvinceId DESC";
+            ORDER BY a.ProvinceId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Province>(sql, parameters, transaction);
         }

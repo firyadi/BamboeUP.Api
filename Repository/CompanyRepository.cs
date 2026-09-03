@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,21 +11,23 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class CompanyRepository(RepositoryContext context, IAuditService audit) : ICompanyRepository
+    public partial class CompanyRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : ICompanyRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Company");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<Company?> GetCompanyAsync(Guid companyGuid, bool trackChanges)
+public async Task<Company?> GetCompanyAsync(Guid companyGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_LeaderId.LeaderName AS LeaderName
-, j_ParentCompanyId.ParentCompanyName AS ParentCompanyName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_LeaderId.PersonName AS LeaderName
+, j_ParentCompanyId.CompanyName AS ParentCompanyName
 
 
-                FROM [app].[Company] a
-LEFT JOIN [app].[Person] j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
-LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
+LEFT JOIN {dialect.Qualify("app", "Company")} j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
 
                 WHERE a.CompanyGuid = @companyGuid
                   AND a.StatusId > 0
@@ -36,14 +39,14 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_LeaderId.LeaderName AS LeaderName
-, j_ParentCompanyId.ParentCompanyName AS ParentCompanyName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_LeaderId.PersonName AS LeaderName
+, j_ParentCompanyId.CompanyName AS ParentCompanyName
 
 
-                FROM [app].[Company] a
-LEFT JOIN [app].[Person] j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
-LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
+LEFT JOIN {dialect.Qualify("app", "Company")} j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
 
                 WHERE j_LeaderId.PersonGuid = @personGuid
                   AND a.CompanyGuid = @companyGuid
@@ -56,19 +59,19 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_LeaderId.LeaderName AS LeaderName
-, j_ParentCompanyId.ParentCompanyName AS ParentCompanyName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_LeaderId.PersonName AS LeaderName
+, j_ParentCompanyId.CompanyName AS ParentCompanyName
 
 
-                FROM [app].[Company] a
-LEFT JOIN [app].[Person] j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
-LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
+LEFT JOIN {dialect.Qualify("app", "Company")} j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
 
                 WHERE j_LeaderId.PersonGuid = @personGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.CompanyId DESC";
+                ORDER BY a.CompanyId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Company>(sql, new { personGuid });
         }
 
@@ -76,12 +79,11 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
         {
             AuditTimestampHelper.StampCreate(company);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Company]
+            var sql = $@"
+                INSERT INTO {_table}
                 (CompanyGuid, LeaderId, CreatedById, StatusId, CreatedTime, [CompanyName], [InitialName], [TaxCompulsionNo], [RegistrationNo], [ParentCompanyId], [DefaultCurrency], [CompanyLogo])
                 VALUES
-                (@CompanyGuid, @LeaderId, @CreatedById, @StatusId, @CreatedTime, @CompanyName, @InitialName, @TaxCompulsionNo, @RegistrationNo, @ParentCompanyId, @DefaultCurrency, @CompanyLogo);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@CompanyGuid, @LeaderId, @CreatedById, @StatusId, @CreatedTime, @CompanyName, @InitialName, @TaxCompulsionNo, @RegistrationNo, @ParentCompanyId, @DefaultCurrency, @CompanyLogo){dialect.ReturnIdentitySuffix("CompanyId")}";
             company.CompanyId = await conn.QuerySingleAsync<long>(sql, company, transaction);
         }
 
@@ -89,8 +91,8 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
         {
             AuditTimestampHelper.StampUpdate(company);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Company]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [LeaderId] = @LeaderId,
                     [CompanyName] = @CompanyName,
                     [InitialName] = @InitialName,
@@ -110,8 +112,8 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
         {
             AuditTimestampHelper.StampSoftDelete(company, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Company]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -123,14 +125,14 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
         public async Task DeleteCompanyAsync(Guid companyGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Company] WHERE CompanyGuid = @companyGuid";
+            var sql = $@"DELETE FROM {_table} WHERE CompanyGuid = @companyGuid";
             await conn.ExecuteAsync(sql, new { companyGuid }, transaction);
         }
 
         public async Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Company] WHERE LeaderId IN (SELECT PersonId FROM [app].[Person] WHERE PersonGuid = @personGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE LeaderId IN (SELECT PersonId FROM {dialect.Qualify("app", "Person")} WHERE PersonGuid = @personGuid)";
             await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
@@ -167,52 +169,52 @@ LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompa
 
             if (!string.IsNullOrWhiteSpace(companyName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyName", "@companyName", companyNameSearchType, parameters, "companyName", companyName);
+                var param = SqlFilterHelper.BuildFilter("a.CompanyName", "@companyName", companyNameSearchType, parameters, "companyName", companyName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(initialName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.InitialName", "@initialName", initialNameSearchType, parameters, "initialName", initialName);
+                var param = SqlFilterHelper.BuildFilter("a.InitialName", "@initialName", initialNameSearchType, parameters, "initialName", initialName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(taxCompulsionNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.TaxCompulsionNo", "@taxCompulsionNo", taxCompulsionNoSearchType, parameters, "taxCompulsionNo", taxCompulsionNo);
+                var param = SqlFilterHelper.BuildFilter("a.TaxCompulsionNo", "@taxCompulsionNo", taxCompulsionNoSearchType, parameters, "taxCompulsionNo", taxCompulsionNo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(registrationNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.RegistrationNo", "@registrationNo", registrationNoSearchType, parameters, "registrationNo", registrationNo);
+                var param = SqlFilterHelper.BuildFilter("a.RegistrationNo", "@registrationNo", registrationNoSearchType, parameters, "registrationNo", registrationNo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(defaultCurrency))
             {
-                var param = SqlFilterHelper.BuildFilter("a.DefaultCurrency", "@defaultCurrency", defaultCurrencySearchType, parameters, "defaultCurrency", defaultCurrency);
+                var param = SqlFilterHelper.BuildFilter("a.DefaultCurrency", "@defaultCurrency", defaultCurrencySearchType, parameters, "defaultCurrency", defaultCurrency, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(companyLogo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyLogo", "@companyLogo", companyLogoSearchType, parameters, "companyLogo", companyLogo);
+                var param = SqlFilterHelper.BuildFilter("a.CompanyLogo", "@companyLogo", companyLogoSearchType, parameters, "companyLogo", companyLogo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, j_LeaderId.LeaderName AS LeaderName
-, j_ParentCompanyId.ParentCompanyName AS ParentCompanyName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_LeaderId.PersonName AS LeaderName
+, j_ParentCompanyId.CompanyName AS ParentCompanyName
 
 
-                FROM [app].[Company] a
-LEFT JOIN [app].[Person] j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
-LEFT JOIN [app].[Company] j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_LeaderId ON a.LeaderId = j_LeaderId.PersonId
+LEFT JOIN {dialect.Qualify("app", "Company")} j_ParentCompanyId ON a.ParentCompanyId = j_ParentCompanyId.CompanyId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.CompanyId DESC";
+                ORDER BY a.CompanyId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Company>(sql, parameters, transaction);
         }

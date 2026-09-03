@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -11,10 +12,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public UserCompanyScopeRepository(RepositoryContext context, IAuditService auditService)
+        public UserCompanyScopeRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -22,12 +26,12 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ucs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ucs.*")},
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserCompanyScope] ucs
-                JOIN    [app].[Company]            c  ON c.CompanyId        = ucs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserCompanyScope")} ucs
+                JOIN    {_dialect.Qualify("app", "Company")}            c  ON c.CompanyId        = ucs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
                 WHERE   ucs.UserCompanyScopeGuid = @userCompanyScopeGuid
                   AND   ucs.StatusId > 0
                   AND   ucs.DeletedTime IS NULL";
@@ -38,12 +42,12 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ucs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ucs.*")},
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserCompanyScope] ucs
-                JOIN    [app].[Company]            c  ON c.CompanyId        = ucs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserCompanyScope")} ucs
+                JOIN    {_dialect.Qualify("app", "Company")}            c  ON c.CompanyId        = ucs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
                 WHERE   ucs.StatusId > 0 AND ucs.DeletedTime IS NULL
                 ORDER BY ucs.UserCompanyScopeId DESC";
             return await connection.QueryAsync<UserCompanyScope>(sql);
@@ -53,12 +57,12 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ucs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ucs.*")},
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserCompanyScope] ucs
-                JOIN    [app].[Company]            c  ON c.CompanyId        = ucs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserCompanyScope")} ucs
+                JOIN    {_dialect.Qualify("app", "Company")}            c  ON c.CompanyId        = ucs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
                 WHERE   ucs.UserId = @userId
                   AND   ucs.StatusId > 0
                   AND   ucs.DeletedTime IS NULL
@@ -70,12 +74,12 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) ucs.*,
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "ucs.*")},
                         c.CompanyName,
                         co.CompanyOfficeName
-                FROM    [core].[UserCompanyScope] ucs
-                JOIN    [app].[Company]            c  ON c.CompanyId        = ucs.CompanyId
-                LEFT JOIN [app].[CompanyOffice]    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
+                FROM    {_dialect.Qualify("core", "UserCompanyScope")} ucs
+                JOIN    {_dialect.Qualify("app", "Company")}            c  ON c.CompanyId        = ucs.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co ON co.CompanyOfficeId = ucs.CompanyOfficeId
                 WHERE   ucs.UserId = @userId
                   AND   ucs.UserCompanyScopeGuid = @userCompanyScopeGuid
                   AND   ucs.StatusId > 0
@@ -90,16 +94,15 @@ namespace Repository
             entity.UserCompanyScopeGuid = Guid.NewGuid();
             entity.StatusId = 1;
 
-            const string sql = @"
-                INSERT INTO [core].[UserCompanyScope]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("core", "UserCompanyScope")}
                     (UserCompanyScopeGuid, UserId, CompanyId, CompanyOfficeId,
                      IsDefaultCompany, IsDefaultOffice, StatusId,
                      CreatedById, CreatedTime)
                 VALUES
                     (@UserCompanyScopeGuid, @UserId, @CompanyId, @CompanyOfficeId,
                      @IsDefaultCompany, @IsDefaultOffice, @StatusId,
-                     @CreatedById, @CreatedTime);
-                SELECT SCOPE_IDENTITY();";
+                     @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("UserCompanyScopeId")}";
 
             entity.UserCompanyScopeId = await conn.ExecuteScalarAsync<long>(sql, entity, transaction);
 
@@ -114,8 +117,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAsync(entity.UserCompanyScopeGuid, false);
 
-            const string sql = @"
-                UPDATE [core].[UserCompanyScope]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("core", "UserCompanyScope")}
                 SET    CompanyOfficeId   = @CompanyOfficeId,
                        IsDefaultCompany = @IsDefaultCompany,
                        IsDefaultOffice  = @IsDefaultOffice,
@@ -136,8 +139,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAsync(entity.UserCompanyScopeGuid, false);
 
-            const string sql = @"
-                UPDATE [core].[UserCompanyScope]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("core", "UserCompanyScope")}
                 SET    StatusId    = 0,
                        DeletedById = @DeletedById,
                        DeletedTime = @DeletedTime
@@ -154,8 +157,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAsync(userCompanyScopeGuid, false);
 
-            const string sql = @"
-                DELETE FROM [core].[UserCompanyScope]
+            var sql = $@"
+                DELETE FROM {_dialect.Qualify("core", "UserCompanyScope")}
                 WHERE UserCompanyScopeGuid = @userCompanyScopeGuid";
             await conn.ExecuteAsync(sql, new { userCompanyScopeGuid }, transaction);
 

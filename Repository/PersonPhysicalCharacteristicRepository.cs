@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,31 +11,25 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class PersonPhysicalCharacteristicRepository(RepositoryContext context, IAuditService audit) : IPersonPhysicalCharacteristicRepository
+    public partial class PersonPhysicalCharacteristicRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonPhysicalCharacteristicRepository
     {
+        private readonly string _table = dialect.Qualify("app", "PersonPhysicalCharacteristic");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<PersonPhysicalCharacteristic?> GetPersonPhysicalCharacteristicAsync(Guid personPhysicalCharacteristicGuid, bool trackChanges)
+public async Task<PersonPhysicalCharacteristic?> GetPersonPhysicalCharacteristicAsync(Guid personPhysicalCharacteristicGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.FirstName AS FirstName
-, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
-, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMeasurementUnit.StandardReferenceItemName")} AS MeasurementUnitName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrPhysicalCharacteristic.StandardReferenceItemName")} AS PhysicalCharacteristicName
 
 
-                FROM [app].[PersonPhysicalCharacteristic] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
-    WHERE StandardReferenceItemId = a.SrMeasurementUnit
-) v_SrMeasurementUnit
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
-    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
-) v_SrPhysicalCharacteristic
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMeasurementUnit", "SrMeasurementUnit", "MeasurementUnit")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrPhysicalCharacteristic", "SrPhysicalCharacteristic", "PhysicalCharacteristic")}
 
                 WHERE a.PersonPhysicalCharacteristicGuid = @personPhysicalCharacteristicGuid
                   AND a.StatusId > 0
@@ -46,24 +41,16 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.FirstName AS FirstName
-, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
-, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMeasurementUnit.StandardReferenceItemName")} AS MeasurementUnitName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrPhysicalCharacteristic.StandardReferenceItemName")} AS PhysicalCharacteristicName
 
 
-                FROM [app].[PersonPhysicalCharacteristic] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
-    WHERE StandardReferenceItemId = a.SrMeasurementUnit
-) v_SrMeasurementUnit
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
-    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
-) v_SrPhysicalCharacteristic
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMeasurementUnit", "SrMeasurementUnit", "MeasurementUnit")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrPhysicalCharacteristic", "SrPhysicalCharacteristic", "PhysicalCharacteristic")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonPhysicalCharacteristicGuid = @personPhysicalCharacteristicGuid
@@ -76,29 +63,21 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.FirstName AS FirstName
-, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
-, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMeasurementUnit.StandardReferenceItemName")} AS MeasurementUnitName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrPhysicalCharacteristic.StandardReferenceItemName")} AS PhysicalCharacteristicName
 
 
-                FROM [app].[PersonPhysicalCharacteristic] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
-    WHERE StandardReferenceItemId = a.SrMeasurementUnit
-) v_SrMeasurementUnit
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
-    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
-) v_SrPhysicalCharacteristic
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMeasurementUnit", "SrMeasurementUnit", "MeasurementUnit")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrPhysicalCharacteristic", "SrPhysicalCharacteristic", "PhysicalCharacteristic")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.PersonPhysicalCharacteristicId DESC";
+                ORDER BY a.PersonPhysicalCharacteristicId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<PersonPhysicalCharacteristic>(sql, new { personGuid });
         }
 
@@ -106,12 +85,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(personPhysicalCharacteristic);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[PersonPhysicalCharacteristic]
+            var sql = $@"
+                INSERT INTO {_table}
                 (PersonPhysicalCharacteristicGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrPhysicalCharacteristic], [PhysicalValue], [SrMeasurementUnit], [RecordedDate], [Remarks])
                 VALUES
-                (@PersonPhysicalCharacteristicGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrPhysicalCharacteristic, @PhysicalValue, @SrMeasurementUnit, @RecordedDate, @Remarks);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@PersonPhysicalCharacteristicGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrPhysicalCharacteristic, @PhysicalValue, @SrMeasurementUnit, @RecordedDate, @Remarks){dialect.ReturnIdentitySuffix("PersonPhysicalCharacteristicId")}";
             personPhysicalCharacteristic.PersonPhysicalCharacteristicId = await conn.QuerySingleAsync<long>(sql, personPhysicalCharacteristic, transaction);
         }
 
@@ -119,8 +97,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(personPhysicalCharacteristic);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonPhysicalCharacteristic]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [PersonId] = @PersonId,
                     [SrPhysicalCharacteristic] = @SrPhysicalCharacteristic,
                     [PhysicalValue] = @PhysicalValue,
@@ -138,8 +116,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(personPhysicalCharacteristic, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonPhysicalCharacteristic]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -151,14 +129,14 @@ OUTER APPLY (
         public async Task DeletePersonPhysicalCharacteristicAsync(Guid personPhysicalCharacteristicGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonPhysicalCharacteristic] WHERE PersonPhysicalCharacteristicGuid = @personPhysicalCharacteristicGuid";
+            var sql = $@"DELETE FROM {_table} WHERE PersonPhysicalCharacteristicGuid = @personPhysicalCharacteristicGuid";
             await conn.ExecuteAsync(sql, new { personPhysicalCharacteristicGuid }, transaction);
         }
 
         public async Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonPhysicalCharacteristic] WHERE PersonId IN (SELECT PersonId FROM [app].[Person] WHERE PersonGuid = @personGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE PersonId IN (SELECT PersonId FROM {dialect.Qualify("app", "Person")} WHERE PersonGuid = @personGuid)";
             await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
@@ -189,44 +167,36 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(physicalValue))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PhysicalValue", "@physicalValue", physicalValueSearchType, parameters, "physicalValue", physicalValue);
+                var param = SqlFilterHelper.BuildFilter("a.PhysicalValue", "@physicalValue", physicalValueSearchType, parameters, "physicalValue", physicalValue, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(recordedDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.RecordedDate", "@recordedDate", recordedDateSearchType, parameters, "recordedDate", recordedDate);
+                var param = SqlFilterHelper.BuildFilter("a.RecordedDate", "@recordedDate", recordedDateSearchType, parameters, "recordedDate", recordedDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(remarks))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks);
+                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.FirstName AS FirstName
-, ISNULL(v_SrMeasurementUnit.StandardReferenceItemName, '') AS MeasurementUnitName
-, ISNULL(v_SrPhysicalCharacteristic.StandardReferenceItemName, '') AS PhysicalCharacteristicName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMeasurementUnit.StandardReferenceItemName")} AS MeasurementUnitName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrPhysicalCharacteristic.StandardReferenceItemName")} AS PhysicalCharacteristicName
 
 
-                FROM [app].[PersonPhysicalCharacteristic] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MeasurementUnit')
-    WHERE StandardReferenceItemId = a.SrMeasurementUnit
-) v_SrMeasurementUnit
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'PhysicalCharacteristic')
-    WHERE StandardReferenceItemId = a.SrPhysicalCharacteristic
-) v_SrPhysicalCharacteristic
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMeasurementUnit", "SrMeasurementUnit", "MeasurementUnit")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrPhysicalCharacteristic", "SrPhysicalCharacteristic", "PhysicalCharacteristic")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.PersonPhysicalCharacteristicId DESC";
+                ORDER BY a.PersonPhysicalCharacteristicId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<PersonPhysicalCharacteristic>(sql, parameters, transaction);
         }

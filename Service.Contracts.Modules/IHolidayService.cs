@@ -18,5 +18,7 @@ namespace Service.Contracts.Modules
             string? holidayDate, string? holidayDateSearchType, string? holidayName, string? holidayNameSearchType, string? holidayDescription, string? holidayDescriptionSearchType, string? srHolidayType, string? srHolidayTypeSearchType, string? isNational, string? isNationalSearchType, string? isCompanyHoliday, string? isCompanyHolidaySearchType
 
         );
+
+        Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(DateTime start, DateTime end, string? category = null, string? search = null);
     }
 }

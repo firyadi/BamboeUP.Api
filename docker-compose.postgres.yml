@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bamboeup-postgres-dev
+    environment:
+      POSTGRES_USER: bamboeup
+      POSTGRES_PASSWORD: bamboeup_dev
+      POSTGRES_DB: Dev_BamboeHR
+    ports:
+      - "5432:5432"
+    volumes:
+      - bamboeup_pg_data:/var/lib/postgresql/data
+      - ./Database/PostgreSQL/init-pilot.sql:/docker-entrypoint-initdb.d/01-init-pilot.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bamboeup -d Dev_BamboeHR"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  bamboeup_pg_data:

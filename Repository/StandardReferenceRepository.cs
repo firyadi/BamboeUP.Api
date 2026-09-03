@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public StandardReferenceRepository(RepositoryContext context, IAuditService auditService)
+        public StandardReferenceRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -25,8 +29,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReference] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReference")} a
                 WHERE a.StandardReferenceGuid = @standardReferenceGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -37,12 +41,12 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*,
-                       (SELECT COUNT(*) FROM [app].[StandardReferenceItem] i WHERE i.StandardReferenceId = a.StandardReferenceId AND i.StatusId > 0 AND i.DeletedTime IS NULL) AS DefaultItemsCount,
-                       (SELECT COUNT(*) FROM [app].[StandardReferenceScope] s WHERE s.StandardReferenceId = a.StandardReferenceId AND s.StatusId > 0 AND s.DeletedTime IS NULL) AS ScopesCount
-                FROM [app].[StandardReference] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")},
+                       (SELECT COUNT(*) FROM {_dialect.Qualify("app", "StandardReferenceItem")} i WHERE i.StandardReferenceId = a.StandardReferenceId AND i.StatusId > 0 AND i.DeletedTime IS NULL) AS DefaultItemsCount,
+                       (SELECT COUNT(*) FROM {_dialect.Qualify("app", "StandardReferenceScope")} s WHERE s.StandardReferenceId = a.StandardReferenceId AND s.StatusId > 0 AND s.DeletedTime IS NULL) AS ScopesCount
+                FROM {_dialect.Qualify("app", "StandardReference")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.StandardReferenceId DESC";
+                ORDER BY a.StandardReferenceId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<StandardReference>(sql);
         }
 
@@ -52,8 +56,8 @@ namespace Repository
             // but we keep the method signature with empty/basic implementation returning all active ones to avoid breaking compile.
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReference] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReference")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
                   {(currentRecordGuid.HasValue && currentRecordGuid.Value != Guid.Empty ? "AND a.StandardReferenceGuid != @currentRecordGuid" : "")}
                 ORDER BY a.StandardReferenceName ASC";
@@ -64,12 +68,11 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(standardReference);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[StandardReference]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "StandardReference")}
                 (StandardReferenceGuid, CreatedById, StatusId, CreatedTime, StandardReferenceInitial, StandardReferenceName, Description)
                 VALUES
-                (@StandardReferenceGuid, @CreatedById, @StatusId, @CreatedTime, @StandardReferenceInitial, @StandardReferenceName, @Description);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@StandardReferenceGuid, @CreatedById, @StatusId, @CreatedTime, @StandardReferenceInitial, @StandardReferenceName, @Description){_dialect.ReturnIdentitySuffix("StandardReferenceId")}";
             standardReference.StandardReferenceId = await conn.QuerySingleAsync<long>(sql, standardReference, transaction);
         }
 
@@ -77,8 +80,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampUpdate(standardReference);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[StandardReference]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "StandardReference")}
                 SET StandardReferenceInitial = @StandardReferenceInitial,
                     StandardReferenceName = @StandardReferenceName,
                     Description = @Description,
@@ -93,8 +96,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(standardReference, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[StandardReference]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "StandardReference")}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -106,7 +109,7 @@ namespace Repository
         public async Task DeleteStandardReferenceAsync(Guid standardReferenceGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[StandardReference] WHERE StandardReferenceGuid = @standardReferenceGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "StandardReference")} WHERE StandardReferenceGuid = @standardReferenceGuid";
             await conn.ExecuteAsync(sql, new { standardReferenceGuid }, transaction);
         }
 
@@ -130,21 +133,21 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(standardReferenceInitial))
             {
-                var param = SqlFilterHelper.BuildFilter("a.StandardReferenceInitial", "@standardReferenceInitial", standardReferenceInitialSearchType, parameters, "standardReferenceInitial", standardReferenceInitial);
+                var param = SqlFilterHelper.BuildFilter("a.StandardReferenceInitial", "@standardReferenceInitial", standardReferenceInitialSearchType, parameters, "standardReferenceInitial", standardReferenceInitial, _dialect);
                 if (!string.IsNullOrWhiteSpace(param))
                     whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(standardReferenceName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.StandardReferenceName", "@standardReferenceName", standardReferenceNameSearchType, parameters, "standardReferenceName", standardReferenceName);
+                var param = SqlFilterHelper.BuildFilter("a.StandardReferenceName", "@standardReferenceName", standardReferenceNameSearchType, parameters, "standardReferenceName", standardReferenceName, _dialect);
                 if (!string.IsNullOrWhiteSpace(param))
                     whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(note))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", noteSearchType, parameters, "description", note);
+                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", noteSearchType, parameters, "description", note, _dialect);
                 if (!string.IsNullOrWhiteSpace(param))
                     whereClauses.Add(param);
             }
@@ -152,26 +155,14 @@ namespace Repository
             var itemFilters = new List<string>();
             if (!string.IsNullOrWhiteSpace(standardReferenceItemInitial))
             {
-                var param = SqlFilterHelper.BuildFilter(
-                    "i.StandardReferenceItemInitial",
-                    "@standardReferenceItemInitial",
-                    standardReferenceItemInitialSearchType,
-                    parameters,
-                    "standardReferenceItemInitial",
-                    standardReferenceItemInitial);
+                var param = SqlFilterHelper.BuildFilter("i.StandardReferenceItemInitial", "@standardReferenceItemInitial", standardReferenceItemInitialSearchType, parameters, "standardReferenceItemInitial", standardReferenceItemInitial, _dialect);
                 if (!string.IsNullOrWhiteSpace(param))
                     itemFilters.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(standardReferenceItemName))
             {
-                var param = SqlFilterHelper.BuildFilter(
-                    "i.StandardReferenceItemName",
-                    "@standardReferenceItemName",
-                    standardReferenceItemNameSearchType,
-                    parameters,
-                    "standardReferenceItemName",
-                    standardReferenceItemName);
+                var param = SqlFilterHelper.BuildFilter("i.StandardReferenceItemName", "@standardReferenceItemName", standardReferenceItemNameSearchType, parameters, "standardReferenceItemName", standardReferenceItemName, _dialect);
                 if (!string.IsNullOrWhiteSpace(param))
                     itemFilters.Add(param);
             }
@@ -181,7 +172,7 @@ namespace Repository
                 whereClauses.Add($@"
                     EXISTS (
                         SELECT 1
-                        FROM [app].[StandardReferenceItem] i
+                        FROM {_dialect.Qualify("app", "StandardReferenceItem")} i
                         WHERE i.StandardReferenceId = a.StandardReferenceId
                           AND i.StatusId > 0
                           AND i.DeletedTime IS NULL
@@ -191,11 +182,11 @@ namespace Repository
 
             var sql = $@"
                 SELECT a.*,
-                       (SELECT COUNT(*) FROM [app].[StandardReferenceItem] i WHERE i.StandardReferenceId = a.StandardReferenceId AND i.StatusId > 0 AND i.DeletedTime IS NULL) AS DefaultItemsCount,
-                       (SELECT COUNT(*) FROM [app].[StandardReferenceScope] s WHERE s.StandardReferenceId = a.StandardReferenceId AND s.StatusId > 0 AND s.DeletedTime IS NULL) AS ScopesCount
-                FROM [app].[StandardReference] a
+                       (SELECT COUNT(*) FROM {_dialect.Qualify("app", "StandardReferenceItem")} i WHERE i.StandardReferenceId = a.StandardReferenceId AND i.StatusId > 0 AND i.DeletedTime IS NULL) AS DefaultItemsCount,
+                       (SELECT COUNT(*) FROM {_dialect.Qualify("app", "StandardReferenceScope")} s WHERE s.StandardReferenceId = a.StandardReferenceId AND s.StatusId > 0 AND s.DeletedTime IS NULL) AS ScopesCount
+                FROM {_dialect.Qualify("app", "StandardReference")} a
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.StandardReferenceId DESC";
+                ORDER BY a.StandardReferenceId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<StandardReference>(sql, parameters, transaction);
         }

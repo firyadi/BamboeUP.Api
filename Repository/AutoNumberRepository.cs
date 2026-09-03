@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -12,10 +13,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public AutoNumberRepository(RepositoryContext context, IAuditService auditService)
+        public AutoNumberRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -23,8 +27,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumber] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumber")} a
                 WHERE a.AutoNumberGuid = @autoNumberGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -35,10 +39,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumber] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumber")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.AutoNumberId DESC";
+                ORDER BY a.AutoNumberId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<AutoNumber>(sql);
         }
 
@@ -46,8 +50,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(autoNumber);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[AutoNumber]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "AutoNumber")}
                 (AutoNumberGuid, CreatedById, StatusId, CreatedTime, Prefik, SeparatorAfterPrefik, IsUsedDepartment, SeparatorAfterDept, IsUsedYear, YearDigit, SeparatorAfterYear, IsUsedMonth, IsMonthInRomawi, SeparatorAfterMonth, IsUsedDay, SeparatorAfterDay, NumberLength, NumberGroupLength, NumberGroupSeparator, NumberFormat)
                 VALUES
                 (@AutoNumberGuid, @CreatedById, @StatusId, @CreatedTime, @Prefik, @SeparatorAfterPrefik, @IsUsedDepartment, @SeparatorAfterDept, @IsUsedYear, @YearDigit, @SeparatorAfterYear, @IsUsedMonth, @IsMonthInRomawi, @SeparatorAfterMonth, @IsUsedDay, @SeparatorAfterDay, @NumberLength, @NumberGroupLength, @NumberGroupSeparator, @NumberFormat)";
@@ -68,8 +72,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberAsync(autoNumber.AutoNumberGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[AutoNumber]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumber")}
                 SET Prefik = @Prefik,
                                       SeparatorAfterPrefik = @SeparatorAfterPrefik,
                                       IsUsedDepartment = @IsUsedDepartment,
@@ -107,8 +111,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberAsync(autoNumber.AutoNumberGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[AutoNumber]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumber")}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -130,7 +134,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberAsync(autoNumberGuid, false);
 
-            const string sql = @"DELETE FROM [app].[AutoNumber] WHERE AutoNumberGuid = @autoNumberGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "AutoNumber")} WHERE AutoNumberGuid = @autoNumberGuid";
             await conn.ExecuteAsync(sql, new { autoNumberGuid }, transaction);
 
             await _audit.LogAsync(
@@ -174,56 +178,56 @@ namespace Repository
             // 🔍 Prefik
 if (!string.IsNullOrWhiteSpace(prefik))
 {
-    var param = SqlFilterHelper.BuildFilter("a.Prefik", "@prefik", prefikSearchType, parameters, "Prefik", prefik);
+    var param = SqlFilterHelper.BuildFilter("a.Prefik", "@prefik", prefikSearchType, parameters, "Prefik", prefik, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 SeparatorAfterPrefik
 if (!string.IsNullOrWhiteSpace(separatorAfterPrefik))
 {
-    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterPrefik", "@separatorAfterPrefik", separatorAfterPrefikSearchType, parameters, "SeparatorAfterPrefik", separatorAfterPrefik);
+    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterPrefik", "@separatorAfterPrefik", separatorAfterPrefikSearchType, parameters, "SeparatorAfterPrefik", separatorAfterPrefik, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 SeparatorAfterDept
 if (!string.IsNullOrWhiteSpace(separatorAfterDept))
 {
-    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterDept", "@separatorAfterDept", separatorAfterDeptSearchType, parameters, "SeparatorAfterDept", separatorAfterDept);
+    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterDept", "@separatorAfterDept", separatorAfterDeptSearchType, parameters, "SeparatorAfterDept", separatorAfterDept, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 SeparatorAfterYear
 if (!string.IsNullOrWhiteSpace(separatorAfterYear))
 {
-    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterYear", "@separatorAfterYear", separatorAfterYearSearchType, parameters, "SeparatorAfterYear", separatorAfterYear);
+    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterYear", "@separatorAfterYear", separatorAfterYearSearchType, parameters, "SeparatorAfterYear", separatorAfterYear, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 SeparatorAfterMonth
 if (!string.IsNullOrWhiteSpace(separatorAfterMonth))
 {
-    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterMonth", "@separatorAfterMonth", separatorAfterMonthSearchType, parameters, "SeparatorAfterMonth", separatorAfterMonth);
+    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterMonth", "@separatorAfterMonth", separatorAfterMonthSearchType, parameters, "SeparatorAfterMonth", separatorAfterMonth, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 SeparatorAfterDay
 if (!string.IsNullOrWhiteSpace(separatorAfterDay))
 {
-    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterDay", "@separatorAfterDay", separatorAfterDaySearchType, parameters, "SeparatorAfterDay", separatorAfterDay);
+    var param = SqlFilterHelper.BuildFilter("a.SeparatorAfterDay", "@separatorAfterDay", separatorAfterDaySearchType, parameters, "SeparatorAfterDay", separatorAfterDay, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 NumberGroupSeparator
 if (!string.IsNullOrWhiteSpace(numberGroupSeparator))
 {
-    var param = SqlFilterHelper.BuildFilter("a.NumberGroupSeparator", "@numberGroupSeparator", numberGroupSeparatorSearchType, parameters, "NumberGroupSeparator", numberGroupSeparator);
+    var param = SqlFilterHelper.BuildFilter("a.NumberGroupSeparator", "@numberGroupSeparator", numberGroupSeparatorSearchType, parameters, "NumberGroupSeparator", numberGroupSeparator, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
 
 // 🔍 NumberFormat
 if (!string.IsNullOrWhiteSpace(numberFormat))
 {
-    var param = SqlFilterHelper.BuildFilter("a.NumberFormat", "@numberFormat", numberFormatSearchType, parameters, "NumberFormat", numberFormat);
+    var param = SqlFilterHelper.BuildFilter("a.NumberFormat", "@numberFormat", numberFormatSearchType, parameters, "NumberFormat", numberFormat, _dialect);
     if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
 }
             
@@ -231,10 +235,10 @@ if (!string.IsNullOrWhiteSpace(numberFormat))
             var sql = $@"
                 SELECT a.*
                 
-                FROM [app].[AutoNumber] a
+                FROM {_dialect.Qualify("app", "AutoNumber")} a
                 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.AutoNumberId DESC";
+                ORDER BY a.AutoNumberId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<AutoNumber>(sql, parameters, transaction);
         }

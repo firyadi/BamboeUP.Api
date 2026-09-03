@@ -7,31 +7,36 @@ using System.Data;
 using Shared.RequestFeatures;
 using System.Text;
 
+using Repository.Database;
+using Repository.Extensions;
+
 namespace Repository
 {
     public class AutoNumberLogRepository : IAutoNumberLogRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public AutoNumberLogRepository(RepositoryContext context)
+        public AutoNumberLogRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         public async Task CreateAutoNumberLogAsync(AutoNumberLog log, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
 
-            const string sql = @"
-                INSERT INTO [app].[AutoNumberLog]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "AutoNumberLog")}
                 (AutoNumberLogGuid, AutoNumberTemplateId, GeneratedNumber, CounterValue, Status, ReferenceId,
                  CompanyId, CompanyOfficeId, OrganizationUnitId, YearNo, MonthNo, DayNo,
                  CreatedById, CreatedTime)
-                OUTPUT INSERTED.AutoNumberLogId
                 VALUES
                 (@AutoNumberLogGuid, @AutoNumberTemplateId, @GeneratedNumber, @CounterValue, @Status, @ReferenceId,
                  @CompanyId, @CompanyOfficeId, @OrganizationUnitId, @YearNo, @MonthNo, @DayNo,
-                 @CreatedById, @CreatedTime)";
+                 @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("AutoNumberLogId")}";
 
             log.AutoNumberLogId = await conn.QuerySingleAsync<long>(sql, log, transaction);
         }
@@ -41,8 +46,8 @@ namespace Repository
             using var connection = _context.CreateConnection();
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) l.*
-                FROM [app].[AutoNumberLog] l
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "l.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberLog")} l
                 WHERE l.AutoNumberTemplateId = @templateId
                 ORDER BY l.AutoNumberLogId DESC";
 
@@ -54,8 +59,8 @@ namespace Repository
             using var connection = _context.CreateConnection();
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) l.*
-                FROM [app].[AutoNumberLog] l
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "l.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberLog")} l
                 WHERE l.AutoNumberLogGuid = @logGuid";
 
             return await connection.QuerySingleOrDefaultAsync<AutoNumberLog>(sql, new { logGuid });
@@ -66,8 +71,8 @@ namespace Repository
             using var connection = _context.CreateConnection();
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) l.*
-                FROM [app].[AutoNumberLog] l
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "l.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberLog")} l
                 ORDER BY l.AutoNumberLogId DESC";
 
             return await connection.QueryAsync<AutoNumberLog>(sql);
@@ -77,17 +82,17 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
 
-            var sb = new StringBuilder(@"
+            var sb = new StringBuilder($@"
                 SELECT l.*,
                        t.TemplateName,
                        c.CompanyName,
                        co.CompanyOfficeName,
                        ou.OrganizationUnitName
-                FROM [app].[AutoNumberLog] l
-                LEFT JOIN [app].[AutoNumberTemplate] t ON l.AutoNumberTemplateId = t.AutoNumberTemplateId
-                LEFT JOIN [app].[Company] c ON l.CompanyId = c.CompanyId
-                LEFT JOIN [app].[CompanyOffice] co ON l.CompanyOfficeId = co.CompanyOfficeId
-                LEFT JOIN [app].[OrganizationUnit] ou ON l.OrganizationUnitId = ou.OrganizationUnitId
+                FROM {_dialect.Qualify("app", "AutoNumberLog")} l
+                LEFT JOIN {_dialect.Qualify("app", "AutoNumberTemplate")} t ON l.AutoNumberTemplateId = t.AutoNumberTemplateId
+                LEFT JOIN {_dialect.Qualify("app", "Company")} c ON l.CompanyId = c.CompanyId
+                LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")} co ON l.CompanyOfficeId = co.CompanyOfficeId
+                LEFT JOIN {_dialect.Qualify("app", "OrganizationUnit")} ou ON l.OrganizationUnitId = ou.OrganizationUnitId
                 WHERE 1 = 1");
 
             var param = new DynamicParameters();

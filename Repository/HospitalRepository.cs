@@ -1,23 +1,23 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
 namespace Repository
 {
-    public partial class HospitalRepository(RepositoryContext context) : IHospitalRepository
+    public partial class HospitalRepository(RepositoryContext context, ISqlDialect dialect) : IHospitalRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Hospital");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
+
         public async Task<Hospital?> GetHospitalAsync(Guid hospitalGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-
-
-                FROM [app].[Hospital] a
-
-
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE a.HospitalGuid = @hospitalGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -28,36 +28,31 @@ namespace Repository
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-
-
-                FROM [app].[Hospital] a
-
-
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.HospitalId DESC";
+                ORDER BY a.HospitalId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Hospital>(sql);
         }
 
         public async Task CreateHospitalAsync(Hospital hospital, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Hospital]
+            var sql = $@"
+                INSERT INTO {_table}
                 (HospitalGuid, CreatedById, StatusId, CreatedTime, HospitalName, HospitalCode, ShortName, LicenseNo, HospitalType, HospitalClass, PhoneNo, Email, Website
                 )
                 VALUES
                 (@HospitalGuid, @CreatedById, @StatusId, @CreatedTime, @HospitalName, @HospitalCode, @ShortName, @LicenseNo, @HospitalType, @HospitalClass, @PhoneNo, @Email, @Website
-                );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                ){dialect.ReturnIdentitySuffix("HospitalId")}";
             hospital.HospitalId = await conn.QuerySingleAsync<long>(sql, hospital, transaction);
         }
 
         public async Task UpdateHospitalAsync(Hospital hospital, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Hospital]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     HospitalName = @HospitalName,
                     HospitalCode = @HospitalCode,
                     ShortName = @ShortName,
@@ -77,8 +72,8 @@ namespace Repository
         public async Task SoftDeleteHospitalAsync(Hospital hospital, long deletedBy, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Hospital]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -90,7 +85,7 @@ namespace Repository
         public async Task DeleteHospitalAsync(Guid hospitalGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Hospital] WHERE HospitalGuid = @hospitalGuid";
+            var sql = $@"DELETE FROM {_table} WHERE HospitalGuid = @hospitalGuid";
             await conn.ExecuteAsync(sql, new { hospitalGuid }, transaction);
         }
 
@@ -122,68 +117,64 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(hospitalName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HospitalName", "@hospitalName", hospitalNameSearchType, parameters, "hospitalName", hospitalName);
+                var param = SqlFilterHelper.BuildFilter("a.HospitalName", "@hospitalName", hospitalNameSearchType, parameters, "hospitalName", hospitalName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(hospitalCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HospitalCode", "@hospitalCode", hospitalCodeSearchType, parameters, "hospitalCode", hospitalCode);
+                var param = SqlFilterHelper.BuildFilter("a.HospitalCode", "@hospitalCode", hospitalCodeSearchType, parameters, "hospitalCode", hospitalCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(shortName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ShortName", "@shortName", shortNameSearchType, parameters, "shortName", shortName);
+                var param = SqlFilterHelper.BuildFilter("a.ShortName", "@shortName", shortNameSearchType, parameters, "shortName", shortName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(licenseNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.LicenseNo", "@licenseNo", licenseNoSearchType, parameters, "licenseNo", licenseNo);
+                var param = SqlFilterHelper.BuildFilter("a.LicenseNo", "@licenseNo", licenseNoSearchType, parameters, "licenseNo", licenseNo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(hospitalType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HospitalType", "@hospitalType", hospitalTypeSearchType, parameters, "hospitalType", hospitalType);
+                var param = SqlFilterHelper.BuildFilter("a.HospitalType", "@hospitalType", hospitalTypeSearchType, parameters, "hospitalType", hospitalType, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(hospitalClass))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HospitalClass", "@hospitalClass", hospitalClassSearchType, parameters, "hospitalClass", hospitalClass);
+                var param = SqlFilterHelper.BuildFilter("a.HospitalClass", "@hospitalClass", hospitalClassSearchType, parameters, "hospitalClass", hospitalClass, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(phoneNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PhoneNo", "@phoneNo", phoneNoSearchType, parameters, "phoneNo", phoneNo);
+                var param = SqlFilterHelper.BuildFilter("a.PhoneNo", "@phoneNo", phoneNoSearchType, parameters, "phoneNo", phoneNo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(email))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Email", "@email", emailSearchType, parameters, "email", email);
+                var param = SqlFilterHelper.BuildFilter("a.Email", "@email", emailSearchType, parameters, "email", email, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(website))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Website", "@website", websiteSearchType, parameters, "website", website);
+                var param = SqlFilterHelper.BuildFilter("a.Website", "@website", websiteSearchType, parameters, "website", website, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-
-
-                FROM [app].[Hospital] a
-
-
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.HospitalId DESC";
+                ORDER BY a.HospitalId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Hospital>(sql, parameters, transaction);
         }

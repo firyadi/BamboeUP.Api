@@ -2,24 +2,28 @@ using Contracts;
 using Dapper;
 using Entities.Models;
 
+using Repository.Database;
 namespace Repository;
 
 public class UserScopeRepository : IUserScopeRepository
 {
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
     private readonly RepositoryContext _context;
 
-    public UserScopeRepository(RepositoryContext context)
+    public UserScopeRepository(RepositoryContext context, ISqlDialect dialect)
     {
         _context = context;
+            _dialect = dialect;
     }
 
     public async Task<IEnumerable<Company>> GetAccessibleCompaniesAsync(long userId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT DISTINCT c.*
-            FROM [core].[UserGroupScope] ugs
-            INNER JOIN [app].[Company] c ON c.CompanyId = ugs.CompanyId
+            FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
+            INNER JOIN {_dialect.Qualify("app", "Company")} c ON c.CompanyId = ugs.CompanyId
             WHERE ugs.UserId = @userId
               AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
               AND c.StatusId > 0 AND c.DeletedTime IS NULL
@@ -31,20 +35,20 @@ public class UserScopeRepository : IUserScopeRepository
     public async Task<IEnumerable<CompanyOffice>> GetAccessibleOfficesAsync(long userId, long companyId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT co.*
-            FROM [app].[CompanyOffice] co
+            FROM {_dialect.Qualify("app", "CompanyOffice")} co
             WHERE co.CompanyId = @companyId
               AND co.StatusId > 0 AND co.DeletedTime IS NULL
               AND (
                 EXISTS (
-                    SELECT 1 FROM [core].[UserGroupScope] ugs
+                    SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                     WHERE ugs.UserId = @userId AND ugs.CompanyId = @companyId
                       AND ugs.CompanyOfficeId IS NULL
                       AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
                 )
                 OR EXISTS (
-                    SELECT 1 FROM [core].[UserGroupScope] ugs
+                    SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                     WHERE ugs.UserId = @userId AND ugs.CompanyId = @companyId
                       AND ugs.CompanyOfficeId = co.CompanyOfficeId
                       AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
@@ -58,19 +62,19 @@ public class UserScopeRepository : IUserScopeRepository
     public async Task<IEnumerable<CompanyOffice>> GetAllAccessibleOfficesAsync(long userId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT DISTINCT co.*
-            FROM [app].[CompanyOffice] co
+            FROM {_dialect.Qualify("app", "CompanyOffice")} co
             WHERE co.StatusId > 0 AND co.DeletedTime IS NULL
               AND (
                 EXISTS (
-                    SELECT 1 FROM [core].[UserGroupScope] ugs
+                    SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                     WHERE ugs.UserId = @userId AND ugs.CompanyId = co.CompanyId
                       AND ugs.CompanyOfficeId IS NULL
                       AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
                 )
                 OR EXISTS (
-                    SELECT 1 FROM [core].[UserGroupScope] ugs
+                    SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                     WHERE ugs.UserId = @userId AND ugs.CompanyId = co.CompanyId
                       AND ugs.CompanyOfficeId = co.CompanyOfficeId
                       AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
@@ -84,9 +88,9 @@ public class UserScopeRepository : IUserScopeRepository
     public async Task<bool> CanAccessCompanyAsync(long userId, long companyId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT CASE WHEN EXISTS (
-                SELECT 1 FROM [core].[UserGroupScope] ugs
+                SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                 WHERE ugs.UserId = @userId AND ugs.CompanyId = @companyId
                   AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
             ) THEN 1 ELSE 0 END
@@ -97,14 +101,14 @@ public class UserScopeRepository : IUserScopeRepository
     public async Task<bool> CanAccessOfficeAsync(long userId, long companyId, long companyOfficeId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT CASE WHEN EXISTS (
-                SELECT 1 FROM [core].[UserGroupScope] ugs
+                SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                 WHERE ugs.UserId = @userId AND ugs.CompanyId = @companyId
                   AND ugs.CompanyOfficeId IS NULL
                   AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
             ) OR EXISTS (
-                SELECT 1 FROM [core].[UserGroupScope] ugs
+                SELECT 1 FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
                 WHERE ugs.UserId = @userId AND ugs.CompanyId = @companyId
                   AND ugs.CompanyOfficeId = @companyOfficeId
                   AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
@@ -116,14 +120,14 @@ public class UserScopeRepository : IUserScopeRepository
     public async Task<IEnumerable<OrganizationUnit>> GetAccessibleOrganizationUnitsAsync(long userId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT DISTINCT ou.*
-            FROM [app].[OrganizationUnit] ou
+            FROM {_dialect.Qualify("app", "OrganizationUnit")} ou
             WHERE ou.StatusId > 0 AND ou.DeletedTime IS NULL
               AND EXISTS (
                 SELECT 1
-                FROM [app].[OrganizationUnitScope] ous
-                INNER JOIN [core].[UserGroupScope] ugs
+                FROM {_dialect.Qualify("app", "OrganizationUnitScope")} ous
+                INNER JOIN {_dialect.Qualify("core", "UserGroupScope")} ugs
                     ON ugs.UserId = @userId
                    AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
                 WHERE ous.OrganizationUnitId = ou.OrganizationUnitId
@@ -145,11 +149,11 @@ public class UserScopeRepository : IUserScopeRepository
     public async Task<bool> CanAccessOrganizationUnitAsync(long userId, long organizationUnitId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = """
+        var sql = $"""
             SELECT CASE WHEN EXISTS (
                 SELECT 1
-                FROM [app].[OrganizationUnitScope] ous
-                INNER JOIN [core].[UserGroupScope] ugs
+                FROM {_dialect.Qualify("app", "OrganizationUnitScope")} ous
+                INNER JOIN {_dialect.Qualify("core", "UserGroupScope")} ugs
                     ON ugs.UserId = @userId
                    AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
                 WHERE ous.OrganizationUnitId = @organizationUnitId

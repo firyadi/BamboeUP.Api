@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,25 +11,23 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class PersonEducationRepository(RepositoryContext context, IAuditService audit) : IPersonEducationRepository
+    public partial class PersonEducationRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonEducationRepository
     {
+        private readonly string _table = dialect.Qualify("app", "PersonEducation");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<PersonEducation?> GetPersonEducationAsync(Guid personEducationGuid, bool trackChanges)
+public async Task<PersonEducation?> GetPersonEducationAsync(Guid personEducationGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEducationLevel.StandardReferenceItemName")} AS EducationLevelName
 
 
-                FROM [app].[PersonEducation] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
-    WHERE StandardReferenceItemId = a.SrEducationLevel
-) v_SrEducationLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 
                 WHERE a.PersonEducationGuid = @personEducationGuid
                   AND a.StatusId > 0
@@ -40,18 +39,14 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEducationLevel.StandardReferenceItemName")} AS EducationLevelName
 
 
-                FROM [app].[PersonEducation] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
-    WHERE StandardReferenceItemId = a.SrEducationLevel
-) v_SrEducationLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonEducationGuid = @personEducationGuid
@@ -64,23 +59,19 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEducationLevel.StandardReferenceItemName")} AS EducationLevelName
 
 
-                FROM [app].[PersonEducation] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
-    WHERE StandardReferenceItemId = a.SrEducationLevel
-) v_SrEducationLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.PersonEducationId DESC";
+                ORDER BY a.PersonEducationId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<PersonEducation>(sql, new { personGuid });
         }
 
@@ -88,12 +79,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(personEducation);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[PersonEducation]
+            var sql = $@"
+                INSERT INTO {_table}
                 (PersonEducationGuid, PersonId, CreatedById, StatusId, CreatedTime, [SrEducationLevel], [InstitutionName])
                 VALUES
-                (@PersonEducationGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrEducationLevel, @InstitutionName);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@PersonEducationGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @SrEducationLevel, @InstitutionName){dialect.ReturnIdentitySuffix("PersonEducationId")}";
             personEducation.PersonEducationId = await conn.QuerySingleAsync<long>(sql, personEducation, transaction);
         }
 
@@ -101,8 +91,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(personEducation);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonEducation]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [PersonId] = @PersonId,
                     [SrEducationLevel] = @SrEducationLevel,
                     [InstitutionName] = @InstitutionName,
@@ -117,8 +107,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(personEducation, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonEducation]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -130,14 +120,14 @@ OUTER APPLY (
         public async Task DeletePersonEducationAsync(Guid personEducationGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonEducation] WHERE PersonEducationGuid = @personEducationGuid";
+            var sql = $@"DELETE FROM {_table} WHERE PersonEducationGuid = @personEducationGuid";
             await conn.ExecuteAsync(sql, new { personEducationGuid }, transaction);
         }
 
         public async Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonEducation] WHERE PersonId IN (SELECT PersonId FROM [app].[Person] WHERE PersonGuid = @personGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE PersonId IN (SELECT PersonId FROM {dialect.Qualify("app", "Person")} WHERE PersonGuid = @personGuid)";
             await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
@@ -164,26 +154,22 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(institutionName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.InstitutionName", "@institutionName", institutionNameSearchType, parameters, "institutionName", institutionName);
+                var param = SqlFilterHelper.BuildFilter("a.InstitutionName", "@institutionName", institutionNameSearchType, parameters, "institutionName", institutionName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEducationLevel.StandardReferenceItemName, '') AS EducationLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEducationLevel.StandardReferenceItemName")} AS EducationLevelName
 
 
-                FROM [app].[PersonEducation] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EducationLevel')
-    WHERE StandardReferenceItemId = a.SrEducationLevel
-) v_SrEducationLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.PersonEducationId DESC";
+                ORDER BY a.PersonEducationId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<PersonEducation>(sql, parameters, transaction);
         }

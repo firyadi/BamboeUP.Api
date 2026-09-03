@@ -27,6 +27,8 @@ namespace Repository.Extensions
             services.AddScoped<IAutoNumberLogRepository, AutoNumberLogRepository>();
             services.AddScoped<IAutoNumberGenerateRepository, AutoNumberGenerateRepository>();
             services.AddScoped<IDocumentNumberRequestRepository, DocumentNumberRequestRepository>();
+            services.AddScoped<IProcessRepository, ProcessRepository>();
+            services.AddScoped<ISharedParameterCatalogRepository, SharedParameterCatalogRepository>();
             // + GENERATED_REPOSITORY_REGISTRATION_END
         }
     }

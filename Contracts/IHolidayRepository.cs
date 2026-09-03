@@ -31,5 +31,7 @@ namespace Contracts
             string? isCompanyHolidaySearchType,
 
             IDbTransaction? transaction = null);
+
+        Task<IEnumerable<Holiday>> GetHolidaysByDateRangeAsync(DateTime start, DateTime end, string? category = null, string? search = null, IDbTransaction? transaction = null);
     }
 }

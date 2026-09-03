@@ -12,11 +12,22 @@ using Presentation.Shell.ActionFilters;
 using Repository;
 using Repository.Extensions;
 using Service.Shell.Extensions;
+using BamboeUp.Api.Hubs;
 using Service.Modules.Extensions;
+using Service.Modules.Processes;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Optional local PostgreSQL overlay (launch profile "PostgreSql" sets BAMBOEUP_USE_POSTGRES=1).
+if (string.Equals(Environment.GetEnvironmentVariable("BAMBOEUP_USE_POSTGRES"), "1", StringComparison.Ordinal))
+{
+    builder.Configuration.AddJsonFile(
+        "appsettings.Development.PostgreSql.json",
+        optional: true,
+        reloadOnChange: true);
+}
 
 LogManager.Setup().LoadConfigurationFromFile(Path.Combine(Directory.GetCurrentDirectory(), "nlog.config"));
 
@@ -35,6 +46,7 @@ builder.Services.ConfigureTransactionManager();
 builder.Services.ConfigureRepositories();
 builder.Services.ConfigureShellServices();
 builder.Services.ConfigureModulesServices();
+builder.Services.ConfigureProcessServices();
 builder.Services.Configure<Shared.AdminRegistry.AdminRegistrySettings>(
     builder.Configuration.GetSection(Shared.AdminRegistry.AdminRegistrySettings.SectionName));
 MapsterConfig.RegisterMappings();
@@ -85,6 +97,9 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IProcessProgressNotifier, SignalRProcessProgressNotifier>();
+
 builder.Services.AddControllers(config =>
 {
     config.RespectBrowserAcceptHeader = true;
@@ -121,6 +136,7 @@ app.UseMiddleware<Presentation.Shell.ActionFilters.ParameterContextMiddleware>()
 
 app.UseSwagger();
 app.MapControllers();
+app.MapHub<ProcessExecutionHub>("/hubs/process-execution");
 
 if (app.Environment.IsDevelopment())
 {

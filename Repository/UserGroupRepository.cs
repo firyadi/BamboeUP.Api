@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 using System.Text;
@@ -12,17 +13,20 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public UserGroupRepository(RepositoryContext context, IAuditService auditService)
+        public UserGroupRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _auditService = auditService;
         }
 
         public async Task<UserGroup?> GetUserGroupAsync(Guid userGroupGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[UserGroup] 
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("core", "UserGroup")} 
                                  WHERE UserGroupGuid = @userGroupGuid AND StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<UserGroup>(sql, new { userGroupGuid });
         }
@@ -31,10 +35,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[UserGroup] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("core", "UserGroup")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.UserGroupId DESC";
+                ORDER BY a.UserGroupId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<UserGroup>(sql);
         }
@@ -43,7 +47,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(userGroup);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[UserGroup]
+            var sql = $@"INSERT INTO {_dialect.Qualify("core", "UserGroup")}
                                  (UserGroupGuid, UserGroupName, IsEditAble, StatusId, CreatedById, CreatedTime)
                                  VALUES
                                  (@UserGroupGuid, @UserGroupName, @IsEditAble, @StatusId, @CreatedById, @CreatedTime)";
@@ -64,7 +68,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupAsync(userGroup.UserGroupGuid, false);
 
-            const string sql = @"UPDATE [core].[UserGroup]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "UserGroup")}
                                  SET
                                      UserGroupName = @UserGroupName,
                                      IsEditAble = @IsEditAble,
@@ -90,7 +94,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupAsync(userGroup.UserGroupGuid, false);
 
-            const string sql = @"UPDATE [core].[UserGroup]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "UserGroup")}
                                  SET StatusId = 0,
                                      DeletedById = @DeletedById,
                                      DeletedTime = @DeletedTime
@@ -111,7 +115,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupAsync(userGroupGuid, false);
 
-            const string sql = @"DELETE FROM [core].[UserGroup]
+            var sql = $@"DELETE FROM {_dialect.Qualify("core", "UserGroup")}
                                  WHERE UserGroupGuid = @userGroupGuid";
             await conn.ExecuteAsync(sql, new { userGroupGuid }, transaction);
 
@@ -129,15 +133,15 @@ namespace Repository
             IDbTransaction? transaction = null)
         {
             using var connection = _context.CreateConnection();
-            var sql = @"
+            var sql = $@"
                 SELECT a.*
-                FROM [core].[UserGroup] a
+                FROM {_dialect.Qualify("core", "UserGroup")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                AND (@userGroupName IS NULL OR ISNULL(UserGroupName, '') LIKE '%' + @userGroupName + '%')
-                ORDER BY a.UserGroupId DESC";
+                AND (@userGroupName IS NULL OR {_dialect.LikeContains("UserGroupName", "@userGroupName")})
+                ORDER BY a.UserGroupId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<UserGroup>(sql, new {
-                userGroupName = userGroupName
+                userGroupName = string.IsNullOrWhiteSpace(userGroupName) ? null : $"%{userGroupName}%"
             }, transaction);
         }
     }

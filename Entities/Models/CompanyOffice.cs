@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Entities.Models
 {
     [Table("CompanyOffice", Schema = "app")]
-    public class CompanyOffice
+    public partial class CompanyOffice
     {
         [Column("CompanyOfficeId")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,51 +16,36 @@ namespace Entities.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid CompanyOfficeGuid { get; set; } = Guid.NewGuid();
 
-        [Column("CompanyId")]
-        public long CompanyId { get; set; } = 0;
-
-        [Column("CompanyGuid")]
-        public Guid CompanyGuid { get; set; } = Guid.Empty;
+        [Required]
+        public long CompanyId { get; set; }
 
         [Required]
-        [MaxLength(150)]
+        [Column("CompanyGuid")]
+        public Guid CompanyGuid { get; set; } = Guid.NewGuid();
+
+        [Required]
         public string CompanyOfficeName { get; set; } = string.Empty;
 
-        [Required]
         public long SrAddressType { get; set; }
 
-        [Required]
         public long CountryId { get; set; }
 
-        [Required]
         public long StateId { get; set; }
 
-        [Required]
         public long CityId { get; set; }
 
         [Required]
-        [MaxLength(8)]
         public string PostalCodeId { get; set; } = string.Empty;
 
         [Required]
-        [MaxLength(500)]
         public string Address { get; set; } = string.Empty;
 
-        [Column("CreatedById")]
-        public long CreatedById { get; set; } = 0;
+public string? CityName { get; set; }
+public string? CountryName { get; set; }
+public string? PostalCodeName { get; set; }
+public string? AddressTypeName { get; set; }
+public string? StateName { get; set; }
 
-        [Required]
-        public DateTime CreatedTime { get; set; }  = DateTime.UtcNow;
-
-        [Column("UpdatedById")]
-        public long? UpdatedById { get; set; }
-
-        public DateTime? UpdatedTime { get; set; }
-
-        [Column("DeletedById")]
-        public long? DeletedById { get; set; }
-
-        public DateTime? DeletedTime { get; set; }
 
         [Column("StatusId")]
         public long StatusId { get; set; } = 0;
@@ -68,17 +53,20 @@ namespace Entities.Models
         [Timestamp]
         public byte[]? RowVersion { get; set; }
 
-        [NotMapped]
-        public string? AddressTypeName { get; set; }
+        [Column("CreatedById")]
+        public long CreatedById { get; set; } = 0;
 
-        [NotMapped]
-        public string? CityName { get; set; }
+        [Required]
+        public DateTime CreatedTime { get; set; } = DateTime.UtcNow;
 
-        [NotMapped]
-        public string? StateName { get; set; }
+        [Column("UpdatedById")]
+        public long UpdatedById { get; set; } = 0;
 
-        [NotMapped]
-        public string? CountryName { get; set; }
+        public DateTime? UpdatedTime { get; set; }
+
+        [Column("DeletedById")]
+        public long DeletedById { get; set; } = 0;
+
+        public DateTime? DeletedTime { get; set; }
     }
 }
-

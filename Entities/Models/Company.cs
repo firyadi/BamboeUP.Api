@@ -32,9 +32,6 @@ namespace Entities.Models
 
         public string? DefaultCurrency { get; set; }
 
-        // IMPORTANT: app.Company.CompanyLogo is varbinary(max). Keep this as
-        // byte[] so Dapper and report branding can consume binary image data.
-        // Public DTOs expose Base64 string through Mapster configuration.
         public byte[]? CompanyLogo { get; set; }
 
 public string? ParentCompanyName { get; set; }

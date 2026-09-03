@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 using System.Text;
@@ -12,17 +13,20 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public UserGroupProgramRepository(RepositoryContext context, IAuditService auditService)
+        public UserGroupProgramRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _auditService = auditService;
         }
 
         public async Task<UserGroupProgram?> GetUserGroupProgramAsync(Guid userGroupProgramGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[UserGroupProgram] 
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("core", "UserGroupProgram")} 
                                  WHERE UserGroupProgramGuid = @userGroupProgramGuid AND StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<UserGroupProgram>(sql, new { userGroupProgramGuid });
         }
@@ -32,9 +36,9 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 SELECT a.*
-                FROM [core].[UserGroupProgram] a
+                FROM {_dialect.Qualify("core", "UserGroupProgram")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.UserGroupProgramId DESC";
+                ORDER BY a.UserGroupProgramId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<UserGroupProgram>(sql);
         }
@@ -44,11 +48,11 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 SELECT a.*
-                FROM [core].[UserGroupProgram] a
-                INNER JOIN [core].[UserGroup] ug ON ug.UserGroupId = a.UserGroupId
+                FROM {_dialect.Qualify("core", "UserGroupProgram")} a
+                INNER JOIN {_dialect.Qualify("core", "UserGroup")} ug ON ug.UserGroupId = a.UserGroupId
                 WHERE ug.UserGroupGuid = @userGroupGuid
                   AND a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.UserGroupProgramId DESC";
+                ORDER BY a.UserGroupProgramId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<UserGroupProgram>(sql, new { userGroupGuid });
         }
@@ -57,7 +61,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(userGroupProgram);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[UserGroupProgram]
+            var sql = $@"INSERT INTO {_dialect.Qualify("core", "UserGroupProgram")}
                                  (UserGroupProgramGuid, UserGroupId, ProgramsId, IsUserGroupViewAble, IsUserGroupAddAble, IsUserGroupEditAble, IsUserGroupDeleteAble,
                                   IsUserGroupApprovalAble, IsUserGroupUnApprovalAble, IsUserGroupVoidAble, IsUserGroupUnVoidAble, IsUserGroupExportAble,
                                   StatusId, CreatedById, CreatedTime)
@@ -82,7 +86,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupProgramAsync(userGroupProgram.UserGroupProgramGuid, false);
 
-            const string sql = @"UPDATE [core].[UserGroupProgram]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "UserGroupProgram")}
                                  SET
                                      UserGroupId = @UserGroupId,
                                      ProgramsId = @ProgramsId,
@@ -117,7 +121,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupProgramAsync(userGroupProgram.UserGroupProgramGuid, false);
 
-            const string sql = @"UPDATE [core].[UserGroupProgram]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "UserGroupProgram")}
                                  SET StatusId = 0,
                                      DeletedById = @DeletedById,
                                      DeletedTime = @DeletedTime
@@ -138,7 +142,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetUserGroupProgramAsync(userGroupProgramGuid, false);
 
-            const string sql = @"DELETE FROM [core].[UserGroupProgram]
+            var sql = $@"DELETE FROM {_dialect.Qualify("core", "UserGroupProgram")}
                                  WHERE UserGroupProgramGuid = @userGroupProgramGuid";
             await conn.ExecuteAsync(sql, new { userGroupProgramGuid }, transaction);
 

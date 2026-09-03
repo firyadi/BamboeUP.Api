@@ -76,21 +76,69 @@ namespace Service.Modules
                 };
 
                 // Dapper doesn't automatically insert children, so we must manually insert nested Details
-                                if (input.PersonIdentifications != null && input.PersonIdentifications.Any())
+                                if (input.CostCenterAssignments != null && input.CostCenterAssignments.Any())
                 {
-                    foreach (var detailDto in input.PersonIdentifications)
+                    foreach (var detailDto in input.CostCenterAssignments)
                     {
-                        var detail = detailDto.Adapt<PersonIdentification>();
-                        detail.PersonId = model.PersonId;
+                        var detail = detailDto.Adapt<CostCenterAssignment>();
+                        detail.CostCenterManagerEmployeeId = model.PersonId;
                         detail.StatusId = 1;
                         detail.CreatedTime = DateTime.UtcNow;
-                        await repository.PersonIdentification.CreatePersonIdentificationAsync(detail, transaction);
+                        await repository.CostCenterAssignment.CreateCostCenterAssignmentAsync(detail, transaction);
 
                         entries.Add(new AuditLogEntry
                         {
-                            TableName = "PersonIdentification",
-                            EntityKey = detail.PersonIdentificationGuid.ToString(),
-                            EntityDisplayName = detail.IdentificationValue,
+                            TableName = "CostCenterAssignment",
+                            EntityKey = detail.CostCenterAssignmentGuid.ToString(),
+                            EntityDisplayName = detail.EffectiveDate.ToString(),
+                            ParentTableName = "Person",
+                            ParentEntityKey = model.PersonGuid.ToString(),
+                            ActionType = "CREATE",
+                            OldEntity = null,
+                            NewEntity = detail
+                        });
+                    }
+                }
+
+                                if (input.PersonAddresses != null && input.PersonAddresses.Any())
+                {
+                    foreach (var detailDto in input.PersonAddresses)
+                    {
+                        var detail = detailDto.Adapt<PersonAddress>();
+                        detail.PersonId = model.PersonId;
+                        detail.StatusId = 1;
+                        detail.CreatedTime = DateTime.UtcNow;
+                        await repository.PersonAddress.CreatePersonAddressAsync(detail, transaction);
+
+                        entries.Add(new AuditLogEntry
+                        {
+                            TableName = "PersonAddress",
+                            EntityKey = detail.PersonAddressGuid.ToString(),
+                            EntityDisplayName = detail.Address,
+                            ParentTableName = "Person",
+                            ParentEntityKey = model.PersonGuid.ToString(),
+                            ActionType = "CREATE",
+                            OldEntity = null,
+                            NewEntity = detail
+                        });
+                    }
+                }
+
+                                if (input.PersonContacts != null && input.PersonContacts.Any())
+                {
+                    foreach (var detailDto in input.PersonContacts)
+                    {
+                        var detail = detailDto.Adapt<PersonContact>();
+                        detail.PersonId = model.PersonId;
+                        detail.StatusId = 1;
+                        detail.CreatedTime = DateTime.UtcNow;
+                        await repository.PersonContact.CreatePersonContactAsync(detail, transaction);
+
+                        entries.Add(new AuditLogEntry
+                        {
+                            TableName = "PersonContact",
+                            EntityKey = detail.PersonContactGuid.ToString(),
+                            EntityDisplayName = detail.ContactValue,
                             ParentTableName = "Person",
                             ParentEntityKey = model.PersonGuid.ToString(),
                             ActionType = "CREATE",
@@ -148,30 +196,6 @@ namespace Service.Modules
                     }
                 }
 
-                                if (input.PersonContacts != null && input.PersonContacts.Any())
-                {
-                    foreach (var detailDto in input.PersonContacts)
-                    {
-                        var detail = detailDto.Adapt<PersonContact>();
-                        detail.PersonId = model.PersonId;
-                        detail.StatusId = 1;
-                        detail.CreatedTime = DateTime.UtcNow;
-                        await repository.PersonContact.CreatePersonContactAsync(detail, transaction);
-
-                        entries.Add(new AuditLogEntry
-                        {
-                            TableName = "PersonContact",
-                            EntityKey = detail.PersonContactGuid.ToString(),
-                            EntityDisplayName = detail.ContactValue,
-                            ParentTableName = "Person",
-                            ParentEntityKey = model.PersonGuid.ToString(),
-                            ActionType = "CREATE",
-                            OldEntity = null,
-                            NewEntity = detail
-                        });
-                    }
-                }
-
                                 if (input.PersonFamilies != null && input.PersonFamilies.Any())
                 {
                     foreach (var detailDto in input.PersonFamilies)
@@ -187,6 +211,30 @@ namespace Service.Modules
                             TableName = "PersonFamily",
                             EntityKey = detail.PersonFamilyGuid.ToString(),
                             EntityDisplayName = detail.FamilyName,
+                            ParentTableName = "Person",
+                            ParentEntityKey = model.PersonGuid.ToString(),
+                            ActionType = "CREATE",
+                            OldEntity = null,
+                            NewEntity = detail
+                        });
+                    }
+                }
+
+                                if (input.PersonIdentifications != null && input.PersonIdentifications.Any())
+                {
+                    foreach (var detailDto in input.PersonIdentifications)
+                    {
+                        var detail = detailDto.Adapt<PersonIdentification>();
+                        detail.PersonId = model.PersonId;
+                        detail.StatusId = 1;
+                        detail.CreatedTime = DateTime.UtcNow;
+                        await repository.PersonIdentification.CreatePersonIdentificationAsync(detail, transaction);
+
+                        entries.Add(new AuditLogEntry
+                        {
+                            TableName = "PersonIdentification",
+                            EntityKey = detail.PersonIdentificationGuid.ToString(),
+                            EntityDisplayName = detail.IdentificationValue,
                             ParentTableName = "Person",
                             ParentEntityKey = model.PersonGuid.ToString(),
                             ActionType = "CREATE",
@@ -244,22 +292,70 @@ namespace Service.Modules
                     }
                 }
 
-                // ##HeaderDetailCreateBlock##
-                if (input.PersonAddresses != null && input.PersonAddresses.Any())
+                                if (input.RoomBookings != null && input.RoomBookings.Any())
                 {
-                    foreach (var detailDto in input.PersonAddresses)
+                    foreach (var detailDto in input.RoomBookings)
                     {
-                        var detail = detailDto.Adapt<PersonAddress>();
-                        detail.PersonId = model.PersonId;
-                    detail.StatusId = 1;
+                        var detail = detailDto.Adapt<RoomBooking>();
+                        detail.BookedByUserId = model.PersonId;
+                        detail.StatusId = 1;
                         detail.CreatedTime = DateTime.UtcNow;
-                        await repository.PersonAddress.CreatePersonAddressAsync(detail, transaction);
+                        await repository.RoomBooking.CreateRoomBookingAsync(detail, transaction);
 
                         entries.Add(new AuditLogEntry
                         {
-                            TableName = "PersonAddress",
-                            EntityKey = detail.PersonAddressGuid.ToString(),
-                            EntityDisplayName = detail.Address,
+                            TableName = "RoomBooking",
+                            EntityKey = detail.RoomBookingGuid.ToString(),
+                            EntityDisplayName = detail.RoomBookingCode,
+                            ParentTableName = "Person",
+                            ParentEntityKey = model.PersonGuid.ToString(),
+                            ActionType = "CREATE",
+                            OldEntity = null,
+                            NewEntity = detail
+                        });
+                    }
+                }
+
+                                if (input.WorkItems != null && input.WorkItems.Any())
+                {
+                    foreach (var detailDto in input.WorkItems)
+                    {
+                        var detail = detailDto.Adapt<WorkItem>();
+                        detail.OwnerUserId = model.PersonId;
+                        detail.StatusId = 1;
+                        detail.CreatedTime = DateTime.UtcNow;
+                        await repository.WorkItem.CreateWorkItemAsync(detail, transaction);
+
+                        entries.Add(new AuditLogEntry
+                        {
+                            TableName = "WorkItem",
+                            EntityKey = detail.WorkItemGuid.ToString(),
+                            EntityDisplayName = detail.WorkItemCode,
+                            ParentTableName = "Person",
+                            ParentEntityKey = model.PersonGuid.ToString(),
+                            ActionType = "CREATE",
+                            OldEntity = null,
+                            NewEntity = detail
+                        });
+                    }
+                }
+
+                // ##HeaderDetailCreateBlock##
+                if (input.Companies != null && input.Companies.Any())
+                {
+                    foreach (var detailDto in input.Companies)
+                    {
+                        var detail = detailDto.Adapt<Company>();
+                        detail.LeaderId = model.PersonId;
+                    detail.StatusId = 1;
+                        detail.CreatedTime = DateTime.UtcNow;
+                        await repository.Company.CreateCompanyAsync(detail, transaction);
+
+                        entries.Add(new AuditLogEntry
+                        {
+                            TableName = "Company",
+                            EntityKey = detail.CompanyGuid.ToString(),
+                            EntityDisplayName = detail.CompanyName,
                             ParentTableName = "Person",
                             ParentEntityKey = model.PersonGuid.ToString(),
                             ActionType = "CREATE",
@@ -296,14 +392,18 @@ namespace Service.Modules
             // 1. Fetch old data for audit diff
             var oldPerson = await repository.Person.GetPersonAsync(personGuid, false)
                 ?? throw new KeyNotFoundException($"Person '{{personGuid}}' was not found.");
-            var oldPersonAddresses = (await repository.PersonAddress.GetAllByPersonGuidAsync(personGuid)).ToList();
-                        var oldPersonIdentifications = (await repository.PersonIdentification.GetAllByPersonGuidAsync(personGuid)).ToList();
+            var oldCompanies = (await repository.Company.GetAllByPersonGuidAsync(personGuid)).ToList();
+                        var oldCostCenterAssignments = (await repository.CostCenterAssignment.GetAllByPersonGuidAsync(personGuid)).ToList();
+                        var oldPersonAddresses = (await repository.PersonAddress.GetAllByPersonGuidAsync(personGuid)).ToList();
+                        var oldPersonContacts = (await repository.PersonContact.GetAllByPersonGuidAsync(personGuid)).ToList();
                         var oldPersonEducations = (await repository.PersonEducation.GetAllByPersonGuidAsync(personGuid)).ToList();
                         var oldPersonEmergencyContacts = (await repository.PersonEmergencyContact.GetAllByPersonGuidAsync(personGuid)).ToList();
-                        var oldPersonContacts = (await repository.PersonContact.GetAllByPersonGuidAsync(personGuid)).ToList();
                         var oldPersonFamilies = (await repository.PersonFamily.GetAllByPersonGuidAsync(personGuid)).ToList();
+                        var oldPersonIdentifications = (await repository.PersonIdentification.GetAllByPersonGuidAsync(personGuid)).ToList();
                         var oldPersonPhysicalCharacteristics = (await repository.PersonPhysicalCharacteristic.GetAllByPersonGuidAsync(personGuid)).ToList();
                         var oldPersonWorkExperiences = (await repository.PersonWorkExperience.GetAllByPersonGuidAsync(personGuid)).ToList();
+                        var oldRoomBookings = (await repository.RoomBooking.GetAllByPersonGuidAsync(personGuid)).ToList();
+                        var oldWorkItems = (await repository.WorkItem.GetAllByPersonGuidAsync(personGuid)).ToList();
             // ##HeaderDetailUpdateFetch##
 
             await transactionManager.BeginTransactionAsync();
@@ -338,33 +438,33 @@ namespace Service.Modules
                 };
 
                 // 3. Child alignment/diff logic
-                                if (input.PersonIdentifications != null)
+                                if (input.CostCenterAssignments != null)
                 {
-                    var newPersonIdentifications = input.PersonIdentifications.ToList();
-                    var oldPersonIdentificationDict = oldPersonIdentifications.ToDictionary(o => o.PersonIdentificationGuid);
+                    var newCostCenterAssignments = input.CostCenterAssignments.ToList();
+                    var oldCostCenterAssignmentDict = oldCostCenterAssignments.ToDictionary(o => o.CostCenterAssignmentGuid);
 
-                    foreach (var detailDto in newPersonIdentifications)
+                    foreach (var detailDto in newCostCenterAssignments)
                     {
-                        var detail = detailDto.Adapt<PersonIdentification>();
-                        detail.PersonId = model.PersonId;
+                        var detail = detailDto.Adapt<CostCenterAssignment>();
+                        detail.CostCenterManagerEmployeeId = model.PersonId;
                         detail.StatusId = 2;
                         detail.UpdatedTime = DateTime.UtcNow;
 
-                        if (detailDto.PersonIdentificationGuid != Guid.Empty && oldPersonIdentificationDict.ContainsKey(detailDto.PersonIdentificationGuid))
+                        if (detailDto.CostCenterAssignmentGuid != Guid.Empty && oldCostCenterAssignmentDict.ContainsKey(detailDto.CostCenterAssignmentGuid))
                         {
-                            detail.PersonIdentificationGuid = detailDto.PersonIdentificationGuid;
-                            detail.PersonIdentificationId = oldPersonIdentificationDict[detailDto.PersonIdentificationGuid].PersonIdentificationId;
-                            await repository.PersonIdentification.UpdatePersonIdentificationAsync(detail, transaction);
+                            detail.CostCenterAssignmentGuid = detailDto.CostCenterAssignmentGuid;
+                            detail.CostCenterAssignmentId = oldCostCenterAssignmentDict[detailDto.CostCenterAssignmentGuid].CostCenterAssignmentId;
+                            await repository.CostCenterAssignment.UpdateCostCenterAssignmentAsync(detail, transaction);
 
                             entries.Add(new AuditLogEntry
                             {
-                                TableName = "PersonIdentification",
-                                EntityKey = detail.PersonIdentificationGuid.ToString(),
-                                EntityDisplayName = detail.IdentificationValue,
+                                TableName = "CostCenterAssignment",
+                                EntityKey = detail.CostCenterAssignmentGuid.ToString(),
+                                EntityDisplayName = detail.EffectiveDate.ToString(),
                                 ParentTableName = "Person",
                                 ParentEntityKey = model.PersonGuid.ToString(),
                                 ActionType = "UPDATE",
-                                OldEntity = oldPersonIdentificationDict[detailDto.PersonIdentificationGuid],
+                                OldEntity = oldCostCenterAssignmentDict[detailDto.CostCenterAssignmentGuid],
                                 NewEntity = detail
                             });
                         }
@@ -372,13 +472,13 @@ namespace Service.Modules
                         {
                             detail.StatusId = 1;
                             detail.CreatedTime = DateTime.UtcNow;
-                            await repository.PersonIdentification.CreatePersonIdentificationAsync(detail, transaction);
+                            await repository.CostCenterAssignment.CreateCostCenterAssignmentAsync(detail, transaction);
 
                             entries.Add(new AuditLogEntry
                             {
-                                TableName = "PersonIdentification",
-                                EntityKey = detail.PersonIdentificationGuid.ToString(),
-                                EntityDisplayName = detail.IdentificationValue,
+                                TableName = "CostCenterAssignment",
+                                EntityKey = detail.CostCenterAssignmentGuid.ToString(),
+                                EntityDisplayName = detail.EffectiveDate.ToString(),
                                 ParentTableName = "Person",
                                 ParentEntityKey = model.PersonGuid.ToString(),
                                 ActionType = "CREATE",
@@ -388,29 +488,187 @@ namespace Service.Modules
                         }
                     }
 
-                    foreach (var oldPersonIdentification in oldPersonIdentifications)
+                    foreach (var oldCostCenterAssignment in oldCostCenterAssignments)
                     {
-                        if (!newPersonIdentifications.Any(o => o.PersonIdentificationGuid == oldPersonIdentification.PersonIdentificationGuid))
+                        if (!newCostCenterAssignments.Any(o => o.CostCenterAssignmentGuid == oldCostCenterAssignment.CostCenterAssignmentGuid))
                         {
-                            await repository.PersonIdentification.SoftDeletePersonIdentificationAsync(
-                                new PersonIdentification
+                            await repository.CostCenterAssignment.SoftDeleteCostCenterAssignmentAsync(
+                                new CostCenterAssignment
                                 {
-                                    PersonIdentificationGuid = oldPersonIdentification.PersonIdentificationGuid,
-                                    PersonIdentificationId = oldPersonIdentification.PersonIdentificationId,
-                                    PersonId = oldPersonIdentification.PersonId
+                                    CostCenterAssignmentGuid = oldCostCenterAssignment.CostCenterAssignmentGuid,
+                                    CostCenterAssignmentId = oldCostCenterAssignment.CostCenterAssignmentId,
+                                    CostCenterManagerEmployeeId = oldCostCenterAssignment.CostCenterManagerEmployeeId
                                 },
                                 input.UpdatedById,
                                 transaction);
 
                             entries.Add(new AuditLogEntry
                             {
-                                TableName = "PersonIdentification",
-                                EntityKey = oldPersonIdentification.PersonIdentificationGuid.ToString(),
-                                EntityDisplayName = oldPersonIdentification.IdentificationValue,
+                                TableName = "CostCenterAssignment",
+                                EntityKey = oldCostCenterAssignment.CostCenterAssignmentGuid.ToString(),
+                                EntityDisplayName = oldCostCenterAssignment.EffectiveDate.ToString(),
                                 ParentTableName = "Person",
                                 ParentEntityKey = model.PersonGuid.ToString(),
                                 ActionType = "DELETE",
-                                OldEntity = oldPersonIdentification,
+                                OldEntity = oldCostCenterAssignment,
+                                NewEntity = null
+                            });
+                        }
+                    }
+                }
+
+                                if (input.PersonAddresses != null)
+                {
+                    var newPersonAddresses = input.PersonAddresses.ToList();
+                    var oldPersonAddressDict = oldPersonAddresses.ToDictionary(o => o.PersonAddressGuid);
+
+                    foreach (var detailDto in newPersonAddresses)
+                    {
+                        var detail = detailDto.Adapt<PersonAddress>();
+                        detail.PersonId = model.PersonId;
+                        detail.StatusId = 2;
+                        detail.UpdatedTime = DateTime.UtcNow;
+
+                        if (detailDto.PersonAddressGuid != Guid.Empty && oldPersonAddressDict.ContainsKey(detailDto.PersonAddressGuid))
+                        {
+                            detail.PersonAddressGuid = detailDto.PersonAddressGuid;
+                            detail.PersonAddressId = oldPersonAddressDict[detailDto.PersonAddressGuid].PersonAddressId;
+                            await repository.PersonAddress.UpdatePersonAddressAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonAddress",
+                                EntityKey = detail.PersonAddressGuid.ToString(),
+                                EntityDisplayName = detail.Address,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "UPDATE",
+                                OldEntity = oldPersonAddressDict[detailDto.PersonAddressGuid],
+                                NewEntity = detail
+                            });
+                        }
+                        else
+                        {
+                            detail.StatusId = 1;
+                            detail.CreatedTime = DateTime.UtcNow;
+                            await repository.PersonAddress.CreatePersonAddressAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonAddress",
+                                EntityKey = detail.PersonAddressGuid.ToString(),
+                                EntityDisplayName = detail.Address,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "CREATE",
+                                OldEntity = null,
+                                NewEntity = detail
+                            });
+                        }
+                    }
+
+                    foreach (var oldPersonAddress in oldPersonAddresses)
+                    {
+                        if (!newPersonAddresses.Any(o => o.PersonAddressGuid == oldPersonAddress.PersonAddressGuid))
+                        {
+                            await repository.PersonAddress.SoftDeletePersonAddressAsync(
+                                new PersonAddress
+                                {
+                                    PersonAddressGuid = oldPersonAddress.PersonAddressGuid,
+                                    PersonAddressId = oldPersonAddress.PersonAddressId,
+                                    PersonId = oldPersonAddress.PersonId
+                                },
+                                input.UpdatedById,
+                                transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonAddress",
+                                EntityKey = oldPersonAddress.PersonAddressGuid.ToString(),
+                                EntityDisplayName = oldPersonAddress.Address,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "DELETE",
+                                OldEntity = oldPersonAddress,
+                                NewEntity = null
+                            });
+                        }
+                    }
+                }
+
+                                if (input.PersonContacts != null)
+                {
+                    var newPersonContacts = input.PersonContacts.ToList();
+                    var oldPersonContactDict = oldPersonContacts.ToDictionary(o => o.PersonContactGuid);
+
+                    foreach (var detailDto in newPersonContacts)
+                    {
+                        var detail = detailDto.Adapt<PersonContact>();
+                        detail.PersonId = model.PersonId;
+                        detail.StatusId = 2;
+                        detail.UpdatedTime = DateTime.UtcNow;
+
+                        if (detailDto.PersonContactGuid != Guid.Empty && oldPersonContactDict.ContainsKey(detailDto.PersonContactGuid))
+                        {
+                            detail.PersonContactGuid = detailDto.PersonContactGuid;
+                            detail.PersonContactId = oldPersonContactDict[detailDto.PersonContactGuid].PersonContactId;
+                            await repository.PersonContact.UpdatePersonContactAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonContact",
+                                EntityKey = detail.PersonContactGuid.ToString(),
+                                EntityDisplayName = detail.ContactValue,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "UPDATE",
+                                OldEntity = oldPersonContactDict[detailDto.PersonContactGuid],
+                                NewEntity = detail
+                            });
+                        }
+                        else
+                        {
+                            detail.StatusId = 1;
+                            detail.CreatedTime = DateTime.UtcNow;
+                            await repository.PersonContact.CreatePersonContactAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonContact",
+                                EntityKey = detail.PersonContactGuid.ToString(),
+                                EntityDisplayName = detail.ContactValue,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "CREATE",
+                                OldEntity = null,
+                                NewEntity = detail
+                            });
+                        }
+                    }
+
+                    foreach (var oldPersonContact in oldPersonContacts)
+                    {
+                        if (!newPersonContacts.Any(o => o.PersonContactGuid == oldPersonContact.PersonContactGuid))
+                        {
+                            await repository.PersonContact.SoftDeletePersonContactAsync(
+                                new PersonContact
+                                {
+                                    PersonContactGuid = oldPersonContact.PersonContactGuid,
+                                    PersonContactId = oldPersonContact.PersonContactId,
+                                    PersonId = oldPersonContact.PersonId
+                                },
+                                input.UpdatedById,
+                                transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonContact",
+                                EntityKey = oldPersonContact.PersonContactGuid.ToString(),
+                                EntityDisplayName = oldPersonContact.ContactValue,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "DELETE",
+                                OldEntity = oldPersonContact,
                                 NewEntity = null
                             });
                         }
@@ -575,85 +833,6 @@ namespace Service.Modules
                     }
                 }
 
-                                if (input.PersonContacts != null)
-                {
-                    var newPersonContacts = input.PersonContacts.ToList();
-                    var oldPersonContactDict = oldPersonContacts.ToDictionary(o => o.PersonContactGuid);
-
-                    foreach (var detailDto in newPersonContacts)
-                    {
-                        var detail = detailDto.Adapt<PersonContact>();
-                        detail.PersonId = model.PersonId;
-                        detail.StatusId = 2;
-                        detail.UpdatedTime = DateTime.UtcNow;
-
-                        if (detailDto.PersonContactGuid != Guid.Empty && oldPersonContactDict.ContainsKey(detailDto.PersonContactGuid))
-                        {
-                            detail.PersonContactGuid = detailDto.PersonContactGuid;
-                            detail.PersonContactId = oldPersonContactDict[detailDto.PersonContactGuid].PersonContactId;
-                            await repository.PersonContact.UpdatePersonContactAsync(detail, transaction);
-
-                            entries.Add(new AuditLogEntry
-                            {
-                                TableName = "PersonContact",
-                                EntityKey = detail.PersonContactGuid.ToString(),
-                                EntityDisplayName = detail.ContactValue,
-                                ParentTableName = "Person",
-                                ParentEntityKey = model.PersonGuid.ToString(),
-                                ActionType = "UPDATE",
-                                OldEntity = oldPersonContactDict[detailDto.PersonContactGuid],
-                                NewEntity = detail
-                            });
-                        }
-                        else
-                        {
-                            detail.StatusId = 1;
-                            detail.CreatedTime = DateTime.UtcNow;
-                            await repository.PersonContact.CreatePersonContactAsync(detail, transaction);
-
-                            entries.Add(new AuditLogEntry
-                            {
-                                TableName = "PersonContact",
-                                EntityKey = detail.PersonContactGuid.ToString(),
-                                EntityDisplayName = detail.ContactValue,
-                                ParentTableName = "Person",
-                                ParentEntityKey = model.PersonGuid.ToString(),
-                                ActionType = "CREATE",
-                                OldEntity = null,
-                                NewEntity = detail
-                            });
-                        }
-                    }
-
-                    foreach (var oldPersonContact in oldPersonContacts)
-                    {
-                        if (!newPersonContacts.Any(o => o.PersonContactGuid == oldPersonContact.PersonContactGuid))
-                        {
-                            await repository.PersonContact.SoftDeletePersonContactAsync(
-                                new PersonContact
-                                {
-                                    PersonContactGuid = oldPersonContact.PersonContactGuid,
-                                    PersonContactId = oldPersonContact.PersonContactId,
-                                    PersonId = oldPersonContact.PersonId
-                                },
-                                input.UpdatedById,
-                                transaction);
-
-                            entries.Add(new AuditLogEntry
-                            {
-                                TableName = "PersonContact",
-                                EntityKey = oldPersonContact.PersonContactGuid.ToString(),
-                                EntityDisplayName = oldPersonContact.ContactValue,
-                                ParentTableName = "Person",
-                                ParentEntityKey = model.PersonGuid.ToString(),
-                                ActionType = "DELETE",
-                                OldEntity = oldPersonContact,
-                                NewEntity = null
-                            });
-                        }
-                    }
-                }
-
                                 if (input.PersonFamilies != null)
                 {
                     var newPersonFamilies = input.PersonFamilies.ToList();
@@ -727,6 +906,85 @@ namespace Service.Modules
                                 ParentEntityKey = model.PersonGuid.ToString(),
                                 ActionType = "DELETE",
                                 OldEntity = oldPersonFamily,
+                                NewEntity = null
+                            });
+                        }
+                    }
+                }
+
+                                if (input.PersonIdentifications != null)
+                {
+                    var newPersonIdentifications = input.PersonIdentifications.ToList();
+                    var oldPersonIdentificationDict = oldPersonIdentifications.ToDictionary(o => o.PersonIdentificationGuid);
+
+                    foreach (var detailDto in newPersonIdentifications)
+                    {
+                        var detail = detailDto.Adapt<PersonIdentification>();
+                        detail.PersonId = model.PersonId;
+                        detail.StatusId = 2;
+                        detail.UpdatedTime = DateTime.UtcNow;
+
+                        if (detailDto.PersonIdentificationGuid != Guid.Empty && oldPersonIdentificationDict.ContainsKey(detailDto.PersonIdentificationGuid))
+                        {
+                            detail.PersonIdentificationGuid = detailDto.PersonIdentificationGuid;
+                            detail.PersonIdentificationId = oldPersonIdentificationDict[detailDto.PersonIdentificationGuid].PersonIdentificationId;
+                            await repository.PersonIdentification.UpdatePersonIdentificationAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonIdentification",
+                                EntityKey = detail.PersonIdentificationGuid.ToString(),
+                                EntityDisplayName = detail.IdentificationValue,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "UPDATE",
+                                OldEntity = oldPersonIdentificationDict[detailDto.PersonIdentificationGuid],
+                                NewEntity = detail
+                            });
+                        }
+                        else
+                        {
+                            detail.StatusId = 1;
+                            detail.CreatedTime = DateTime.UtcNow;
+                            await repository.PersonIdentification.CreatePersonIdentificationAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonIdentification",
+                                EntityKey = detail.PersonIdentificationGuid.ToString(),
+                                EntityDisplayName = detail.IdentificationValue,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "CREATE",
+                                OldEntity = null,
+                                NewEntity = detail
+                            });
+                        }
+                    }
+
+                    foreach (var oldPersonIdentification in oldPersonIdentifications)
+                    {
+                        if (!newPersonIdentifications.Any(o => o.PersonIdentificationGuid == oldPersonIdentification.PersonIdentificationGuid))
+                        {
+                            await repository.PersonIdentification.SoftDeletePersonIdentificationAsync(
+                                new PersonIdentification
+                                {
+                                    PersonIdentificationGuid = oldPersonIdentification.PersonIdentificationGuid,
+                                    PersonIdentificationId = oldPersonIdentification.PersonIdentificationId,
+                                    PersonId = oldPersonIdentification.PersonId
+                                },
+                                input.UpdatedById,
+                                transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "PersonIdentification",
+                                EntityKey = oldPersonIdentification.PersonIdentificationGuid.ToString(),
+                                EntityDisplayName = oldPersonIdentification.IdentificationValue,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "DELETE",
+                                OldEntity = oldPersonIdentification,
                                 NewEntity = null
                             });
                         }
@@ -891,30 +1149,188 @@ namespace Service.Modules
                     }
                 }
 
-                // ##HeaderDetailUpdateDiff##
-                if (input.PersonAddresses != null)
+                                if (input.RoomBookings != null)
                 {
-                    var newPersonAddresses = input.PersonAddresses.ToList();
-                    var oldPersonAddressDict = oldPersonAddresses.ToDictionary(o => o.PersonAddressGuid);
+                    var newRoomBookings = input.RoomBookings.ToList();
+                    var oldRoomBookingDict = oldRoomBookings.ToDictionary(o => o.RoomBookingGuid);
 
-                    foreach (var detailDto in newPersonAddresses)
+                    foreach (var detailDto in newRoomBookings)
                     {
-                        var detail = detailDto.Adapt<PersonAddress>();
-                        detail.PersonId = model.PersonId;
+                        var detail = detailDto.Adapt<RoomBooking>();
+                        detail.BookedByUserId = model.PersonId;
                         detail.StatusId = 2;
                         detail.UpdatedTime = DateTime.UtcNow;
 
-                        if (detailDto.PersonAddressGuid != Guid.Empty && oldPersonAddressDict.TryGetValue(detailDto.PersonAddressGuid, out var oldDetailRow))
+                        if (detailDto.RoomBookingGuid != Guid.Empty && oldRoomBookingDict.ContainsKey(detailDto.RoomBookingGuid))
                         {
-                            detail.PersonAddressGuid = detailDto.PersonAddressGuid;
-                            detail.UpdatedById = input.UpdatedById;
-                            await repository.PersonAddress.UpdatePersonAddressAsync(detail, transaction);
+                            detail.RoomBookingGuid = detailDto.RoomBookingGuid;
+                            detail.RoomBookingId = oldRoomBookingDict[detailDto.RoomBookingGuid].RoomBookingId;
+                            await repository.RoomBooking.UpdateRoomBookingAsync(detail, transaction);
 
                             entries.Add(new AuditLogEntry
                             {
-                                TableName = "PersonAddress",
-                                EntityKey = detail.PersonAddressGuid.ToString(),
-                                EntityDisplayName = detail.Address,
+                                TableName = "RoomBooking",
+                                EntityKey = detail.RoomBookingGuid.ToString(),
+                                EntityDisplayName = detail.RoomBookingCode,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "UPDATE",
+                                OldEntity = oldRoomBookingDict[detailDto.RoomBookingGuid],
+                                NewEntity = detail
+                            });
+                        }
+                        else
+                        {
+                            detail.StatusId = 1;
+                            detail.CreatedTime = DateTime.UtcNow;
+                            await repository.RoomBooking.CreateRoomBookingAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "RoomBooking",
+                                EntityKey = detail.RoomBookingGuid.ToString(),
+                                EntityDisplayName = detail.RoomBookingCode,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "CREATE",
+                                OldEntity = null,
+                                NewEntity = detail
+                            });
+                        }
+                    }
+
+                    foreach (var oldRoomBooking in oldRoomBookings)
+                    {
+                        if (!newRoomBookings.Any(o => o.RoomBookingGuid == oldRoomBooking.RoomBookingGuid))
+                        {
+                            await repository.RoomBooking.SoftDeleteRoomBookingAsync(
+                                new RoomBooking
+                                {
+                                    RoomBookingGuid = oldRoomBooking.RoomBookingGuid,
+                                    RoomBookingId = oldRoomBooking.RoomBookingId,
+                                    BookedByUserId = oldRoomBooking.BookedByUserId
+                                },
+                                input.UpdatedById,
+                                transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "RoomBooking",
+                                EntityKey = oldRoomBooking.RoomBookingGuid.ToString(),
+                                EntityDisplayName = oldRoomBooking.RoomBookingCode,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "DELETE",
+                                OldEntity = oldRoomBooking,
+                                NewEntity = null
+                            });
+                        }
+                    }
+                }
+
+                                if (input.WorkItems != null)
+                {
+                    var newWorkItems = input.WorkItems.ToList();
+                    var oldWorkItemDict = oldWorkItems.ToDictionary(o => o.WorkItemGuid);
+
+                    foreach (var detailDto in newWorkItems)
+                    {
+                        var detail = detailDto.Adapt<WorkItem>();
+                        detail.OwnerUserId = model.PersonId;
+                        detail.StatusId = 2;
+                        detail.UpdatedTime = DateTime.UtcNow;
+
+                        if (detailDto.WorkItemGuid != Guid.Empty && oldWorkItemDict.ContainsKey(detailDto.WorkItemGuid))
+                        {
+                            detail.WorkItemGuid = detailDto.WorkItemGuid;
+                            detail.WorkItemId = oldWorkItemDict[detailDto.WorkItemGuid].WorkItemId;
+                            await repository.WorkItem.UpdateWorkItemAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "WorkItem",
+                                EntityKey = detail.WorkItemGuid.ToString(),
+                                EntityDisplayName = detail.WorkItemCode,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "UPDATE",
+                                OldEntity = oldWorkItemDict[detailDto.WorkItemGuid],
+                                NewEntity = detail
+                            });
+                        }
+                        else
+                        {
+                            detail.StatusId = 1;
+                            detail.CreatedTime = DateTime.UtcNow;
+                            await repository.WorkItem.CreateWorkItemAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "WorkItem",
+                                EntityKey = detail.WorkItemGuid.ToString(),
+                                EntityDisplayName = detail.WorkItemCode,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "CREATE",
+                                OldEntity = null,
+                                NewEntity = detail
+                            });
+                        }
+                    }
+
+                    foreach (var oldWorkItem in oldWorkItems)
+                    {
+                        if (!newWorkItems.Any(o => o.WorkItemGuid == oldWorkItem.WorkItemGuid))
+                        {
+                            await repository.WorkItem.SoftDeleteWorkItemAsync(
+                                new WorkItem
+                                {
+                                    WorkItemGuid = oldWorkItem.WorkItemGuid,
+                                    WorkItemId = oldWorkItem.WorkItemId,
+                                    OwnerUserId = oldWorkItem.OwnerUserId
+                                },
+                                input.UpdatedById,
+                                transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "WorkItem",
+                                EntityKey = oldWorkItem.WorkItemGuid.ToString(),
+                                EntityDisplayName = oldWorkItem.WorkItemCode,
+                                ParentTableName = "Person",
+                                ParentEntityKey = model.PersonGuid.ToString(),
+                                ActionType = "DELETE",
+                                OldEntity = oldWorkItem,
+                                NewEntity = null
+                            });
+                        }
+                    }
+                }
+
+                // ##HeaderDetailUpdateDiff##
+                if (input.Companies != null)
+                {
+                    var newCompanies = input.Companies.ToList();
+                    var oldCompanyDict = oldCompanies.ToDictionary(o => o.CompanyGuid);
+
+                    foreach (var detailDto in newCompanies)
+                    {
+                        var detail = detailDto.Adapt<Company>();
+                        detail.LeaderId = model.PersonId;
+                        detail.StatusId = 2;
+                        detail.UpdatedTime = DateTime.UtcNow;
+
+                        if (detailDto.CompanyGuid != Guid.Empty && oldCompanyDict.TryGetValue(detailDto.CompanyGuid, out var oldDetailRow))
+                        {
+                            detail.CompanyGuid = detailDto.CompanyGuid;
+                            detail.UpdatedById = input.UpdatedById;
+                            await repository.Company.UpdateCompanyAsync(detail, transaction);
+
+                            entries.Add(new AuditLogEntry
+                            {
+                                TableName = "Company",
+                                EntityKey = detail.CompanyGuid.ToString(),
+                                EntityDisplayName = detail.CompanyName,
                                 ParentTableName = "Person",
                                 ParentEntityKey = personGuid.ToString(),
                                 ActionType = "UPDATE",
@@ -924,17 +1340,17 @@ namespace Service.Modules
                         }
                         else
                         {
-                            detail.PersonAddressGuid = Guid.NewGuid();
+                            detail.CompanyGuid = Guid.NewGuid();
                             detail.CreatedById = input.UpdatedById;
                             detail.StatusId = 1;
                             detail.CreatedTime = DateTime.UtcNow;
-                            await repository.PersonAddress.CreatePersonAddressAsync(detail, transaction);
+                            await repository.Company.CreateCompanyAsync(detail, transaction);
 
                             entries.Add(new AuditLogEntry
                             {
-                                TableName = "PersonAddress",
-                                EntityKey = detail.PersonAddressGuid.ToString(),
-                                EntityDisplayName = detail.Address,
+                                TableName = "Company",
+                                EntityKey = detail.CompanyGuid.ToString(),
+                                EntityDisplayName = detail.CompanyName,
                                 ParentTableName = "Person",
                                 ParentEntityKey = personGuid.ToString(),
                                 ActionType = "CREATE",
@@ -944,14 +1360,14 @@ namespace Service.Modules
                         }
                     }
 
-                    foreach (var oldPersonAddress in oldPersonAddresses)
+                    foreach (var oldCompany in oldCompanies)
                     {
-                        if (!newPersonAddresses.Any(o => o.PersonAddressGuid == oldPersonAddress.PersonAddressGuid))
+                        if (!newCompanies.Any(o => o.CompanyGuid == oldCompany.CompanyGuid))
                         {
-                            await repository.PersonAddress.SoftDeletePersonAddressAsync(
-                                new PersonAddress
+                            await repository.Company.SoftDeleteCompanyAsync(
+                                new Company
                                 {
-                                    PersonAddressGuid = oldPersonAddress.PersonAddressGuid,
+                                    CompanyGuid = oldCompany.CompanyGuid,
                                     DeletedById = input.UpdatedById,
                                     DeletedTime = DateTime.UtcNow
                                 },
@@ -960,13 +1376,13 @@ namespace Service.Modules
 
                             entries.Add(new AuditLogEntry
                             {
-                                TableName = "PersonAddress",
-                                EntityKey = oldPersonAddress.PersonAddressGuid.ToString(),
-                                EntityDisplayName = oldPersonAddress.Address,
+                                TableName = "Company",
+                                EntityKey = oldCompany.CompanyGuid.ToString(),
+                                EntityDisplayName = oldCompany.CompanyName,
                                 ParentTableName = "Person",
                                 ParentEntityKey = personGuid.ToString(),
                                 ActionType = "DELETE",
-                                OldEntity = oldPersonAddress,
+                                OldEntity = oldCompany,
                                 NewEntity = null
                             });
                         }

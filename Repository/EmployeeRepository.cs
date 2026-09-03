@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,39 +11,29 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class EmployeeRepository(RepositoryContext context, IAuditService audit) : IEmployeeRepository
+    public partial class EmployeeRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IEmployeeRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Employee");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<Employee?> GetEmployeeAsync(Guid employeeGuid, bool trackChanges)
+public async Task<Employee?> GetEmployeeAsync(Guid employeeGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEmploymentStatus.StandardReferenceItemName, '') AS EmploymentStatusName
-, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
-, ISNULL(v_SrRemunerationType.StandardReferenceItemName, '') AS RemunerationTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentStatus.StandardReferenceItemName")} AS EmploymentStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentType.StandardReferenceItemName")} AS EmploymentTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRemunerationType.StandardReferenceItemName")} AS RemunerationTypeName
 
 , j_PersonId.FileStorageId AS PersonFileStorageId
 , j_PersonId.BirthDate AS BirthDate
 
-                FROM [app].[Employee] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentStatus')
-    WHERE StandardReferenceItemId = a.SrEmploymentStatus
-) v_SrEmploymentStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
-    WHERE StandardReferenceItemId = a.SrEmploymentType
-) v_SrEmploymentType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'RemunerationType')
-    WHERE StandardReferenceItemId = a.SrRemunerationType
-) v_SrRemunerationType
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentStatus", "SrEmploymentStatus", "EmploymentStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentType", "SrEmploymentType", "EmploymentType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRemunerationType", "SrRemunerationType", "RemunerationType")}
 
                 WHERE a.EmployeeGuid = @employeeGuid
                   AND a.StatusId > 0
@@ -54,32 +45,20 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEmploymentStatus.StandardReferenceItemName, '') AS EmploymentStatusName
-, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
-, ISNULL(v_SrRemunerationType.StandardReferenceItemName, '') AS RemunerationTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentStatus.StandardReferenceItemName")} AS EmploymentStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentType.StandardReferenceItemName")} AS EmploymentTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRemunerationType.StandardReferenceItemName")} AS RemunerationTypeName
 
 , j_PersonId.FileStorageId AS PersonFileStorageId
 , j_PersonId.BirthDate AS BirthDate
 
-                FROM [app].[Employee] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentStatus')
-    WHERE StandardReferenceItemId = a.SrEmploymentStatus
-) v_SrEmploymentStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
-    WHERE StandardReferenceItemId = a.SrEmploymentType
-) v_SrEmploymentType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'RemunerationType')
-    WHERE StandardReferenceItemId = a.SrRemunerationType
-) v_SrRemunerationType
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentStatus", "SrEmploymentStatus", "EmploymentStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentType", "SrEmploymentType", "EmploymentType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRemunerationType", "SrRemunerationType", "RemunerationType")}
 
                 WHERE a.EmployeeId = @employeeId
                   AND a.StatusId > 0
@@ -91,35 +70,23 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEmploymentStatus.StandardReferenceItemName, '') AS EmploymentStatusName
-, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
-, ISNULL(v_SrRemunerationType.StandardReferenceItemName, '') AS RemunerationTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentStatus.StandardReferenceItemName")} AS EmploymentStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentType.StandardReferenceItemName")} AS EmploymentTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRemunerationType.StandardReferenceItemName")} AS RemunerationTypeName
 
 , j_PersonId.FileStorageId AS PersonFileStorageId
 , j_PersonId.BirthDate AS BirthDate
 
-                FROM [app].[Employee] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentStatus')
-    WHERE StandardReferenceItemId = a.SrEmploymentStatus
-) v_SrEmploymentStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
-    WHERE StandardReferenceItemId = a.SrEmploymentType
-) v_SrEmploymentType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'RemunerationType')
-    WHERE StandardReferenceItemId = a.SrRemunerationType
-) v_SrRemunerationType
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentStatus", "SrEmploymentStatus", "EmploymentStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentType", "SrEmploymentType", "EmploymentType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRemunerationType", "SrRemunerationType", "RemunerationType")}
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.EmployeeId DESC";
+                ORDER BY a.EmployeeId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Employee>(sql);
         }
 
@@ -127,12 +94,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(employee);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Employee]
+            var sql = $@"
+                INSERT INTO {_table}
                 (EmployeeGuid, CreatedById, StatusId, CreatedTime, PersonId, EmployeeNo, HireDate, ProbationEndDate, ConfirmationDate, TerminationDate, SrEmploymentStatus, SrEmploymentType, SrRemunerationType)
                 VALUES
-                (@EmployeeGuid, @CreatedById, @StatusId, @CreatedTime, @PersonId, @EmployeeNo, @HireDate, @ProbationEndDate, @ConfirmationDate, @TerminationDate, @SrEmploymentStatus, @SrEmploymentType, @SrRemunerationType);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@EmployeeGuid, @CreatedById, @StatusId, @CreatedTime, @PersonId, @EmployeeNo, @HireDate, @ProbationEndDate, @ConfirmationDate, @TerminationDate, @SrEmploymentStatus, @SrEmploymentType, @SrRemunerationType){dialect.ReturnIdentitySuffix("EmployeeId")}";
             employee.EmployeeId = await conn.QuerySingleAsync<long>(sql, employee, transaction);
         }
 
@@ -140,8 +106,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(employee);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Employee]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     PersonId = @PersonId,
                     EmployeeNo = @EmployeeNo,
                     HireDate = @HireDate,
@@ -162,8 +128,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(employee, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Employee]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -175,7 +141,7 @@ OUTER APPLY (
         public async Task DeleteEmployeeAsync(Guid employeeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Employee] WHERE EmployeeGuid = @employeeGuid";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeGuid = @employeeGuid";
             await conn.ExecuteAsync(sql, new { employeeGuid }, transaction);
         }
 
@@ -198,66 +164,54 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(employeeNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.EmployeeNo", "@employeeNo", employeeNoSearchType, parameters, "employeeNo", employeeNo);
+                var param = SqlFilterHelper.BuildFilter("a.EmployeeNo", "@employeeNo", employeeNoSearchType, parameters, "employeeNo", employeeNo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(hireDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HireDate", "@hireDate", hireDateSearchType, parameters, "hireDate", hireDate);
+                var param = SqlFilterHelper.BuildFilter("a.HireDate", "@hireDate", hireDateSearchType, parameters, "hireDate", hireDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(probationEndDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ProbationEndDate", "@probationEndDate", probationEndDateSearchType, parameters, "probationEndDate", probationEndDate);
+                var param = SqlFilterHelper.BuildFilter("a.ProbationEndDate", "@probationEndDate", probationEndDateSearchType, parameters, "probationEndDate", probationEndDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(confirmationDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ConfirmationDate", "@confirmationDate", confirmationDateSearchType, parameters, "confirmationDate", confirmationDate);
+                var param = SqlFilterHelper.BuildFilter("a.ConfirmationDate", "@confirmationDate", confirmationDateSearchType, parameters, "confirmationDate", confirmationDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(terminationDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.TerminationDate", "@terminationDate", terminationDateSearchType, parameters, "terminationDate", terminationDate);
+                var param = SqlFilterHelper.BuildFilter("a.TerminationDate", "@terminationDate", terminationDateSearchType, parameters, "terminationDate", terminationDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
-, ISNULL(v_SrEmploymentStatus.StandardReferenceItemName, '') AS EmploymentStatusName
-, ISNULL(v_SrEmploymentType.StandardReferenceItemName, '') AS EmploymentTypeName
-, ISNULL(v_SrRemunerationType.StandardReferenceItemName, '') AS RemunerationTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentStatus.StandardReferenceItemName")} AS EmploymentStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrEmploymentType.StandardReferenceItemName")} AS EmploymentTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrRemunerationType.StandardReferenceItemName")} AS RemunerationTypeName
 
 , j_PersonId.FileStorageId AS PersonFileStorageId
 , j_PersonId.BirthDate AS BirthDate
 
-                FROM [app].[Employee] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentStatus')
-    WHERE StandardReferenceItemId = a.SrEmploymentStatus
-) v_SrEmploymentStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'EmploymentType')
-    WHERE StandardReferenceItemId = a.SrEmploymentType
-) v_SrEmploymentType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'RemunerationType')
-    WHERE StandardReferenceItemId = a.SrRemunerationType
-) v_SrRemunerationType
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentStatus", "SrEmploymentStatus", "EmploymentStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEmploymentType", "SrEmploymentType", "EmploymentType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrRemunerationType", "SrRemunerationType", "RemunerationType")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.EmployeeId DESC";
+                ORDER BY a.EmployeeId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Employee>(sql, parameters, transaction);
         }

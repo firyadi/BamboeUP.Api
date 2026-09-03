@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,22 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class PersonBankAccountRepository(RepositoryContext context, IAuditService audit) : IPersonBankAccountRepository
+    public partial class PersonBankAccountRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonBankAccountRepository
     {
+
+        private readonly string _table = dialect.Qualify("app", "PersonBankAccount");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
         public async Task<PersonBankAccount?> GetPersonBankAccountAsync(Guid personBankAccountGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
 
 
-                FROM [app].[PersonBankAccount] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
 
                 WHERE a.PersonBankAccountGuid = @personBankAccountGuid
                   AND a.StatusId > 0
@@ -34,12 +38,12 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
 
 
-                FROM [app].[PersonBankAccount] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonBankAccountGuid = @personBankAccountGuid
@@ -52,17 +56,17 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
 
 
-                FROM [app].[PersonBankAccount] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.PersonBankAccountId DESC";
+                ORDER BY a.PersonBankAccountId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<PersonBankAccount>(sql, new { personGuid });
         }
 
@@ -70,12 +74,11 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         {
             AuditTimestampHelper.StampCreate(personBankAccount);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[PersonBankAccount]
+            var sql = $@"
+                INSERT INTO {_table}
                 (PersonBankAccountGuid, PersonId, CreatedById, StatusId, CreatedTime, BankBranch, AccountNumber, AccountName, SwiftCode, IBAN, CurrencyId, SrBankAccountType, IsPrimary, IsPayrollAccount, IsActive, Remarks)
                 VALUES
-                (@PersonBankAccountGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @BankBranch, @AccountNumber, @AccountName, @SwiftCode, @IBAN, @CurrencyId, @SrBankAccountType, @IsPrimary, @IsPayrollAccount, @IsActive, @Remarks);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@PersonBankAccountGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @BankBranch, @AccountNumber, @AccountName, @SwiftCode, @IBAN, @CurrencyId, @SrBankAccountType, @IsPrimary, @IsPayrollAccount, @IsActive, @Remarks){dialect.ReturnIdentitySuffix("PersonBankAccountId")}";
             personBankAccount.PersonBankAccountId = await conn.QuerySingleAsync<long>(sql, personBankAccount, transaction);
         }
 
@@ -83,8 +86,8 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         {
             AuditTimestampHelper.StampUpdate(personBankAccount);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonBankAccount]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     PersonId = @PersonId,
                     BankBranch = @BankBranch,
                     AccountNumber = @AccountNumber,
@@ -108,8 +111,8 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         {
             AuditTimestampHelper.StampSoftDelete(personBankAccount, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[PersonBankAccount]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -121,14 +124,14 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
         public async Task DeletePersonBankAccountAsync(Guid personBankAccountGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonBankAccount] WHERE PersonBankAccountGuid = @personBankAccountGuid";
+            var sql = $@"DELETE FROM {_table} WHERE PersonBankAccountGuid = @personBankAccountGuid";
             await conn.ExecuteAsync(sql, new { personBankAccountGuid }, transaction);
         }
 
         public async Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[PersonBankAccount] WHERE PersonId IN (SELECT PersonId FROM [app].[Person] WHERE PersonGuid = @personGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE PersonId IN (SELECT PersonId FROM {dialect.Qualify("app", "Person")} WHERE PersonGuid = @personGuid)";
             await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
@@ -177,86 +180,86 @@ LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
 
             if (!string.IsNullOrWhiteSpace(bankId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.BankId", "@bankId", bankIdSearchType, parameters, "bankId", bankId);
+                var param = SqlFilterHelper.BuildFilter("a.BankId", "@bankId", bankIdSearchType, parameters, "bankId", bankId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(bankBranch))
             {
-                var param = SqlFilterHelper.BuildFilter("a.BankBranch", "@bankBranch", bankBranchSearchType, parameters, "bankBranch", bankBranch);
+                var param = SqlFilterHelper.BuildFilter("a.BankBranch", "@bankBranch", bankBranchSearchType, parameters, "bankBranch", bankBranch, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(accountNumber))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AccountNumber", "@accountNumber", accountNumberSearchType, parameters, "accountNumber", accountNumber);
+                var param = SqlFilterHelper.BuildFilter("a.AccountNumber", "@accountNumber", accountNumberSearchType, parameters, "accountNumber", accountNumber, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(accountName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AccountName", "@accountName", accountNameSearchType, parameters, "accountName", accountName);
+                var param = SqlFilterHelper.BuildFilter("a.AccountName", "@accountName", accountNameSearchType, parameters, "accountName", accountName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(swiftCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SwiftCode", "@swiftCode", swiftCodeSearchType, parameters, "swiftCode", swiftCode);
+                var param = SqlFilterHelper.BuildFilter("a.SwiftCode", "@swiftCode", swiftCodeSearchType, parameters, "swiftCode", swiftCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(iBAN))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IBAN", "@iBAN", iBANSearchType, parameters, "iBAN", iBAN);
+                var param = SqlFilterHelper.BuildFilter("a.IBAN", "@iBAN", iBANSearchType, parameters, "iBAN", iBAN, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(currencyId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CurrencyId", "@currencyId", currencyIdSearchType, parameters, "currencyId", currencyId);
+                var param = SqlFilterHelper.BuildFilter("a.CurrencyId", "@currencyId", currencyIdSearchType, parameters, "currencyId", currencyId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srBankAccountType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrBankAccountType", "@srBankAccountType", srBankAccountTypeSearchType, parameters, "srBankAccountType", srBankAccountType);
+                var param = SqlFilterHelper.BuildFilter("a.SrBankAccountType", "@srBankAccountType", srBankAccountTypeSearchType, parameters, "srBankAccountType", srBankAccountType, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isPrimary))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary);
+                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isPayrollAccount))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsPayrollAccount", "@isPayrollAccount", isPayrollAccountSearchType, parameters, "isPayrollAccount", isPayrollAccount);
+                var param = SqlFilterHelper.BuildFilter("a.IsPayrollAccount", "@isPayrollAccount", isPayrollAccountSearchType, parameters, "isPayrollAccount", isPayrollAccount, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isActive))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsActive", "@isActive", isActiveSearchType, parameters, "isActive", isActive);
+                var param = SqlFilterHelper.BuildFilter("a.IsActive", "@isActive", isActiveSearchType, parameters, "isActive", isActive, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(remarks))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks);
+                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
 
 
-                FROM [app].[PersonBankAccount] a
-LEFT JOIN [app].[Person] j_PersonId ON a.PersonId = j_PersonId.PersonId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.PersonBankAccountId DESC";
+                ORDER BY a.PersonBankAccountId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<PersonBankAccount>(sql, parameters, transaction);
         }

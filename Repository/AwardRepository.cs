@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,20 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class AwardRepository(RepositoryContext context, IAuditService audit) : IAwardRepository
+    public partial class AwardRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IAwardRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Award");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
         public async Task<Award?> GetAwardAsync(Guid awardGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrAwardType.StandardReferenceItemName, '') AS AwardTypeName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAwardType.StandardReferenceItemName")} AS AwardTypeName
 
 
-                FROM [app].[Award] a
+                FROM {_table} a
 OUTER APPLY (
     SELECT StandardReferenceItemName
     FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AwardType')
@@ -38,11 +41,11 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrAwardType.StandardReferenceItemName, '') AS AwardTypeName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAwardType.StandardReferenceItemName")} AS AwardTypeName
 
 
-                FROM [app].[Award] a
+                FROM {_table} a
 OUTER APPLY (
     SELECT StandardReferenceItemName
     FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AwardType')
@@ -59,11 +62,11 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrAwardType.StandardReferenceItemName, '') AS AwardTypeName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAwardType.StandardReferenceItemName")} AS AwardTypeName
 
 
-                FROM [app].[Award] a
+                FROM {_table} a
 OUTER APPLY (
     SELECT StandardReferenceItemName
     FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AwardType')
@@ -71,7 +74,7 @@ OUTER APPLY (
 ) v_SrAwardType
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.AwardId DESC";
+                ORDER BY a.AwardId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Award>(sql);
         }
 
@@ -79,12 +82,12 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(award);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Award]
+            var sql = $@"
+                INSERT INTO {_table}
                 (AwardGuid, CreatedById, StatusId, CreatedTime, AwardCode, AwardName, SrAwardType, ValidFrom, Validto, AwardPrize, Note)
                 VALUES
                 (@AwardGuid, @CreatedById, @StatusId, @CreatedTime, @AwardCode, @AwardName, @SrAwardType, @ValidFrom, @Validto, @AwardPrize, @Note);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {dialect.ReturnIdentitySuffix("AwardId")}";
             award.AwardId = await conn.QuerySingleAsync<long>(sql, award, transaction);
         }
 
@@ -92,8 +95,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(award);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Award]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     AwardCode = @AwardCode,
                     AwardName = @AwardName,
                     SrAwardType = @SrAwardType,
@@ -112,8 +115,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(award, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Award]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -125,7 +128,7 @@ OUTER APPLY (
         public async Task DeleteAwardAsync(Guid awardGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Award] WHERE AwardGuid = @awardGuid";
+            var sql = $@"DELETE FROM {_table} WHERE AwardGuid = @awardGuid";
             await conn.ExecuteAsync(sql, new { awardGuid }, transaction);
         }
 
@@ -150,48 +153,48 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(awardCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AwardCode", "@awardCode", awardCodeSearchType, parameters, "awardCode", awardCode);
+                var param = SqlFilterHelper.BuildFilter("a.AwardCode", "@awardCode", awardCodeSearchType, parameters, "awardCode", awardCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(awardName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AwardName", "@awardName", awardNameSearchType, parameters, "awardName", awardName);
+                var param = SqlFilterHelper.BuildFilter("a.AwardName", "@awardName", awardNameSearchType, parameters, "awardName", awardName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(validFrom))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ValidFrom", "@validFrom", validFromSearchType, parameters, "validFrom", validFrom);
+                var param = SqlFilterHelper.BuildFilter("a.ValidFrom", "@validFrom", validFromSearchType, parameters, "validFrom", validFrom, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(validto))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Validto", "@validto", validtoSearchType, parameters, "validto", validto);
+                var param = SqlFilterHelper.BuildFilter("a.Validto", "@validto", validtoSearchType, parameters, "validto", validto, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(awardPrize))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AwardPrize", "@awardPrize", awardPrizeSearchType, parameters, "awardPrize", awardPrize);
+                var param = SqlFilterHelper.BuildFilter("a.AwardPrize", "@awardPrize", awardPrizeSearchType, parameters, "awardPrize", awardPrize, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(note))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Note", "@note", noteSearchType, parameters, "note", note);
+                var param = SqlFilterHelper.BuildFilter("a.Note", "@note", noteSearchType, parameters, "note", note, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrAwardType.StandardReferenceItemName, '') AS AwardTypeName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrAwardType.StandardReferenceItemName")} AS AwardTypeName
 
 
-                FROM [app].[Award] a
+                FROM {_table} a
 OUTER APPLY (
     SELECT StandardReferenceItemName
     FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'AwardType')
@@ -199,7 +202,7 @@ OUTER APPLY (
 ) v_SrAwardType
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.AwardId DESC";
+                ORDER BY a.AwardId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Award>(sql, parameters, transaction);
         }

@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -11,10 +12,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public AutoNumberCounterRepository(RepositoryContext context, IAuditService auditService)
+        public AutoNumberCounterRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -22,8 +26,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumberCounter] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberCounter")} a
                 WHERE a.AutoNumberCounterGuid = @autoNumberCounterGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -34,10 +38,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumberCounter] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberCounter")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.AutoNumberCounterId DESC";
+                ORDER BY a.AutoNumberCounterId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<AutoNumberCounter>(sql);
         }
 
@@ -45,8 +49,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(autoNumberCounter);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[AutoNumberCounter]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "AutoNumberCounter")}
                 (AutoNumberCounterGuid, AutoNumberTemplateId,
                  CompanyId, CompanyOfficeId, OrganizationUnitId,
                  YearNo, MonthNo, DayNo,
@@ -75,8 +79,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberCounterAsync(autoNumberCounter.AutoNumberCounterGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[AutoNumberCounter]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumberCounter")}
                 SET AutoNumberTemplateId = @AutoNumberTemplateId,
                     CompanyId            = @CompanyId,
                     CompanyOfficeId      = @CompanyOfficeId,
@@ -106,8 +110,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberCounterAsync(autoNumberCounter.AutoNumberCounterGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[AutoNumberCounter]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumberCounter")}
                 SET StatusId    = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -129,7 +133,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberCounterAsync(autoNumberCounterGuid, false);
 
-            const string sql = @"DELETE FROM [app].[AutoNumberCounter] WHERE AutoNumberCounterGuid = @autoNumberCounterGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "AutoNumberCounter")} WHERE AutoNumberCounterGuid = @autoNumberCounterGuid";
             await conn.ExecuteAsync(sql, new { autoNumberCounterGuid }, transaction);
 
             await _audit.LogAsync(
@@ -198,9 +202,9 @@ namespace Repository
 
             var sql = $@"
                 SELECT a.*
-                FROM [app].[AutoNumberCounter] a
+                FROM {_dialect.Qualify("app", "AutoNumberCounter")} a
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.AutoNumberCounterId DESC";
+                ORDER BY a.AutoNumberCounterId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<AutoNumberCounter>(sql, parameters, transaction);
         }
@@ -210,9 +214,9 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumberCounter] a
-                INNER JOIN [app].[AutoNumberTemplate] t
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberCounter")} a
+                INNER JOIN {_dialect.Qualify("app", "AutoNumberTemplate")} t
                     ON a.AutoNumberTemplateId = t.AutoNumberTemplateId
                 WHERE t.AutoNumberTemplateGuid = @autoNumberTemplateGuid
                   AND a.StatusId > 0

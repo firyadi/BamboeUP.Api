@@ -1,6 +1,7 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,25 +13,28 @@ namespace Repository
     public class StandardReferenceScopeRepository : IStandardReferenceScopeRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public StandardReferenceScopeRepository(RepositoryContext context)
+        public StandardReferenceScopeRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         public async Task<StandardReferenceScope?> GetStandardReferenceScopeAsync(Guid standardReferenceScopeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_StandardReferenceId.StandardReferenceName AS StandardReferenceName
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 
-                FROM [app].[StandardReferenceScope] a
-LEFT JOIN [app].[StandardReference] j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
-LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
-LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+                FROM {_dialect.Qualify("app", "StandardReferenceScope")} a
+LEFT JOIN {_dialect.Qualify("app", "StandardReference")} j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
+LEFT JOIN {_dialect.Qualify("app", "Company")} j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")} j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 
                 WHERE a.StandardReferenceScopeGuid = @standardReferenceScopeGuid
                   AND a.StatusId > 0
@@ -42,15 +46,15 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_StandardReferenceId.StandardReferenceName AS StandardReferenceName
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 
-                FROM [app].[StandardReferenceScope] a
-LEFT JOIN [app].[StandardReference] j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
-LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
-LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+                FROM {_dialect.Qualify("app", "StandardReferenceScope")} a
+LEFT JOIN {_dialect.Qualify("app", "StandardReference")} j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
+LEFT JOIN {_dialect.Qualify("app", "Company")} j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")} j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 
                 WHERE a.StandardReferenceGuid = @standardReferenceGuid
                   AND a.StandardReferenceScopeGuid = @standardReferenceScopeGuid
@@ -63,20 +67,20 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_StandardReferenceId.StandardReferenceName AS StandardReferenceName
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 
-                FROM [app].[StandardReferenceScope] a
-LEFT JOIN [app].[StandardReference] j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
-LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
-LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+                FROM {_dialect.Qualify("app", "StandardReferenceScope")} a
+LEFT JOIN {_dialect.Qualify("app", "StandardReference")} j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
+LEFT JOIN {_dialect.Qualify("app", "Company")} j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")} j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 
                 WHERE a.StandardReferenceGuid = @standardReferenceGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.StandardReferenceScopeId DESC";
+                ORDER BY a.StandardReferenceScopeId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<StandardReferenceScope>(sql, new { standardReferenceGuid });
         }
 
@@ -84,19 +88,19 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_StandardReferenceId.StandardReferenceName AS StandardReferenceName
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 
-                FROM [app].[StandardReferenceScope] a
-LEFT JOIN [app].[StandardReference] j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
-LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
-LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+                FROM {_dialect.Qualify("app", "StandardReferenceScope")} a
+LEFT JOIN {_dialect.Qualify("app", "StandardReference")} j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
+LEFT JOIN {_dialect.Qualify("app", "Company")} j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")} j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 
                 WHERE a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.StandardReferenceScopeId DESC";
+                ORDER BY a.StandardReferenceScopeId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<StandardReferenceScope>(sql);
         }
 
@@ -104,16 +108,15 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         {
             AuditTimestampHelper.StampCreate(scope);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[StandardReferenceScope]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "StandardReferenceScope")}
                 (StandardReferenceScopeGuid, StandardReferenceId, StandardReferenceGuid, CreatedById, StatusId, CreatedTime,
                  CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid
                 )
                 VALUES
                 (@StandardReferenceScopeGuid, @StandardReferenceId, @StandardReferenceGuid, @CreatedById, @StatusId, @CreatedTime,
                  @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid
-                );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                ){_dialect.ReturnIdentitySuffix("StandardReferenceScopeId")}";
             scope.StandardReferenceScopeId = await conn.QuerySingleAsync<long>(sql, scope, transaction);
         }
 
@@ -121,8 +124,8 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         {
             AuditTimestampHelper.StampUpdate(scope);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[StandardReferenceScope]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "StandardReferenceScope")}
                 SET StandardReferenceId = @StandardReferenceId,
                     StandardReferenceGuid = @StandardReferenceGuid,
                     CompanyId = @CompanyId,
@@ -140,8 +143,8 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         {
             AuditTimestampHelper.StampSoftDelete(scope, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[StandardReferenceScope]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "StandardReferenceScope")}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -153,14 +156,14 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
         public async Task DeleteStandardReferenceScopeAsync(Guid standardReferenceScopeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[StandardReferenceScope] WHERE StandardReferenceScopeGuid = @standardReferenceScopeGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "StandardReferenceScope")} WHERE StandardReferenceScopeGuid = @standardReferenceScopeGuid";
             await conn.ExecuteAsync(sql, new { standardReferenceScopeGuid }, transaction);
         }
 
         public async Task DeleteByStandardReferenceGuidAsync(Guid standardReferenceGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[StandardReferenceScope] WHERE StandardReferenceGuid = @standardReferenceGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "StandardReferenceScope")} WHERE StandardReferenceGuid = @standardReferenceGuid";
             await conn.ExecuteAsync(sql, new { standardReferenceGuid }, transaction);
         }
 
@@ -195,18 +198,18 @@ LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_Compa
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_StandardReferenceId.StandardReferenceName AS StandardReferenceName
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 
-                FROM [app].[StandardReferenceScope] a
-LEFT JOIN [app].[StandardReference] j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
-LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
-LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
+                FROM {_dialect.Qualify("app", "StandardReferenceScope")} a
+LEFT JOIN {_dialect.Qualify("app", "StandardReference")} j_StandardReferenceId ON a.StandardReferenceId = j_StandardReferenceId.StandardReferenceId
+LEFT JOIN {_dialect.Qualify("app", "Company")} j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
+LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")} j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.StandardReferenceScopeId DESC";
+                ORDER BY a.StandardReferenceScopeId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<StandardReferenceScope>(sql, parameters, transaction);
         }

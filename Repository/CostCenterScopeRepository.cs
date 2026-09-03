@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,20 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class CostCenterScopeRepository(RepositoryContext context, IAuditService audit) : ICostCenterScopeRepository
+    public partial class CostCenterScopeRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : ICostCenterScopeRepository
     {
+        private readonly string _table = dialect.Qualify("app", "CostCenterScope");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
         public async Task<CostCenterScope?> GetCostCenterScopeAsync(Guid costCenterScopeGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CostCenterId.CostCenterName AS CostCenterName
 
 
-                FROM [app].[CostCenterScope] a
+                FROM {_table} a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
 
                 WHERE a.CostCenterScopeGuid = @costCenterScopeGuid
@@ -34,11 +37,11 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CostCenterId.CostCenterName AS CostCenterName
 
 
-                FROM [app].[CostCenterScope] a
+                FROM {_table} a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
 
                 WHERE j_CostCenterId.CostCenterGuid = @costCenterGuid
@@ -52,17 +55,17 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CostCenterId.CostCenterName AS CostCenterName
 
 
-                FROM [app].[CostCenterScope] a
+                FROM {_table} a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
 
                 WHERE j_CostCenterId.CostCenterGuid = @costCenterGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.CostCenterScopeId DESC";
+                ORDER BY a.CostCenterScopeId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<CostCenterScope>(sql, new { costCenterGuid });
         }
 
@@ -70,12 +73,12 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         {
             AuditTimestampHelper.StampCreate(costCenterScope);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[CostCenterScope]
+            var sql = $@"
+                INSERT INTO {_table}
                 (CostCenterScopeGuid, CostCenterId, CreatedById, StatusId, CreatedTime, CompanyId, CompanyOfficeId, ScopeType)
                 VALUES
                 (@CostCenterScopeGuid, @CostCenterId, @CreatedById, @StatusId, @CreatedTime, @CompanyId, @CompanyOfficeId, @ScopeType);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {dialect.ReturnIdentitySuffix("CostCenterScopeId")}";
             costCenterScope.CostCenterScopeId = await conn.QuerySingleAsync<long>(sql, costCenterScope, transaction);
         }
 
@@ -83,8 +86,8 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         {
             AuditTimestampHelper.StampUpdate(costCenterScope);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[CostCenterScope]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     CostCenterId = @CostCenterId,
                     CompanyId = @CompanyId,
                     CompanyOfficeId = @CompanyOfficeId,
@@ -100,8 +103,8 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         {
             AuditTimestampHelper.StampSoftDelete(costCenterScope, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[CostCenterScope]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -113,14 +116,14 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
         public async Task DeleteCostCenterScopeAsync(Guid costCenterScopeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[CostCenterScope] WHERE CostCenterScopeGuid = @costCenterScopeGuid";
+            var sql = $@"DELETE FROM {_table} WHERE CostCenterScopeGuid = @costCenterScopeGuid";
             await conn.ExecuteAsync(sql, new { costCenterScopeGuid }, transaction);
         }
 
         public async Task DeleteByCostCenterGuidAsync(Guid costCenterGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[CostCenterScope] WHERE CostCenterId IN (SELECT CostCenterId FROM [app].[CostCenter] WHERE CostCenterGuid = @costCenterGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE CostCenterId IN (SELECT CostCenterId FROM [app].[CostCenter] WHERE CostCenterGuid = @costCenterGuid)";
             await conn.ExecuteAsync(sql, new { costCenterGuid }, transaction);
         }
 
@@ -151,32 +154,32 @@ LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.C
 
             if (!string.IsNullOrWhiteSpace(companyId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyId", "@companyId", companyIdSearchType, parameters, "companyId", companyId);
+                var param = SqlFilterHelper.BuildFilter("a.CompanyId", "@companyId", companyIdSearchType, parameters, "companyId", companyId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(companyOfficeId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeId", "@companyOfficeId", companyOfficeIdSearchType, parameters, "companyOfficeId", companyOfficeId);
+                var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeId", "@companyOfficeId", companyOfficeIdSearchType, parameters, "companyOfficeId", companyOfficeId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(scopeType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ScopeType", "@scopeType", scopeTypeSearchType, parameters, "scopeType", scopeType);
+                var param = SqlFilterHelper.BuildFilter("a.ScopeType", "@scopeType", scopeTypeSearchType, parameters, "scopeType", scopeType, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CostCenterId.CostCenterName AS CostCenterName
 
 
-                FROM [app].[CostCenterScope] a
+                FROM {_table} a
 LEFT JOIN [app].[CostCenter] j_CostCenterId ON a.CostCenterId = j_CostCenterId.CostCenterId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.CostCenterScopeId DESC";
+                ORDER BY a.CostCenterScopeId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<CostCenterScope>(sql, parameters, transaction);
         }

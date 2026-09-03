@@ -1,6 +1,7 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -10,18 +11,23 @@ namespace Repository
     public partial class BankRepository : IBankRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public BankRepository(RepositoryContext context)
+        public BankRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
+            _table = dialect.Qualify("core", "Bank");
         }
 
         public async Task<Bank?> GetBankAsync(Guid bankGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[Bank] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE a.BankGuid = @bankGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -32,10 +38,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [core].[Bank] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.BankId DESC";
+                ORDER BY a.BankId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Bank>(sql);
         }
 
@@ -43,8 +49,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(bank);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [core].[Bank]
+            var sql = $@"
+                INSERT INTO {_table}
                 (BankGuid, CreatedById, StatusId, CreatedTime, BankName, BankInitial)
                 VALUES
                 (@BankGuid, @CreatedById, @StatusId, @CreatedTime, @BankName, @BankInitial)";
@@ -56,8 +62,8 @@ namespace Repository
             AuditTimestampHelper.StampUpdate(bank);
             var conn = transaction?.Connection ?? _context.CreateConnection();
 
-            const string sql = @"
-                UPDATE [core].[Bank]
+            var sql = $@"
+                UPDATE {_table}
                 SET BankName = @BankName,
                                       BankInitial = @BankInitial,
                                       StatusId = @StatusId,
@@ -72,8 +78,8 @@ namespace Repository
             AuditTimestampHelper.StampSoftDelete(bank, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
 
-            const string sql = @"
-                UPDATE [core].[Bank]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -86,7 +92,7 @@ namespace Repository
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
 
-            const string sql = @"DELETE FROM [core].[Bank] WHERE BankGuid = @bankGuid";
+            var sql = $@"DELETE FROM {_table} WHERE BankGuid = @bankGuid";
             await conn.ExecuteAsync(sql, new { bankGuid }, transaction);
         }
 
@@ -108,7 +114,7 @@ IDbTransaction? transaction = null)
             // 🔍 BankName
 if (!string.IsNullOrWhiteSpace(bankName))
 {
-    var param = SqlFilterHelper.BuildFilter("a.BankName", "@bankName", bankNameSearchType, parameters, "bankName", bankName);
+    var param = SqlFilterHelper.BuildFilter("a.BankName", "@bankName", bankNameSearchType, parameters, "bankName", bankName, _dialect);
     if (!string.IsNullOrWhiteSpace(param))
         whereClauses.Add(param);
 }
@@ -116,19 +122,17 @@ if (!string.IsNullOrWhiteSpace(bankName))
 // 🔍 BankInitial
 if (!string.IsNullOrWhiteSpace(bankInitial))
 {
-    var param = SqlFilterHelper.BuildFilter("a.BankInitial", "@bankInitial", bankInitialSearchType, parameters, "bankInitial", bankInitial);
+    var param = SqlFilterHelper.BuildFilter("a.BankInitial", "@bankInitial", bankInitialSearchType, parameters, "bankInitial", bankInitial, _dialect);
     if (!string.IsNullOrWhiteSpace(param))
         whereClauses.Add(param);
 }
             
 
             var sql = $@"
-                SELECT a.*
-                
-                FROM [core].[Bank] a
-                
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_table} a
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.BankId DESC";
+                ORDER BY a.BankId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Bank>(sql, parameters, transaction);
         }

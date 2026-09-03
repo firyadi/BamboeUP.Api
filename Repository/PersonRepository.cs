@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,47 +11,29 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class PersonRepository(RepositoryContext context, IAuditService audit) : IPersonRepository
+    public partial class PersonRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Person");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<Person?> GetPersonAsync(Guid personGuid, bool trackChanges)
+public async Task<Person?> GetPersonAsync(Guid personGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
-, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
-, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
-, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
-, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBloodType.StandardReferenceItemName")} AS BloodTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrGender.StandardReferenceItemName")} AS GenderName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMaritalStatus.StandardReferenceItemName")} AS MaritalStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReligion.StandardReferenceItemName")} AS ReligionName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSalutation.StandardReferenceItemName")} AS SalutationName
 
 
-                FROM [app].[Person] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
-    WHERE StandardReferenceItemId = a.SrBloodType
-) v_SrBloodType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
-    WHERE StandardReferenceItemId = a.SrGender
-) v_SrGender
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
-    WHERE StandardReferenceItemId = a.SrMaritalStatus
-) v_SrMaritalStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
-    WHERE StandardReferenceItemId = a.SrReligion
-) v_SrReligion
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
-    WHERE StandardReferenceItemId = a.SrSalutation
-) v_SrSalutation
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBloodType", "SrBloodType", "BloodType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrGender", "SrGender", "Gender")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMaritalStatus", "SrMaritalStatus", "MaritalStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReligion", "SrReligion", "Religion")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSalutation", "SrSalutation", "Salutation")}
 
                 WHERE a.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -62,40 +45,20 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
-, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
-, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
-, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
-, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBloodType.StandardReferenceItemName")} AS BloodTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrGender.StandardReferenceItemName")} AS GenderName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMaritalStatus.StandardReferenceItemName")} AS MaritalStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReligion.StandardReferenceItemName")} AS ReligionName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSalutation.StandardReferenceItemName")} AS SalutationName
 
 
-                FROM [app].[Person] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
-    WHERE StandardReferenceItemId = a.SrBloodType
-) v_SrBloodType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
-    WHERE StandardReferenceItemId = a.SrGender
-) v_SrGender
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
-    WHERE StandardReferenceItemId = a.SrMaritalStatus
-) v_SrMaritalStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
-    WHERE StandardReferenceItemId = a.SrReligion
-) v_SrReligion
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
-    WHERE StandardReferenceItemId = a.SrSalutation
-) v_SrSalutation
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBloodType", "SrBloodType", "BloodType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrGender", "SrGender", "Gender")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMaritalStatus", "SrMaritalStatus", "MaritalStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReligion", "SrReligion", "Religion")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSalutation", "SrSalutation", "Salutation")}
 
                 WHERE a.PersonId = @personId
                   AND a.StatusId > 0
@@ -107,43 +70,23 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
-, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
-, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
-, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
-, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBloodType.StandardReferenceItemName")} AS BloodTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrGender.StandardReferenceItemName")} AS GenderName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMaritalStatus.StandardReferenceItemName")} AS MaritalStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReligion.StandardReferenceItemName")} AS ReligionName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSalutation.StandardReferenceItemName")} AS SalutationName
 
 
-                FROM [app].[Person] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
-    WHERE StandardReferenceItemId = a.SrBloodType
-) v_SrBloodType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
-    WHERE StandardReferenceItemId = a.SrGender
-) v_SrGender
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
-    WHERE StandardReferenceItemId = a.SrMaritalStatus
-) v_SrMaritalStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
-    WHERE StandardReferenceItemId = a.SrReligion
-) v_SrReligion
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
-    WHERE StandardReferenceItemId = a.SrSalutation
-) v_SrSalutation
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBloodType", "SrBloodType", "BloodType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrGender", "SrGender", "Gender")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMaritalStatus", "SrMaritalStatus", "MaritalStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReligion", "SrReligion", "Religion")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSalutation", "SrSalutation", "Salutation")}
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.PersonId DESC";
+                ORDER BY a.PersonId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Person>(sql);
         }
 
@@ -151,12 +94,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(person);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Person]
+            var sql = $@"
+                INSERT INTO {_table}
                 (PersonGuid, CreatedById, StatusId, CreatedTime, FirstName, MiddleName, LastName, PreTitle, PostTitle, BirthName, PlaceofBirth, BirthDate, NationalIdNo, SrGender, SrReligion, SrSalutation, SrBloodType, SrMaritalStatus, FileStorageId)
                 VALUES
-                (@PersonGuid, @CreatedById, @StatusId, @CreatedTime, @FirstName, @MiddleName, @LastName, @PreTitle, @PostTitle, @BirthName, @PlaceofBirth, @BirthDate, @NationalIdNo, @SrGender, @SrReligion, @SrSalutation, @SrBloodType, @SrMaritalStatus, @FileStorageId);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@PersonGuid, @CreatedById, @StatusId, @CreatedTime, @FirstName, @MiddleName, @LastName, @PreTitle, @PostTitle, @BirthName, @PlaceofBirth, @BirthDate, @NationalIdNo, @SrGender, @SrReligion, @SrSalutation, @SrBloodType, @SrMaritalStatus, @FileStorageId){dialect.ReturnIdentitySuffix("PersonId")}";
             person.PersonId = await conn.QuerySingleAsync<long>(sql, person, transaction);
         }
 
@@ -164,8 +106,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(person);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Person]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     FirstName = @FirstName,
                     MiddleName = @MiddleName,
                     LastName = @LastName,
@@ -192,8 +134,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(person, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Person]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -205,7 +147,7 @@ OUTER APPLY (
         public async Task DeletePersonAsync(Guid personGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Person] WHERE PersonGuid = @personGuid";
+            var sql = $@"DELETE FROM {_table} WHERE PersonGuid = @personGuid";
             await conn.ExecuteAsync(sql, new { personGuid }, transaction);
         }
 
@@ -238,104 +180,84 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(firstName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.FirstName", "@firstName", firstNameSearchType, parameters, "firstName", firstName);
+                var param = SqlFilterHelper.BuildFilter("a.FirstName", "@firstName", firstNameSearchType, parameters, "firstName", firstName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(middleName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.MiddleName", "@middleName", middleNameSearchType, parameters, "middleName", middleName);
+                var param = SqlFilterHelper.BuildFilter("a.MiddleName", "@middleName", middleNameSearchType, parameters, "middleName", middleName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(lastName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.LastName", "@lastName", lastNameSearchType, parameters, "lastName", lastName);
+                var param = SqlFilterHelper.BuildFilter("a.LastName", "@lastName", lastNameSearchType, parameters, "lastName", lastName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(preTitle))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PreTitle", "@preTitle", preTitleSearchType, parameters, "preTitle", preTitle);
+                var param = SqlFilterHelper.BuildFilter("a.PreTitle", "@preTitle", preTitleSearchType, parameters, "preTitle", preTitle, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(postTitle))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PostTitle", "@postTitle", postTitleSearchType, parameters, "postTitle", postTitle);
+                var param = SqlFilterHelper.BuildFilter("a.PostTitle", "@postTitle", postTitleSearchType, parameters, "postTitle", postTitle, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(personName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PersonName", "@personName", personNameSearchType, parameters, "personName", personName);
+                var param = SqlFilterHelper.BuildFilter("a.PersonName", "@personName", personNameSearchType, parameters, "personName", personName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(birthName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.BirthName", "@birthName", birthNameSearchType, parameters, "birthName", birthName);
+                var param = SqlFilterHelper.BuildFilter("a.BirthName", "@birthName", birthNameSearchType, parameters, "birthName", birthName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(placeofBirth))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PlaceofBirth", "@placeofBirth", placeofBirthSearchType, parameters, "placeofBirth", placeofBirth);
+                var param = SqlFilterHelper.BuildFilter("a.PlaceofBirth", "@placeofBirth", placeofBirthSearchType, parameters, "placeofBirth", placeofBirth, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(birthDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.BirthDate", "@birthDate", birthDateSearchType, parameters, "birthDate", birthDate);
+                var param = SqlFilterHelper.BuildFilter("a.BirthDate", "@birthDate", birthDateSearchType, parameters, "birthDate", birthDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(nationalIdNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.NationalIdNo", "@nationalIdNo", nationalIdNoSearchType, parameters, "nationalIdNo", nationalIdNo);
+                var param = SqlFilterHelper.BuildFilter("a.NationalIdNo", "@nationalIdNo", nationalIdNoSearchType, parameters, "nationalIdNo", nationalIdNo, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrBloodType.StandardReferenceItemName, '') AS BloodTypeName
-, ISNULL(v_SrGender.StandardReferenceItemName, '') AS GenderName
-, ISNULL(v_SrMaritalStatus.StandardReferenceItemName, '') AS MaritalStatusName
-, ISNULL(v_SrReligion.StandardReferenceItemName, '') AS ReligionName
-, ISNULL(v_SrSalutation.StandardReferenceItemName, '') AS SalutationName
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBloodType.StandardReferenceItemName")} AS BloodTypeName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrGender.StandardReferenceItemName")} AS GenderName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrMaritalStatus.StandardReferenceItemName")} AS MaritalStatusName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrReligion.StandardReferenceItemName")} AS ReligionName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSalutation.StandardReferenceItemName")} AS SalutationName
 
 
-                FROM [app].[Person] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'BloodType')
-    WHERE StandardReferenceItemId = a.SrBloodType
-) v_SrBloodType
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Gender')
-    WHERE StandardReferenceItemId = a.SrGender
-) v_SrGender
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'MaritalStatus')
-    WHERE StandardReferenceItemId = a.SrMaritalStatus
-) v_SrMaritalStatus
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Religion')
-    WHERE StandardReferenceItemId = a.SrReligion
-) v_SrReligion
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'Salutation')
-    WHERE StandardReferenceItemId = a.SrSalutation
-) v_SrSalutation
+                FROM {_table} a
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBloodType", "SrBloodType", "BloodType")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrGender", "SrGender", "Gender")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrMaritalStatus", "SrMaritalStatus", "MaritalStatus")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrReligion", "SrReligion", "Religion")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSalutation", "SrSalutation", "Salutation")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.PersonId DESC";
+                ORDER BY a.PersonId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Person>(sql, parameters, transaction);
         }

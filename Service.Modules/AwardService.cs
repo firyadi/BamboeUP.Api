@@ -57,7 +57,6 @@ namespace Service.Modules
             {
                 var model = input.Adapt<Award>();
 
-                model.AwardGuid = model.AwardGuid == Guid.Empty ? Guid.NewGuid() : model.AwardGuid;
                 model.StatusId = 1;
                 model.CreatedTime = DateTime.UtcNow;
                 await repository.Award.CreateAwardAsync(model, transaction);
@@ -81,9 +80,6 @@ namespace Service.Modules
                     {
                         var detail = detailDto.Adapt<AwardCriteria>();
                         detail.AwardId = model.AwardId;
-                        detail.AwardCriteriaGuid = detail.AwardCriteriaGuid == Guid.Empty
-                            ? Guid.NewGuid()
-                            : detail.AwardCriteriaGuid;
                         detail.StatusId = 1;
                         detail.CreatedTime = DateTime.UtcNow;
                         await repository.AwardCriteria.CreateAwardCriteriaAsync(detail, transaction);
@@ -106,9 +102,6 @@ namespace Service.Modules
                             {
                                 var subDetail = subDetailDto.Adapt<AwardCriteriaRule>();
                                 subDetail.AwardCriteriaId = detail.AwardCriteriaId;
-                                subDetail.AwardCriteriaRuleGuid = subDetail.AwardCriteriaRuleGuid == Guid.Empty
-                                    ? Guid.NewGuid()
-                                    : subDetail.AwardCriteriaRuleGuid;
                                 subDetail.StatusId = 1;
                                 subDetail.CreatedTime = DateTime.UtcNow;
                                 await repository.AwardCriteriaRule.CreateAwardCriteriaRuleAsync(subDetail, transaction);
@@ -204,9 +197,6 @@ namespace Service.Modules
                         if (detailDto.AwardCriteriaGuid != Guid.Empty && oldAwardCriteriaDict.TryGetValue(detailDto.AwardCriteriaGuid, out var oldDetailRow))
                         {
                             detail.AwardCriteriaGuid = detailDto.AwardCriteriaGuid;
-                            // DTOs do not expose internal IDs. Preserve the existing numeric
-                            // key so child Rules always retain their actual parent relationship.
-                            detail.AwardCriteriaId = oldDetailRow.AwardCriteriaId;
                             detail.UpdatedById = input.UpdatedById;
                             await repository.AwardCriteria.UpdateAwardCriteriaAsync(detail, transaction);
 
@@ -358,36 +348,6 @@ namespace Service.Modules
                     {
                         if (!newAwardCriteria.Any(o => o.AwardCriteriaGuid == oldDetail.AwardCriteriaGuid))
                         {
-                            // Keep hierarchy status consistent: a deleted Detail must not
-                            // leave active SubDetails behind.
-                            if (oldSubDetailsDict.TryGetValue(oldDetail.AwardCriteriaId, out var orphanedSubDetails))
-                            {
-                                foreach (var oldSub in orphanedSubDetails)
-                                {
-                                    await repository.AwardCriteriaRule.SoftDeleteAwardCriteriaRuleAsync(
-                                        new AwardCriteriaRule
-                                        {
-                                            AwardCriteriaRuleGuid = oldSub.AwardCriteriaRuleGuid,
-                                            DeletedById = input.UpdatedById,
-                                            DeletedTime = DateTime.UtcNow
-                                        },
-                                        input.UpdatedById,
-                                        transaction);
-
-                                    entries.Add(new AuditLogEntry
-                                    {
-                                        TableName = "AwardCriteriaRule",
-                                        EntityKey = oldSub.AwardCriteriaRuleGuid.ToString(),
-                                        EntityDisplayName = oldSub.RuleCode,
-                                        ParentTableName = "AwardCriteria",
-                                        ParentEntityKey = oldDetail.AwardCriteriaGuid.ToString(),
-                                        ActionType = "DELETE",
-                                        OldEntity = oldSub,
-                                        NewEntity = null
-                                    });
-                                }
-                            }
-
                             await repository.AwardCriteria.SoftDeleteAwardCriteriaAsync(
                                 new AwardCriteria
                                 {

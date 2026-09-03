@@ -1,35 +1,33 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
 namespace Repository
 {
-    public partial class CertificationRepository(RepositoryContext context) : ICertificationRepository
+    public partial class CertificationRepository(RepositoryContext context, ISqlDialect dialect) : ICertificationRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Certification");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
+
+        private string BuildSelectColumns() => $@"
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrCertificationCategory.StandardReferenceItemName")} AS CertificationCategoryName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrCertificationProvider.StandardReferenceItemName")} AS CertificationProviderName";
+
+        private string BuildStandardReferenceJoins() => $@"
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrCertificationCategory", "SrCertificationCategory", "CertificationCategory")}
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrCertificationProvider", "SrCertificationProvider", "CertificationProvider")}";
+
         public async Task<Certification?> GetCertificationAsync(Guid certificationGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrCertificationCategory.StandardReferenceItemName, '') AS CertificationCategoryName
-, ISNULL(v_SrCertificationProvider.StandardReferenceItemName, '') AS CertificationProviderName
-
-
-                FROM [app].[Certification] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'CertificationCategory')
-    WHERE StandardReferenceItemId = a.SrCertificationCategory
-) v_SrCertificationCategory
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'CertificationProvider')
-    WHERE StandardReferenceItemId = a.SrCertificationProvider
-) v_SrCertificationProvider
-
-
+                {BuildSelectColumns()}
+                FROM {_table} a
+{BuildStandardReferenceJoins()}
                 WHERE a.CertificationGuid = @certificationGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -40,49 +38,32 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrCertificationCategory.StandardReferenceItemName, '') AS CertificationCategoryName
-, ISNULL(v_SrCertificationProvider.StandardReferenceItemName, '') AS CertificationProviderName
-
-
-
-                FROM [app].[Certification] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'CertificationCategory')
-    WHERE StandardReferenceItemId = a.SrCertificationCategory
-) v_SrCertificationCategory
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'CertificationProvider')
-    WHERE StandardReferenceItemId = a.SrCertificationProvider
-) v_SrCertificationProvider
-
-
+                {BuildSelectColumns()}
+                FROM {_table} a
+{BuildStandardReferenceJoins()}
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.CertificationId DESC";
+                ORDER BY a.CertificationId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Certification>(sql);
         }
 
         public async Task CreateCertificationAsync(Certification certification, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Certification]
+            var sql = $@"
+                INSERT INTO {_table}
                 (CertificationGuid, CreatedById, StatusId, CreatedTime, CertificationCode, CertificationName, CertificationShortName, SrCertificationCategory, SrCertificationProvider, DefaultValidityMonth, IsLifetime, IsRenewable, LogoFileStorageId, Description, IsActive
                 )
                 VALUES
                 (@CertificationGuid, @CreatedById, @StatusId, @CreatedTime, @CertificationCode, @CertificationName, @CertificationShortName, @SrCertificationCategory, @SrCertificationProvider, @DefaultValidityMonth, @IsLifetime, @IsRenewable, @LogoFileStorageId, @Description, @IsActive
-                );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                ){dialect.ReturnIdentitySuffix("CertificationId")}";
             certification.CertificationId = await conn.QuerySingleAsync<long>(sql, certification, transaction);
         }
 
         public async Task UpdateCertificationAsync(Certification certification, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Certification]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     CertificationCode = @CertificationCode,
                     CertificationName = @CertificationName,
                     CertificationShortName = @CertificationShortName,
@@ -104,8 +85,8 @@ OUTER APPLY (
         public async Task SoftDeleteCertificationAsync(Certification certification, long deletedBy, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Certification]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -117,7 +98,7 @@ OUTER APPLY (
         public async Task DeleteCertificationAsync(Guid certificationGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Certification] WHERE CertificationGuid = @certificationGuid";
+            var sql = $@"DELETE FROM {_table} WHERE CertificationGuid = @certificationGuid";
             await conn.ExecuteAsync(sql, new { certificationGuid }, transaction);
         }
 
@@ -149,76 +130,61 @@ string? certificationProviderName, string? certificationProviderNameSearchType,
 
             if (!string.IsNullOrWhiteSpace(certificationCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificationCode", "@certificationCode", certificationCodeSearchType, parameters, "certificationCode", certificationCode);
+                var param = SqlFilterHelper.BuildFilter("a.CertificationCode", "@certificationCode", certificationCodeSearchType, parameters, "certificationCode", certificationCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(certificationName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificationName", "@certificationName", certificationNameSearchType, parameters, "certificationName", certificationName);
+                var param = SqlFilterHelper.BuildFilter("a.CertificationName", "@certificationName", certificationNameSearchType, parameters, "certificationName", certificationName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(certificationShortName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificationShortName", "@certificationShortName", certificationShortNameSearchType, parameters, "certificationShortName", certificationShortName);
+                var param = SqlFilterHelper.BuildFilter("a.CertificationShortName", "@certificationShortName", certificationShortNameSearchType, parameters, "certificationShortName", certificationShortName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(defaultValidityMonth))
             {
-                var param = SqlFilterHelper.BuildFilter("a.DefaultValidityMonth", "@defaultValidityMonth", defaultValidityMonthSearchType, parameters, "defaultValidityMonth", defaultValidityMonth);
+                var param = SqlFilterHelper.BuildFilter("a.DefaultValidityMonth", "@defaultValidityMonth", defaultValidityMonthSearchType, parameters, "defaultValidityMonth", defaultValidityMonth, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isLifetime))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsLifetime", "@isLifetime", isLifetimeSearchType, parameters, "isLifetime", isLifetime);
+                var param = SqlFilterHelper.BuildFilter("a.IsLifetime", "@isLifetime", isLifetimeSearchType, parameters, "isLifetime", isLifetime, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isRenewable))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsRenewable", "@isRenewable", isRenewableSearchType, parameters, "isRenewable", isRenewable);
+                var param = SqlFilterHelper.BuildFilter("a.IsRenewable", "@isRenewable", isRenewableSearchType, parameters, "isRenewable", isRenewable, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(description))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description);
+                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isActive))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsActive", "@isActive", isActiveSearchType, parameters, "isActive", isActive);
+                var param = SqlFilterHelper.BuildFilter("a.IsActive", "@isActive", isActiveSearchType, parameters, "isActive", isActive, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
-if (!string.IsNullOrWhiteSpace(certificationCategoryName)) { var param = SqlFilterHelper.BuildFilter("v_SrCertificationCategory.StandardReferenceItemName", "@certificationCategoryName", certificationCategoryNameSearchType, parameters, "certificationCategoryName", certificationCategoryName); if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param); }
-if (!string.IsNullOrWhiteSpace(certificationProviderName)) { var param = SqlFilterHelper.BuildFilter("v_SrCertificationProvider.StandardReferenceItemName", "@certificationProviderName", certificationProviderNameSearchType, parameters, "certificationProviderName", certificationProviderName); if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param); }
+if (!string.IsNullOrWhiteSpace(certificationCategoryName)) { var param = SqlFilterHelper.BuildFilter("v_SrCertificationCategory.StandardReferenceItemName", "@certificationCategoryName", certificationCategoryNameSearchType, parameters, "certificationCategoryName", certificationCategoryName, dialect); if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param); }
+if (!string.IsNullOrWhiteSpace(certificationProviderName)) { var param = SqlFilterHelper.BuildFilter("v_SrCertificationProvider.StandardReferenceItemName", "@certificationProviderName", certificationProviderNameSearchType, parameters, "certificationProviderName", certificationProviderName, dialect); if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param); }
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-, ISNULL(v_SrCertificationCategory.StandardReferenceItemName, '') AS CertificationCategoryName
-, ISNULL(v_SrCertificationProvider.StandardReferenceItemName, '') AS CertificationProviderName
-
-
-                FROM [app].[Certification] a
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'CertificationCategory')
-    WHERE StandardReferenceItemId = a.SrCertificationCategory
-) v_SrCertificationCategory
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'CertificationProvider')
-    WHERE StandardReferenceItemId = a.SrCertificationProvider
-) v_SrCertificationProvider
-
-
+                {BuildSelectColumns()}
+                FROM {_table} a
+{BuildStandardReferenceJoins()}
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.CertificationId DESC";
+                ORDER BY a.CertificationId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Certification>(sql, parameters, transaction);
         }

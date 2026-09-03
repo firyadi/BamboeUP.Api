@@ -15,13 +15,8 @@ public static class ReportParameterEditor
         "string", "DateTime", "int", "long", "decimal", "bool"
     ];
 
-    public static IReadOnlyList<(string Token, string Label)> ProfileTemplates { get; } =
-    [
-        ("none", "None — no parameters"),
-        ("scope", "Scope — Company + Office"),
-        ("period", "Period — Scope + date range"),
-        ("standard", "Standard — same as Period")
-    ];
+    public static IReadOnlyList<(string Token, string Label)> ProfileTemplates =>
+        SharedParameterCatalog.Profiles;
 
     public static ReportParameterEditModel CreateEmptyRow(int sortOrder = 10) => new()
     {
@@ -110,65 +105,41 @@ public static class ReportParameterEditor
 
     public static List<ReportParameterEditModel> ApplyProfileTemplate(string profileToken)
     {
-        return profileToken.ToLowerInvariant() switch
-        {
-            "scope" => ScopeTemplate(),
-            "period" or "standard" => PeriodTemplate(),
-            _ => []
-        };
+        var audience = CatalogAudience.Report;
+        var token = (profileToken ?? "none").Trim().ToLowerInvariant();
+        // Report keeps DateFrom/To for period/standard; "process" profile maps to period for reports
+        if (token == "process")
+            token = "period";
+
+        return SharedParameterCatalog.ApplyProfile(token, audience)
+            .Select(ToReportEditModel)
+            .ToList();
     }
+
+    private static ReportParameterEditModel ToReportEditModel(CatalogField f) => new()
+    {
+        ParameterName = f.Code,
+        DisplayLabel = f.Label,
+        FieldKey = f.LookupSource ?? f.Code,
+        ControlType = f.ReportControlType,
+        DataType = f.DataType.Equals("bigint", StringComparison.OrdinalIgnoreCase) ? "long"
+            : f.DataType.Equals("boolean", StringComparison.OrdinalIgnoreCase) ? "bool"
+            : f.DataType.Equals("datetime", StringComparison.OrdinalIgnoreCase) ? "DateTime"
+            : f.DataType,
+        IsRequired = f.IsRequired,
+        DefaultValue = f.DefaultValue,
+        SortOrder = f.SortOrder,
+        ColumnGroup = f.GroupName is "Scope" ? (byte)1 : (byte)2,
+        ColumnSpan = (byte)(f.GroupName is "Period" ? 6 : 12),
+        RowGroup = f.GroupName,
+        LookupType = f.LookupSource
+    };
 
     private static List<ReportParameterEditModel> ScopeTemplate() =>
-    [
-        ScopeRow("CompanyId", "Company", "Company", 10),
-        ScopeRow("CompanyOfficeId", "Office", "Office", 20)
-    ];
+        ApplyProfileTemplate("scope");
 
-    private static List<ReportParameterEditModel> PeriodTemplate()
-    {
-        var rows = ScopeTemplate();
-        rows.Add(new ReportParameterEditModel
-        {
-            ParameterName = "DateFrom",
-            DisplayLabel = "Valid From",
-            FieldKey = "DateFrom",
-            ControlType = "DatePicker",
-            DataType = "DateTime",
-            IsRequired = true,
-            SortOrder = 10,
-            ColumnGroup = 2,
-            ColumnSpan = 6,
-            RowGroup = "Period"
-        });
-        rows.Add(new ReportParameterEditModel
-        {
-            ParameterName = "DateTo",
-            DisplayLabel = "Valid To",
-            FieldKey = "DateTo",
-            ControlType = "DatePicker",
-            DataType = "DateTime",
-            IsRequired = true,
-            SortOrder = 20,
-            ColumnGroup = 2,
-            ColumnSpan = 6,
-            RowGroup = "Period"
-        });
-        return rows;
-    }
-
-    private static ReportParameterEditModel ScopeRow(string name, string label, string fieldKey, int sortOrder) => new()
-    {
-        ParameterName = name,
-        DisplayLabel = label,
-        FieldKey = fieldKey,
-        ControlType = "ReadonlyText",
-        DataType = "string",
-        IsRequired = true,
-        SortOrder = sortOrder,
-        ColumnGroup = 1,
-        ColumnSpan = 12,
-        RowGroup = "Scope"
-    };
+    private static List<ReportParameterEditModel> PeriodTemplate() =>
+        ApplyProfileTemplate("period");
 }
 
 public sealed class ReportParameterEditModel

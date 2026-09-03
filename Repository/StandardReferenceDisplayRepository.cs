@@ -2,24 +2,28 @@ using Contracts;
 using Dapper;
 using Entities.Models;
 
+using Repository.Database;
 namespace Repository
 {
     public class StandardReferenceDisplayRepository : IStandardReferenceDisplayRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public StandardReferenceDisplayRepository(RepositoryContext context)
+        public StandardReferenceDisplayRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         public async Task<IEnumerable<StandardReferenceDisplay>> GetAllDisplaysAsync(Shared.RequestFeatures.StandardReferenceDisplayParameters parameters, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            const string sql = @"
+            var sql = $@"
                 SELECT StandardReferenceItemId, StandardReferenceItemName,
                        CompanyId, CompanyOfficeId, StandardReferenceGroupId, StandardReferenceInitial
-                FROM [app].[vw_StandardReference_Display]
+                FROM {_dialect.Qualify("app", "vw_StandardReference_Display")}
                 WHERE StandardReferenceInitial = @Initial
                   AND (
                         (CompanyId = @CompanyId AND CompanyOfficeId = @CompanyOfficeId)
@@ -43,9 +47,9 @@ namespace Repository
         public async Task<StandardReferenceDisplay?> GetOneAsync(long id, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            const string sql = @"
+            var sql = $@"
                 SELECT StandardReferenceItemId, StandardReferenceItemName
-                FROM [app].[vw_StandardReference_Display]
+                FROM {_dialect.Qualify("app", "vw_StandardReference_Display")}
                 WHERE StandardReferenceItemId = @Id";
 
             return await connection.QuerySingleOrDefaultAsync<StandardReferenceDisplay>(sql, new { Id = id });

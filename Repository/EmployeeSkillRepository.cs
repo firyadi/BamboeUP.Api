@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,25 +11,23 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class EmployeeSkillRepository(RepositoryContext context, IAuditService audit) : IEmployeeSkillRepository
+    public partial class EmployeeSkillRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IEmployeeSkillRepository
     {
+        private readonly string _table = dialect.Qualify("app", "EmployeeSkill");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<EmployeeSkill?> GetEmployeeSkillAsync(Guid employeeSkillGuid, bool trackChanges)
+public async Task<EmployeeSkill?> GetEmployeeSkillAsync(Guid employeeSkillGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_SkillId.SkillName AS SkillName
-, ISNULL(v_SrSkillLevel.StandardReferenceItemName, '') AS SkillLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSkillLevel.StandardReferenceItemName")} AS SkillLevelName
 
 
-                FROM [app].[EmployeeSkill] a
-LEFT JOIN [app].[Skill] j_SkillId ON a.SkillId = j_SkillId.SkillId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSkillLevel
-) v_SrSkillLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Skill")} j_SkillId ON a.SkillId = j_SkillId.SkillId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSkillLevel", "SrSkillLevel", "LanguageLevel")}
 
                 WHERE a.EmployeeSkillGuid = @employeeSkillGuid
                   AND a.StatusId > 0
@@ -40,18 +39,14 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_SkillId.SkillName AS SkillName
-, ISNULL(v_SrSkillLevel.StandardReferenceItemName, '') AS SkillLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSkillLevel.StandardReferenceItemName")} AS SkillLevelName
 
 
-                FROM [app].[EmployeeSkill] a
-LEFT JOIN [app].[Skill] j_SkillId ON a.SkillId = j_SkillId.SkillId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSkillLevel
-) v_SrSkillLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Skill")} j_SkillId ON a.SkillId = j_SkillId.SkillId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSkillLevel", "SrSkillLevel", "LanguageLevel")}
 
                 WHERE j_EmployeeId.EmployeeGuid = @employeeGuid
                   AND a.EmployeeSkillGuid = @employeeSkillGuid
@@ -64,23 +59,19 @@ OUTER APPLY (
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_SkillId.SkillName AS SkillName
-, ISNULL(v_SrSkillLevel.StandardReferenceItemName, '') AS SkillLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSkillLevel.StandardReferenceItemName")} AS SkillLevelName
 
 
-                FROM [app].[EmployeeSkill] a
-LEFT JOIN [app].[Skill] j_SkillId ON a.SkillId = j_SkillId.SkillId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSkillLevel
-) v_SrSkillLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Skill")} j_SkillId ON a.SkillId = j_SkillId.SkillId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSkillLevel", "SrSkillLevel", "LanguageLevel")}
 
                 WHERE j_EmployeeId.EmployeeGuid = @employeeGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.EmployeeSkillId DESC";
+                ORDER BY a.EmployeeSkillId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<EmployeeSkill>(sql, new { employeeGuid });
         }
 
@@ -88,12 +79,11 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampCreate(employeeSkill);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[EmployeeSkill]
+            var sql = $@"
+                INSERT INTO {_table}
                 (EmployeeSkillGuid, EmployeeId, CreatedById, StatusId, CreatedTime, [SkillId], [SrSkillLevel], [YearsofExperience], [LastUsedDate], [IsPrimary], [IsCertified], [CertificateNumber], [CertificateIssueDate], [CertificateExpiredDate], [FileStorageId], [Remarks])
                 VALUES
-                (@EmployeeSkillGuid, @EmployeeId, @CreatedById, @StatusId, @CreatedTime, @SkillId, @SrSkillLevel, @YearsofExperience, @LastUsedDate, @IsPrimary, @IsCertified, @CertificateNumber, @CertificateIssueDate, @CertificateExpiredDate, @FileStorageId, @Remarks);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@EmployeeSkillGuid, @EmployeeId, @CreatedById, @StatusId, @CreatedTime, @SkillId, @SrSkillLevel, @YearsofExperience, @LastUsedDate, @IsPrimary, @IsCertified, @CertificateNumber, @CertificateIssueDate, @CertificateExpiredDate, @FileStorageId, @Remarks){dialect.ReturnIdentitySuffix("EmployeeSkillId")}";
             employeeSkill.EmployeeSkillId = await conn.QuerySingleAsync<long>(sql, employeeSkill, transaction);
         }
 
@@ -101,8 +91,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampUpdate(employeeSkill);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[EmployeeSkill]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [EmployeeId] = @EmployeeId,
                     [SkillId] = @SkillId,
                     [SrSkillLevel] = @SrSkillLevel,
@@ -126,8 +116,8 @@ OUTER APPLY (
         {
             AuditTimestampHelper.StampSoftDelete(employeeSkill, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[EmployeeSkill]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -139,14 +129,14 @@ OUTER APPLY (
         public async Task DeleteEmployeeSkillAsync(Guid employeeSkillGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[EmployeeSkill] WHERE EmployeeSkillGuid = @employeeSkillGuid";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeSkillGuid = @employeeSkillGuid";
             await conn.ExecuteAsync(sql, new { employeeSkillGuid }, transaction);
         }
 
         public async Task DeleteByEmployeeGuidAsync(Guid employeeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[EmployeeSkill] WHERE EmployeeId IN (SELECT EmployeeId FROM [app].[Employee] WHERE EmployeeGuid = @employeeGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeId IN (SELECT EmployeeId FROM {dialect.Qualify("app", "Employee")} WHERE EmployeeGuid = @employeeGuid)";
             await conn.ExecuteAsync(sql, new { employeeGuid }, transaction);
         }
 
@@ -187,68 +177,64 @@ OUTER APPLY (
 
             if (!string.IsNullOrWhiteSpace(yearsofExperience))
             {
-                var param = SqlFilterHelper.BuildFilter("a.YearsofExperience", "@yearsofExperience", yearsofExperienceSearchType, parameters, "yearsofExperience", yearsofExperience);
+                var param = SqlFilterHelper.BuildFilter("a.YearsofExperience", "@yearsofExperience", yearsofExperienceSearchType, parameters, "yearsofExperience", yearsofExperience, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(lastUsedDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.LastUsedDate", "@lastUsedDate", lastUsedDateSearchType, parameters, "lastUsedDate", lastUsedDate);
+                var param = SqlFilterHelper.BuildFilter("a.LastUsedDate", "@lastUsedDate", lastUsedDateSearchType, parameters, "lastUsedDate", lastUsedDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isPrimary))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary);
+                var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isCertified))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsCertified", "@isCertified", isCertifiedSearchType, parameters, "isCertified", isCertified);
+                var param = SqlFilterHelper.BuildFilter("a.IsCertified", "@isCertified", isCertifiedSearchType, parameters, "isCertified", isCertified, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(certificateNumber))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificateNumber", "@certificateNumber", certificateNumberSearchType, parameters, "certificateNumber", certificateNumber);
+                var param = SqlFilterHelper.BuildFilter("a.CertificateNumber", "@certificateNumber", certificateNumberSearchType, parameters, "certificateNumber", certificateNumber, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(certificateIssueDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificateIssueDate", "@certificateIssueDate", certificateIssueDateSearchType, parameters, "certificateIssueDate", certificateIssueDate);
+                var param = SqlFilterHelper.BuildFilter("a.CertificateIssueDate", "@certificateIssueDate", certificateIssueDateSearchType, parameters, "certificateIssueDate", certificateIssueDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(certificateExpiredDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificateExpiredDate", "@certificateExpiredDate", certificateExpiredDateSearchType, parameters, "certificateExpiredDate", certificateExpiredDate);
+                var param = SqlFilterHelper.BuildFilter("a.CertificateExpiredDate", "@certificateExpiredDate", certificateExpiredDateSearchType, parameters, "certificateExpiredDate", certificateExpiredDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(remarks))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks);
+                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_SkillId.SkillName AS SkillName
-, ISNULL(v_SrSkillLevel.StandardReferenceItemName, '') AS SkillLevelName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrSkillLevel.StandardReferenceItemName")} AS SkillLevelName
 
 
-                FROM [app].[EmployeeSkill] a
-LEFT JOIN [app].[Skill] j_SkillId ON a.SkillId = j_SkillId.SkillId
-OUTER APPLY (
-    SELECT StandardReferenceItemName
-    FROM [app].[fn_GetStandardReferenceItems](NULL, NULL, NULL, 'LanguageLevel')
-    WHERE StandardReferenceItemId = a.SrSkillLevel
-) v_SrSkillLevel
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Skill")} j_SkillId ON a.SkillId = j_SkillId.SkillId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrSkillLevel", "SrSkillLevel", "LanguageLevel")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.EmployeeSkillId DESC";
+                ORDER BY a.EmployeeSkillId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<EmployeeSkill>(sql, parameters, transaction);
         }

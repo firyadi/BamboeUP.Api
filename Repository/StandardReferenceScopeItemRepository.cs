@@ -1,6 +1,7 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,21 @@ namespace Repository
     public class StandardReferenceScopeItemRepository : IStandardReferenceScopeItemRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public StandardReferenceScopeItemRepository(RepositoryContext context)
+        public StandardReferenceScopeItemRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         public async Task<StandardReferenceScopeItem?> GetStandardReferenceScopeItemAsync(Guid scopeItemGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReferenceScopeItem] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} a
                 WHERE a.StandardReferenceScopeItemGuid = @scopeItemGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -34,10 +38,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReferenceScopeItem] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.StandardReferenceScopeItemId DESC";
+                ORDER BY a.StandardReferenceScopeItemId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<StandardReferenceScopeItem>(sql);
         }
 
@@ -45,16 +49,15 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(scopeItem);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[StandardReferenceScopeItem]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "StandardReferenceScopeItem")}
                 (StandardReferenceScopeItemGuid, StandardReferenceScopeId, StandardReferenceScopeGuid, CreatedById, StatusId, CreatedTime,
                  StandardReferenceScopeItemInitial, StandardReferenceScopeItemName, StandardReferenceScopeItemValue, DisplayOrder
                 )
                 VALUES
                 (@StandardReferenceScopeItemGuid, @StandardReferenceScopeId, @StandardReferenceScopeGuid, @CreatedById, @StatusId, @CreatedTime,
                  @StandardReferenceScopeItemInitial, @StandardReferenceScopeItemName, @StandardReferenceScopeItemValue, @DisplayOrder
-                );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                ){_dialect.ReturnIdentitySuffix("StandardReferenceScopeItemId")}";
             scopeItem.StandardReferenceScopeItemId = await conn.QuerySingleAsync<long>(sql, scopeItem, transaction);
         }
 
@@ -62,8 +65,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampUpdate(scopeItem);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[StandardReferenceScopeItem]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "StandardReferenceScopeItem")}
                 SET StandardReferenceScopeId = @StandardReferenceScopeId,
                     StandardReferenceScopeGuid = @StandardReferenceScopeGuid,
                     StandardReferenceScopeItemInitial = @StandardReferenceScopeItemInitial,
@@ -81,8 +84,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(scopeItem, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[StandardReferenceScopeItem]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "StandardReferenceScopeItem")}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -94,14 +97,14 @@ namespace Repository
         public async Task DeleteStandardReferenceScopeItemAsync(Guid scopeItemGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[StandardReferenceScopeItem] WHERE StandardReferenceScopeItemGuid = @scopeItemGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} WHERE StandardReferenceScopeItemGuid = @scopeItemGuid";
             await conn.ExecuteAsync(sql, new { scopeItemGuid }, transaction);
         }
 
         public async Task DeleteByStandardReferenceScopeGuidAsync(Guid standardReferenceScopeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[StandardReferenceScopeItem] WHERE StandardReferenceScopeGuid = @standardReferenceScopeGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} WHERE StandardReferenceScopeGuid = @standardReferenceScopeGuid";
             await conn.ExecuteAsync(sql, new { standardReferenceScopeGuid }, transaction);
         }
 
@@ -109,8 +112,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReferenceScopeItem] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} a
                 WHERE a.StandardReferenceScopeGuid = @standardReferenceScopeGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
@@ -122,8 +125,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReferenceScopeItem] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} a
                 WHERE a.StandardReferenceScopeGuid = @standardReferenceScopeGuid
                   AND a.StandardReferenceScopeItemGuid = @standardReferenceScopeItemGuid
                   AND a.StatusId > 0
@@ -152,13 +155,13 @@ namespace Repository
             }
             if (!string.IsNullOrWhiteSpace(scopeItemInitial))
             {
-                var param = SqlFilterHelper.BuildFilter("a.StandardReferenceScopeItemInitial", "@scopeItemInitial", scopeItemInitialSearchType, parameters, "scopeItemInitial", scopeItemInitial);
+                var param = SqlFilterHelper.BuildFilter("a.StandardReferenceScopeItemInitial", "@scopeItemInitial", scopeItemInitialSearchType, parameters, "scopeItemInitial", scopeItemInitial, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[StandardReferenceScopeItem] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "StandardReferenceScopeItem")} a
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.DisplayOrder ASC, a.StandardReferenceScopeItemId DESC";
 

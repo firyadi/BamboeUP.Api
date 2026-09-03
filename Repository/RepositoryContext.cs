@@ -1,16 +1,21 @@
-﻿using Microsoft.Data.SqlClient;
 using System.Data;
+using Microsoft.Extensions.Options;
+using Repository.Database;
+using Shared.Settings;
 
-namespace Repository
+namespace Repository;
+
+public class RepositoryContext
 {
-    public class RepositoryContext
+    private readonly DatabaseOptions _options;
+
+    public RepositoryContext(IOptions<DatabaseOptions> options)
     {
-        private readonly string _connectionString;
-
-        public RepositoryContext(string connectionString)
-            => _connectionString = connectionString;
-
-        public SqlConnection CreateConnection()
-            => new SqlConnection(_connectionString);
+        _options = options.Value;
     }
+
+    public DatabaseProvider Provider => _options.Provider;
+
+    public IDbConnection CreateConnection() =>
+        DbConnectionFactory.CreateConnection(_options);
 }

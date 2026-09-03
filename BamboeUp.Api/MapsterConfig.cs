@@ -36,44 +36,48 @@ namespace BamboeUp.Api
             TypeAdapterConfig<Employee, EmployeeDto>.NewConfig();
             TypeAdapterConfig<EmployeeForCreationDto, Employee>.NewConfig();
             TypeAdapterConfig<EmployeeForUpdateDto, Employee>.NewConfig();
+            TypeAdapterConfig<WorkItem, WorkItemDto>.NewConfig();
+            TypeAdapterConfig<WorkItemForCreationDto, WorkItem>.NewConfig();
+            TypeAdapterConfig<WorkItemForUpdateDto, WorkItem>.NewConfig();
+            TypeAdapterConfig<RoomBooking, RoomBookingDto>.NewConfig();
+            TypeAdapterConfig<RoomBookingForCreationDto, RoomBooking>.NewConfig();
+            TypeAdapterConfig<RoomBookingForUpdateDto, RoomBooking>.NewConfig();
             TypeAdapterConfig<PersonWorkExperience, PersonWorkExperienceDto>.NewConfig();
             TypeAdapterConfig<PersonWorkExperienceForCreationDto, PersonWorkExperience>.NewConfig();
             TypeAdapterConfig<PersonWorkExperienceForUpdateDto, PersonWorkExperience>.NewConfig();
             TypeAdapterConfig<PersonPhysicalCharacteristic, PersonPhysicalCharacteristicDto>.NewConfig();
             TypeAdapterConfig<PersonPhysicalCharacteristicForCreationDto, PersonPhysicalCharacteristic>.NewConfig();
             TypeAdapterConfig<PersonPhysicalCharacteristicForUpdateDto, PersonPhysicalCharacteristic>.NewConfig();
+            TypeAdapterConfig<PersonIdentification, PersonIdentificationDto>.NewConfig();
+            TypeAdapterConfig<PersonIdentificationForCreationDto, PersonIdentification>.NewConfig();
+            TypeAdapterConfig<PersonIdentificationForUpdateDto, PersonIdentification>.NewConfig();
             TypeAdapterConfig<PersonFamily, PersonFamilyDto>.NewConfig();
             TypeAdapterConfig<PersonFamilyForCreationDto, PersonFamily>.NewConfig();
             TypeAdapterConfig<PersonFamilyForUpdateDto, PersonFamily>.NewConfig();
-            TypeAdapterConfig<PersonContact, PersonContactDto>.NewConfig();
-            TypeAdapterConfig<PersonContactForCreationDto, PersonContact>.NewConfig();
-            TypeAdapterConfig<PersonContactForUpdateDto, PersonContact>.NewConfig();
             TypeAdapterConfig<PersonEmergencyContact, PersonEmergencyContactDto>.NewConfig();
             TypeAdapterConfig<PersonEmergencyContactForCreationDto, PersonEmergencyContact>.NewConfig();
             TypeAdapterConfig<PersonEmergencyContactForUpdateDto, PersonEmergencyContact>.NewConfig();
             TypeAdapterConfig<PersonEducation, PersonEducationDto>.NewConfig();
             TypeAdapterConfig<PersonEducationForCreationDto, PersonEducation>.NewConfig();
             TypeAdapterConfig<PersonEducationForUpdateDto, PersonEducation>.NewConfig();
-            TypeAdapterConfig<PersonIdentification, PersonIdentificationDto>.NewConfig();
-            TypeAdapterConfig<PersonIdentificationForCreationDto, PersonIdentification>.NewConfig();
-            TypeAdapterConfig<PersonIdentificationForUpdateDto, PersonIdentification>.NewConfig();
+            TypeAdapterConfig<PersonContact, PersonContactDto>.NewConfig();
+            TypeAdapterConfig<PersonContactForCreationDto, PersonContact>.NewConfig();
+            TypeAdapterConfig<PersonContactForUpdateDto, PersonContact>.NewConfig();
             TypeAdapterConfig<PersonAddress, PersonAddressDto>.NewConfig();
             TypeAdapterConfig<PersonAddressForCreationDto, PersonAddress>.NewConfig();
             TypeAdapterConfig<PersonAddressForUpdateDto, PersonAddress>.NewConfig();
-            TypeAdapterConfig<Person, PersonDto>.NewConfig();
-            TypeAdapterConfig<PersonForCreationDto, Person>.NewConfig();
-            TypeAdapterConfig<PersonForUpdateDto, Person>.NewConfig();
             TypeAdapterConfig<CostCenterAssignment, CostCenterAssignmentDto>.NewConfig();
             TypeAdapterConfig<CostCenterAssignmentForCreationDto, CostCenterAssignment>.NewConfig();
             TypeAdapterConfig<CostCenterAssignmentForUpdateDto, CostCenterAssignment>.NewConfig();
-            // CompanyLogo is varbinary(max) in SQL. Keep binary data in the
-            // entity and use Base64 only at the DTO/API boundary.
-            TypeAdapterConfig<Company, CompanyDto>.NewConfig()
-                .Map(dest => dest.CompanyLogo, src => ToBase64(src.CompanyLogo));
-            TypeAdapterConfig<CompanyForCreationDto, Company>.NewConfig()
-                .Map(dest => dest.CompanyLogo, src => FromBase64(src.CompanyLogo));
-            TypeAdapterConfig<CompanyForUpdateDto, Company>.NewConfig()
-                .Map(dest => dest.CompanyLogo, src => FromBase64(src.CompanyLogo));
+            TypeAdapterConfig<Company, CompanyDto>.NewConfig();
+            TypeAdapterConfig<CompanyForCreationDto, Company>.NewConfig();
+            TypeAdapterConfig<CompanyForUpdateDto, Company>.NewConfig();
+            TypeAdapterConfig<Person, PersonDto>.NewConfig();
+            TypeAdapterConfig<PersonForCreationDto, Person>.NewConfig();
+            TypeAdapterConfig<PersonForUpdateDto, Person>.NewConfig();
+            TypeAdapterConfig<MeetingRoom, MeetingRoomDto>.NewConfig();
+            TypeAdapterConfig<MeetingRoomForCreationDto, MeetingRoom>.NewConfig();
+            TypeAdapterConfig<MeetingRoomForUpdateDto, MeetingRoom>.NewConfig();
             TypeAdapterConfig<AwardCriteriaRule, AwardCriteriaRuleDto>.NewConfig();
             TypeAdapterConfig<AwardCriteriaRuleForCreationDto, AwardCriteriaRule>.NewConfig();
             TypeAdapterConfig<AwardCriteriaRuleForUpdateDto, AwardCriteriaRule>.NewConfig();
@@ -83,6 +87,9 @@ namespace BamboeUp.Api
             TypeAdapterConfig<Award, AwardDto>.NewConfig();
             TypeAdapterConfig<AwardForCreationDto, Award>.NewConfig();
             TypeAdapterConfig<AwardForUpdateDto, Award>.NewConfig();
+            TypeAdapterConfig<CompanyOffice, CompanyOfficeDto>.NewConfig();
+            TypeAdapterConfig<CompanyOfficeForCreationDto, CompanyOffice>.NewConfig();
+            TypeAdapterConfig<CompanyOfficeForUpdateDto, CompanyOffice>.NewConfig();
             TypeAdapterConfig<Holiday, HolidayDto>.NewConfig();
             TypeAdapterConfig<HolidayForCreationDto, Holiday>.NewConfig();
             TypeAdapterConfig<HolidayForUpdateDto, Holiday>.NewConfig();

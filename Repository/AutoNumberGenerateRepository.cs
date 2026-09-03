@@ -1,6 +1,7 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -14,10 +15,13 @@ namespace Repository
     public class AutoNumberGenerateRepository : IAutoNumberGenerateRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public AutoNumberGenerateRepository(RepositoryContext context)
+        public AutoNumberGenerateRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         /// <summary>
@@ -25,7 +29,7 @@ namespace Repository
         /// 
         /// Strategi UPSERT yang aman untuk concurrent access:
         /// 1. Coba INSERT dengan IF NOT EXISTS (mencegah duplicate)
-        /// 2. SELECT WITH (UPDLOCK, ROWLOCK) — lock row untuk durasi transaction
+        /// 2. SELECT with row lock for the duration of the transaction
         /// 
         /// Dengan pola ini, dua request concurrent yang sama-sama tidak menemukan counter
         /// akan berlomba di INSERT. Salah satu menang, satunya tidak (tapi tidak error).
@@ -45,19 +49,19 @@ namespace Repository
 
             var createdTime = DateTime.UtcNow;
             // Step 1: INSERT jika belum ada (menggunakan NOT EXISTS agar idempoten)
-            const string insertSql = @"
-                INSERT INTO [app].[AutoNumberCounter]
+            var insertSql = $@"
+                INSERT INTO {_dialect.Qualify("app", "AutoNumberCounter")}
                     (AutoNumberCounterGuid, AutoNumberTemplateId,
                      CompanyId, CompanyOfficeId, OrganizationUnitId,
                      YearNo, MonthNo, DayNo,
                      LastNumber, StatusId, CreatedById, CreatedTime)
                 SELECT
-                    NEWID(), @TemplateId,
+                    {_dialect.NewGuidExpression}, @TemplateId,
                     @CompanyId, @CompanyOfficeId, @OrganizationUnitId,
                     @YearNo, @MonthNo, @DayNo,
                     0, 1, 0, @CreatedTime
                 WHERE NOT EXISTS (
-                    SELECT 1 FROM [app].[AutoNumberCounter]
+                    SELECT 1 FROM {_dialect.Qualify("app", "AutoNumberCounter")}
                     WHERE AutoNumberTemplateId = @TemplateId
                       AND (CompanyId         = @CompanyId         OR (CompanyId         IS NULL AND @CompanyId         IS NULL))
                       AND (CompanyOfficeId   = @CompanyOfficeId   OR (CompanyOfficeId   IS NULL AND @CompanyOfficeId   IS NULL))
@@ -81,10 +85,10 @@ namespace Repository
                 CreatedTime       = createdTime
             }, transaction);
 
-            // Step 2: SELECT WITH (UPDLOCK, ROWLOCK) — lock row untuk durasi transaction
+            // Step 2: lock row for the duration of the transaction
             var selectSql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) *
-                FROM [app].[AutoNumberCounter] WITH (UPDLOCK, ROWLOCK)
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")}
+                FROM {_dialect.Qualify("app", "AutoNumberCounter")}{_dialect.TableLockHint}
                 WHERE AutoNumberTemplateId = @TemplateId
                   AND (CompanyId         = @CompanyId         OR (CompanyId         IS NULL AND @CompanyId         IS NULL))
                   AND (CompanyOfficeId   = @CompanyOfficeId   OR (CompanyOfficeId   IS NULL AND @CompanyOfficeId   IS NULL))
@@ -93,7 +97,7 @@ namespace Repository
                   AND (MonthNo           = @MonthNo           OR (MonthNo           IS NULL AND @MonthNo           IS NULL))
                   AND (DayNo             = @DayNo             OR (DayNo             IS NULL AND @DayNo             IS NULL))
                   AND StatusId > 0
-                  AND DeletedTime IS NULL";
+                  AND DeletedTime IS NULL{_dialect.ForUpdateSuffix}";
 
             var counter = await conn.QueryFirstOrDefaultAsync<AutoNumberCounter>(selectSql, new
             {
@@ -125,8 +129,8 @@ namespace Repository
         {
             var conn = transaction.Connection!;
 
-            const string sql = @"
-                UPDATE [app].[AutoNumberCounter]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumberCounter")}
                 SET LastNumber  = @NewValue,
                     UpdatedTime = @UpdatedTime
                 WHERE AutoNumberCounterId = @CounterId";

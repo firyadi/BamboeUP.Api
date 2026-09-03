@@ -151,5 +151,25 @@ namespace Service.Modules
                 );
             return data.Adapt<IEnumerable<HolidayDto>>();
         }
+
+        public async Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(
+            DateTime start, DateTime end, string? category = null, string? search = null)
+        {
+            var rows = await repository.Holiday.GetHolidaysByDateRangeAsync(start, end, category, search);
+            return rows.Select(h => new CalendarEventDto
+            {
+                EventGuid = h.HolidayGuid,
+                Title = h.HolidayName,
+                Start = h.HolidayDate.Date,
+                End = h.HolidayDate.Date.AddDays(1).AddTicks(-1),
+                IsAllDay = true,
+                Category = h.SrHolidayType?.ToString(),
+                Description = h.HolidayDescription,
+                Color = h.IsNational ? "#7E57C2" : h.IsCompanyHoliday ? "#1976D2" : "#78909C",
+                Status = h.StatusId > 0 ? "Active" : "Inactive",
+                CanEdit = true,
+                CanDelete = true
+            }).ToList();
+        }
     }
 }

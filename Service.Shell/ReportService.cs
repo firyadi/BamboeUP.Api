@@ -346,6 +346,8 @@ namespace Service.Shell
                     ReportPrintIdMasked = printIdMasked,
                     OutputContentType = handlerResult.OutputContentType,
                     OutputFileName = handlerResult.OutputFileName,
+                    RendererType = handlerResult.RendererType,
+                    PivotPayloadJson = handlerResult.PivotPayloadJson,
                     OutputBase64 = handlerResult.OutputBytes is { Length: > 0 } bytes
                         ? Convert.ToBase64String(bytes)
                         : null

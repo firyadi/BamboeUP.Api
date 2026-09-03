@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,23 +15,28 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public OrganizationUnitScopeRepository(RepositoryContext context, IAuditService audit)
+        public OrganizationUnitScopeRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect)
         {
             _context = context;
             _audit = audit;
+            _dialect = dialect;
+            _table = dialect.Qualify("app", "OrganizationUnitScope");
         }
 
         public async Task<OrganizationUnitScope?> GetOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 , j_OrganizationUnitId.OrganizationUnitName AS OrganizationUnitName
 
-                FROM [app].[OrganizationUnitScope] a
+                FROM {_table} a
 LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
 LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId = j_OrganizationUnitId.OrganizationUnitId
@@ -45,12 +51,12 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 , j_OrganizationUnitId.OrganizationUnitName AS OrganizationUnitName
 
-                FROM [app].[OrganizationUnitScope] a
+                FROM {_table} a
 LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
 LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId = j_OrganizationUnitId.OrganizationUnitId
@@ -66,12 +72,12 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 , j_OrganizationUnitId.OrganizationUnitName AS OrganizationUnitName
 
-                FROM [app].[OrganizationUnitScope] a
+                FROM {_table} a
 LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
 LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId = j_OrganizationUnitId.OrganizationUnitId
@@ -79,7 +85,7 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
                 WHERE j_OrganizationUnitId.OrganizationUnitGuid = @organizationUnitGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.OrganizationUnitScopeId DESC";
+                ORDER BY a.OrganizationUnitScopeId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<OrganizationUnitScope>(sql, new { organizationUnitGuid });
         }
 
@@ -87,12 +93,12 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         {
             AuditTimestampHelper.StampCreate(organizationUnitScope);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[OrganizationUnitScope]
+            var sql = $@"
+                INSERT INTO {_table}
                 (OrganizationUnitScopeGuid, OrganizationUnitId, CreatedById, StatusId, CreatedTime, CompanyId, CompanyOfficeId, ScopeType)
                 VALUES
                 (@OrganizationUnitScopeGuid, @OrganizationUnitId, @CreatedById, @StatusId, @CreatedTime, @CompanyId, @CompanyOfficeId, @ScopeType);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {_dialect.ReturnIdentitySuffix("OrganizationUnitScopeId")}";
             organizationUnitScope.OrganizationUnitScopeId = await conn.QuerySingleAsync<long>(sql, organizationUnitScope, transaction);
         }
 
@@ -100,8 +106,8 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         {
             AuditTimestampHelper.StampUpdate(organizationUnitScope);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[OrganizationUnitScope]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     OrganizationUnitId = @OrganizationUnitId,
                     CompanyId = @CompanyId,
                     CompanyOfficeId = @CompanyOfficeId,
@@ -117,8 +123,8 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         {
             AuditTimestampHelper.StampSoftDelete(organizationUnitScope, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[OrganizationUnitScope]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -130,14 +136,14 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
         public async Task DeleteOrganizationUnitScopeAsync(Guid organizationUnitScopeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[OrganizationUnitScope] WHERE OrganizationUnitScopeGuid = @organizationUnitScopeGuid";
+            var sql = $@"DELETE FROM {_table} WHERE OrganizationUnitScopeGuid = @organizationUnitScopeGuid";
             await conn.ExecuteAsync(sql, new { organizationUnitScopeGuid }, transaction);
         }
 
         public async Task DeleteByOrganizationUnitGuidAsync(Guid organizationUnitGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[OrganizationUnitScope] WHERE OrganizationUnitId IN (SELECT OrganizationUnitId FROM [app].[OrganizationUnit] WHERE OrganizationUnitGuid = @organizationUnitGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE OrganizationUnitId IN (SELECT OrganizationUnitId FROM [app].[OrganizationUnit] WHERE OrganizationUnitGuid = @organizationUnitGuid)";
             await conn.ExecuteAsync(sql, new { organizationUnitGuid }, transaction);
         }
 
@@ -164,23 +170,23 @@ LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId 
 
             if (!string.IsNullOrWhiteSpace(scopeType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ScopeType", "@scopeType", scopeTypeSearchType, parameters, "scopeType", scopeType);
+                var param = SqlFilterHelper.BuildFilter("a.ScopeType", "@scopeType", scopeTypeSearchType, parameters, "scopeType", scopeType, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_CompanyId.CompanyName AS CompanyName
 , j_CompanyOfficeId.CompanyOfficeName AS CompanyOfficeName
 , j_OrganizationUnitId.OrganizationUnitName AS OrganizationUnitName
 
-                FROM [app].[OrganizationUnitScope] a
+                FROM {_table} a
 LEFT JOIN [app].[Company] j_CompanyId ON a.CompanyId = j_CompanyId.CompanyId
 LEFT JOIN [app].[CompanyOffice] j_CompanyOfficeId ON a.CompanyOfficeId = j_CompanyOfficeId.CompanyOfficeId
 LEFT JOIN [app].[OrganizationUnit] j_OrganizationUnitId ON a.OrganizationUnitId = j_OrganizationUnitId.OrganizationUnitId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.OrganizationUnitScopeId DESC";
+                ORDER BY a.OrganizationUnitScopeId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<OrganizationUnitScope>(sql, parameters, transaction);
         }

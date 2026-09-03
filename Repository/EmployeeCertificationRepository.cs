@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,19 +11,21 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class EmployeeCertificationRepository(RepositoryContext context, IAuditService audit) : IEmployeeCertificationRepository
+    public partial class EmployeeCertificationRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IEmployeeCertificationRepository
     {
+        private readonly string _table = dialect.Qualify("app", "EmployeeCertification");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<EmployeeCertification?> GetEmployeeCertificationAsync(Guid employeeCertificationGuid, bool trackChanges)
+public async Task<EmployeeCertification?> GetEmployeeCertificationAsync(Guid employeeCertificationGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CertificationId.CertificationName AS CertificationName
 
 
-                FROM [app].[EmployeeCertification] a
-LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Certification")} j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
 
                 WHERE a.EmployeeCertificationGuid = @employeeCertificationGuid
                   AND a.StatusId > 0
@@ -34,12 +37,12 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CertificationId.CertificationName AS CertificationName
 
 
-                FROM [app].[EmployeeCertification] a
-LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Certification")} j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
 
                 WHERE j_EmployeeId.EmployeeGuid = @employeeGuid
                   AND a.EmployeeCertificationGuid = @employeeCertificationGuid
@@ -52,17 +55,17 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CertificationId.CertificationName AS CertificationName
 
 
-                FROM [app].[EmployeeCertification] a
-LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Certification")} j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
 
                 WHERE j_EmployeeId.EmployeeGuid = @employeeGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.EmployeeCertificationId DESC";
+                ORDER BY a.EmployeeCertificationId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<EmployeeCertification>(sql, new { employeeGuid });
         }
 
@@ -70,12 +73,11 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
         {
             AuditTimestampHelper.StampCreate(employeeCertification);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[EmployeeCertification]
+            var sql = $@"
+                INSERT INTO {_table}
                 (EmployeeCertificationGuid, EmployeeId, CreatedById, StatusId, CreatedTime, [CertificationId], [CertificateNumber], [IssuedDate], [ExpiredDate], [Issuedby], [Score], [FileStorageId], [IsLifetime], [IsCurrent], [Remarks])
                 VALUES
-                (@EmployeeCertificationGuid, @EmployeeId, @CreatedById, @StatusId, @CreatedTime, @CertificationId, @CertificateNumber, @IssuedDate, @ExpiredDate, @Issuedby, @Score, @FileStorageId, @IsLifetime, @IsCurrent, @Remarks);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                (@EmployeeCertificationGuid, @EmployeeId, @CreatedById, @StatusId, @CreatedTime, @CertificationId, @CertificateNumber, @IssuedDate, @ExpiredDate, @Issuedby, @Score, @FileStorageId, @IsLifetime, @IsCurrent, @Remarks){dialect.ReturnIdentitySuffix("EmployeeCertificationId")}";
             employeeCertification.EmployeeCertificationId = await conn.QuerySingleAsync<long>(sql, employeeCertification, transaction);
         }
 
@@ -83,8 +85,8 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
         {
             AuditTimestampHelper.StampUpdate(employeeCertification);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[EmployeeCertification]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     [EmployeeId] = @EmployeeId,
                     [CertificationId] = @CertificationId,
                     [CertificateNumber] = @CertificateNumber,
@@ -107,8 +109,8 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
         {
             AuditTimestampHelper.StampSoftDelete(employeeCertification, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[EmployeeCertification]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -120,14 +122,14 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
         public async Task DeleteEmployeeCertificationAsync(Guid employeeCertificationGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[EmployeeCertification] WHERE EmployeeCertificationGuid = @employeeCertificationGuid";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeCertificationGuid = @employeeCertificationGuid";
             await conn.ExecuteAsync(sql, new { employeeCertificationGuid }, transaction);
         }
 
         public async Task DeleteByEmployeeGuidAsync(Guid employeeGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[EmployeeCertification] WHERE EmployeeId IN (SELECT EmployeeId FROM [app].[Employee] WHERE EmployeeGuid = @employeeGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE EmployeeId IN (SELECT EmployeeId FROM {dialect.Qualify("app", "Employee")} WHERE EmployeeGuid = @employeeGuid)";
             await conn.ExecuteAsync(sql, new { employeeGuid }, transaction);
         }
 
@@ -168,62 +170,62 @@ LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_Certi
 
             if (!string.IsNullOrWhiteSpace(certificateNumber))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CertificateNumber", "@certificateNumber", certificateNumberSearchType, parameters, "certificateNumber", certificateNumber);
+                var param = SqlFilterHelper.BuildFilter("a.CertificateNumber", "@certificateNumber", certificateNumberSearchType, parameters, "certificateNumber", certificateNumber, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(issuedDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IssuedDate", "@issuedDate", issuedDateSearchType, parameters, "issuedDate", issuedDate);
+                var param = SqlFilterHelper.BuildFilter("a.IssuedDate", "@issuedDate", issuedDateSearchType, parameters, "issuedDate", issuedDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(expiredDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ExpiredDate", "@expiredDate", expiredDateSearchType, parameters, "expiredDate", expiredDate);
+                var param = SqlFilterHelper.BuildFilter("a.ExpiredDate", "@expiredDate", expiredDateSearchType, parameters, "expiredDate", expiredDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(issuedby))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Issuedby", "@issuedby", issuedbySearchType, parameters, "issuedby", issuedby);
+                var param = SqlFilterHelper.BuildFilter("a.Issuedby", "@issuedby", issuedbySearchType, parameters, "issuedby", issuedby, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(score))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Score", "@score", scoreSearchType, parameters, "score", score);
+                var param = SqlFilterHelper.BuildFilter("a.Score", "@score", scoreSearchType, parameters, "score", score, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isLifetime))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsLifetime", "@isLifetime", isLifetimeSearchType, parameters, "isLifetime", isLifetime);
+                var param = SqlFilterHelper.BuildFilter("a.IsLifetime", "@isLifetime", isLifetimeSearchType, parameters, "isLifetime", isLifetime, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(isCurrent))
             {
-                var param = SqlFilterHelper.BuildFilter("a.IsCurrent", "@isCurrent", isCurrentSearchType, parameters, "isCurrent", isCurrent);
+                var param = SqlFilterHelper.BuildFilter("a.IsCurrent", "@isCurrent", isCurrentSearchType, parameters, "isCurrent", isCurrent, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(remarks))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks);
+                var param = SqlFilterHelper.BuildFilter("a.Remarks", "@remarks", remarksSearchType, parameters, "remarks", remarks, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_CertificationId.CertificationName AS CertificationName
 
 
-                FROM [app].[EmployeeCertification] a
-LEFT JOIN [app].[Certification] j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "Certification")} j_CertificationId ON a.CertificationId = j_CertificationId.CertificationId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.EmployeeCertificationId DESC";
+                ORDER BY a.EmployeeCertificationId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<EmployeeCertification>(sql, parameters, transaction);
         }

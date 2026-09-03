@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,22 +15,27 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly string _table;
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public OrganizationUnitRepository(RepositoryContext context, IAuditService audit)
+        public OrganizationUnitRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect)
         {
             _context = context;
             _audit = audit;
+            _dialect = dialect;
+            _table = dialect.Qualify("app", "OrganizationUnit");
         }
 
         public async Task<OrganizationUnit?> GetOrganizationUnitAsync(Guid organizationUnitGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_ParentOrganizationUnitId.OrganizationUnitName AS ParentOrganizationUnitName
 
-                FROM [app].[OrganizationUnit] a
-LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
+                FROM {_table} a
+LEFT JOIN {_table} j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
 
                 WHERE a.OrganizationUnitGuid = @organizationUnitGuid
                   AND a.StatusId > 0
@@ -41,11 +47,11 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_ParentOrganizationUnitId.OrganizationUnitName AS ParentOrganizationUnitName
 
-                FROM [app].[OrganizationUnit] a
-LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
+                FROM {_table} a
+LEFT JOIN {_table} j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
 
                 WHERE a.OrganizationUnitId = @organizationUnitId
                   AND a.StatusId > 0
@@ -57,14 +63,14 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_ParentOrganizationUnitId.OrganizationUnitName AS ParentOrganizationUnitName
 
-                FROM [app].[OrganizationUnit] a
-LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
+                FROM {_table} a
+LEFT JOIN {_table} j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.OrganizationUnitId DESC";
+                ORDER BY a.OrganizationUnitId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<OrganizationUnit>(sql);
         }
 
@@ -72,12 +78,12 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         {
             AuditTimestampHelper.StampCreate(organizationUnit);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[OrganizationUnit]
+            var sql = $@"
+                INSERT INTO {_table}
                 (OrganizationUnitGuid, CreatedById, StatusId, CreatedTime, OrganizationUnitCode, OrganizationUnitName, ParentOrganizationUnitId, SrOrganizationLevel, LevelDepth, HierarchyPath)
                 VALUES
                 (@OrganizationUnitGuid, @CreatedById, @StatusId, @CreatedTime, @OrganizationUnitCode, @OrganizationUnitName, @ParentOrganizationUnitId, @SrOrganizationLevel, @LevelDepth, @HierarchyPath);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {_dialect.ReturnIdentitySuffix("OrganizationUnitId")}";
             organizationUnit.OrganizationUnitId = await conn.QuerySingleAsync<long>(sql, organizationUnit, transaction);
         }
 
@@ -85,8 +91,8 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         {
             AuditTimestampHelper.StampUpdate(organizationUnit);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[OrganizationUnit]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     OrganizationUnitCode = @OrganizationUnitCode,
                     OrganizationUnitName = @OrganizationUnitName,
                     ParentOrganizationUnitId = @ParentOrganizationUnitId,
@@ -104,8 +110,8 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         {
             AuditTimestampHelper.StampSoftDelete(organizationUnit, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[OrganizationUnit]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -117,7 +123,7 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
         public async Task DeleteOrganizationUnitAsync(Guid organizationUnitGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[OrganizationUnit] WHERE OrganizationUnitGuid = @organizationUnitGuid";
+            var sql = $@"DELETE FROM {_table} WHERE OrganizationUnitGuid = @organizationUnitGuid";
             await conn.ExecuteAsync(sql, new { organizationUnitGuid }, transaction);
         }
 
@@ -140,45 +146,45 @@ LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganiz
 
             if (!string.IsNullOrWhiteSpace(organizationUnitCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.OrganizationUnitCode", "@organizationUnitCode", organizationUnitCodeSearchType, parameters, "organizationUnitCode", organizationUnitCode);
+                var param = SqlFilterHelper.BuildFilter("a.OrganizationUnitCode", "@organizationUnitCode", organizationUnitCodeSearchType, parameters, "organizationUnitCode", organizationUnitCode, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(organizationUnitName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.OrganizationUnitName", "@organizationUnitName", organizationUnitNameSearchType, parameters, "organizationUnitName", organizationUnitName);
+                var param = SqlFilterHelper.BuildFilter("a.OrganizationUnitName", "@organizationUnitName", organizationUnitNameSearchType, parameters, "organizationUnitName", organizationUnitName, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srOrganizationLevel))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrOrganizationLevel", "@srOrganizationLevel", srOrganizationLevelSearchType, parameters, "srOrganizationLevel", srOrganizationLevel);
+                var param = SqlFilterHelper.BuildFilter("a.SrOrganizationLevel", "@srOrganizationLevel", srOrganizationLevelSearchType, parameters, "srOrganizationLevel", srOrganizationLevel, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(levelDepth))
             {
-                var param = SqlFilterHelper.BuildFilter("a.LevelDepth", "@levelDepth", levelDepthSearchType, parameters, "levelDepth", levelDepth);
+                var param = SqlFilterHelper.BuildFilter("a.LevelDepth", "@levelDepth", levelDepthSearchType, parameters, "levelDepth", levelDepth, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(hierarchyPath))
             {
-                var param = SqlFilterHelper.BuildFilter("a.HierarchyPath", "@hierarchyPath", hierarchyPathSearchType, parameters, "hierarchyPath", hierarchyPath);
+                var param = SqlFilterHelper.BuildFilter("a.HierarchyPath", "@hierarchyPath", hierarchyPathSearchType, parameters, "hierarchyPath", hierarchyPath, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 , j_ParentOrganizationUnitId.OrganizationUnitName AS ParentOrganizationUnitName
 
-                FROM [app].[OrganizationUnit] a
-LEFT JOIN [app].[OrganizationUnit] j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
+                FROM {_table} a
+LEFT JOIN {_table} j_ParentOrganizationUnitId ON a.ParentOrganizationUnitId = j_ParentOrganizationUnitId.OrganizationUnitId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.OrganizationUnitId DESC";
+                ORDER BY a.OrganizationUnitId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<OrganizationUnit>(sql, parameters, transaction);
         }

@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -10,18 +11,20 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class AwardCriteriaRuleRepository(RepositoryContext context, IAuditService audit) : IAwardCriteriaRuleRepository
+    public partial class AwardCriteriaRuleRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IAwardCriteriaRuleRepository
     {
+        private readonly string _table = dialect.Qualify("app", "AwardCriteriaRule");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
         public async Task<AwardCriteriaRule?> GetAwardCriteriaRuleAsync(Guid awardCriteriaRuleGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_AwardCriteriaId.AwardCriteriaName AS AwardCriteriaName
 
 
-                FROM [app].[AwardCriteriaRule] a
+                FROM {_table} a
 LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_AwardCriteriaId.AwardCriteriaId
 
                 WHERE a.AwardCriteriaRuleGuid = @awardCriteriaRuleGuid
@@ -34,11 +37,11 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_AwardCriteriaId.AwardCriteriaName AS AwardCriteriaName
 
 
-                FROM [app].[AwardCriteriaRule] a
+                FROM {_table} a
 LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_AwardCriteriaId.AwardCriteriaId
 
                 WHERE j_AwardCriteriaId.AwardCriteriaGuid = @awardCriteriaGuid
@@ -52,26 +55,26 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_AwardCriteriaId.AwardCriteriaName AS AwardCriteriaName
 
 
-                FROM [app].[AwardCriteriaRule] a
+                FROM {_table} a
 LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_AwardCriteriaId.AwardCriteriaId
 
                 WHERE j_AwardCriteriaId.AwardCriteriaGuid = @awardCriteriaGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL
-                ORDER BY a.AwardCriteriaRuleId DESC";
+                ORDER BY a.AwardCriteriaRuleId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<AwardCriteriaRule>(sql, new { awardCriteriaGuid });
         }
 
         public async Task<IEnumerable<AwardCriteriaRule>> GetAllByAwardCriteriaIdAsync(long awardCriteriaId)
         {
             using var connection = context.CreateConnection();
-            const string sql = @"
+            var sql = $@"
                 SELECT *
-                FROM [app].[AwardCriteriaRule]
+                FROM {_table}
                 WHERE AwardCriteriaId = @awardCriteriaId
                   AND StatusId > 0
                   AND DeletedTime IS NULL
@@ -83,12 +86,12 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
         {
             AuditTimestampHelper.StampCreate(awardCriteriaRule);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[AwardCriteriaRule]
-                (AwardCriteriaRuleGuid, AwardCriteriaId, CreatedById, StatusId, CreatedTime, RuleCode, RuleName, Operator, ValueFrom, Valueto, Score, Note)
+            var sql = $@"
+                INSERT INTO {_table}
+                (AwardCriteriaRuleGuid, AwardCriteriaId, CreatedById, StatusId, CreatedTime, [RuleCode], [RuleName], [Operator], [ValueFrom], [Valueto], [Score], [Note])
                 VALUES
                 (@AwardCriteriaRuleGuid, @AwardCriteriaId, @CreatedById, @StatusId, @CreatedTime, @RuleCode, @RuleName, @Operator, @ValueFrom, @Valueto, @Score, @Note);
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {dialect.ReturnIdentitySuffix("AwardCriteriaRuleId")}";
             awardCriteriaRule.AwardCriteriaRuleId = await conn.QuerySingleAsync<long>(sql, awardCriteriaRule, transaction);
         }
 
@@ -96,16 +99,16 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
         {
             AuditTimestampHelper.StampUpdate(awardCriteriaRule);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[AwardCriteriaRule]
-                SET                     AwardCriteriaId = @AwardCriteriaId,
-                    RuleCode = @RuleCode,
-                    RuleName = @RuleName,
-                    Operator = @Operator,
-                    ValueFrom = @ValueFrom,
-                    Valueto = @Valueto,
-                    Score = @Score,
-                    Note = @Note,
+            var sql = $@"
+                UPDATE {_table}
+                SET                     [AwardCriteriaId] = @AwardCriteriaId,
+                    [RuleCode] = @RuleCode,
+                    [RuleName] = @RuleName,
+                    [Operator] = @Operator,
+                    [ValueFrom] = @ValueFrom,
+                    [Valueto] = @Valueto,
+                    [Score] = @Score,
+                    [Note] = @Note,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -117,8 +120,8 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
         {
             AuditTimestampHelper.StampSoftDelete(awardCriteriaRule, deletedBy);
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[AwardCriteriaRule]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -130,14 +133,14 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
         public async Task DeleteAwardCriteriaRuleAsync(Guid awardCriteriaRuleGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[AwardCriteriaRule] WHERE AwardCriteriaRuleGuid = @awardCriteriaRuleGuid";
+            var sql = $@"DELETE FROM {_table} WHERE AwardCriteriaRuleGuid = @awardCriteriaRuleGuid";
             await conn.ExecuteAsync(sql, new { awardCriteriaRuleGuid }, transaction);
         }
 
         public async Task DeleteByAwardCriteriaGuidAsync(Guid awardCriteriaGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[AwardCriteriaRule] WHERE AwardCriteriaId IN (SELECT AwardCriteriaId FROM [app].[AwardCriteria] WHERE AwardCriteriaGuid = @awardCriteriaGuid)";
+            var sql = $@"DELETE FROM {_table} WHERE AwardCriteriaId IN (SELECT AwardCriteriaId FROM [app].[AwardCriteria] WHERE AwardCriteriaGuid = @awardCriteriaGuid)";
             await conn.ExecuteAsync(sql, new { awardCriteriaGuid }, transaction);
         }
 
@@ -176,13 +179,13 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
 
             if (!string.IsNullOrWhiteSpace(ruleCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.RuleCode", "@ruleCode", ruleCodeSearchType, parameters, "ruleCode", ruleCode);
+                var param = SqlFilterHelper.BuildFilter("a.RuleCode", "@ruleCode", ruleCodeSearchType, parameters, "ruleCode", ruleCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(ruleName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.RuleName", "@ruleName", ruleNameSearchType, parameters, "ruleName", ruleName);
+                var param = SqlFilterHelper.BuildFilter("a.RuleName", "@ruleName", ruleNameSearchType, parameters, "ruleName", ruleName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -194,38 +197,38 @@ LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_Award
 
             if (!string.IsNullOrWhiteSpace(valueFrom))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ValueFrom", "@valueFrom", valueFromSearchType, parameters, "valueFrom", valueFrom);
+                var param = SqlFilterHelper.BuildFilter("a.ValueFrom", "@valueFrom", valueFromSearchType, parameters, "valueFrom", valueFrom, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(valueto))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Valueto", "@valueto", valuetoSearchType, parameters, "valueto", valueto);
+                var param = SqlFilterHelper.BuildFilter("a.Valueto", "@valueto", valuetoSearchType, parameters, "valueto", valueto, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(score))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Score", "@score", scoreSearchType, parameters, "score", score);
+                var param = SqlFilterHelper.BuildFilter("a.Score", "@score", scoreSearchType, parameters, "score", score, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(note))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Note", "@note", noteSearchType, parameters, "note", note);
+                var param = SqlFilterHelper.BuildFilter("a.Note", "@note", noteSearchType, parameters, "note", note, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_AwardCriteriaId.AwardCriteriaName AS AwardCriteriaName
 
 
-                FROM [app].[AwardCriteriaRule] a
+                FROM {_table} a
 LEFT JOIN [app].[AwardCriteria] j_AwardCriteriaId ON a.AwardCriteriaId = j_AwardCriteriaId.AwardCriteriaId
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.AwardCriteriaRuleId DESC";
+                ORDER BY a.AwardCriteriaRuleId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<AwardCriteriaRule>(sql, parameters, transaction);
         }

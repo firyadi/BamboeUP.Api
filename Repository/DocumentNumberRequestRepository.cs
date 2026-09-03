@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -11,10 +12,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public DocumentNumberRequestRepository(RepositoryContext context, IAuditService auditService)
+        public DocumentNumberRequestRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -22,8 +26,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[DocumentNumberRequest] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "DocumentNumberRequest")} a
                 WHERE a.DocumentNumberRequestGuid = @requestGuid
                   AND a.Status != 'Void'";
             return await connection.QuerySingleOrDefaultAsync<DocumentNumberRequest>(sql, new { requestGuid });
@@ -33,10 +37,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[DocumentNumberRequest] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "DocumentNumberRequest")} a
                 WHERE a.Status != 'Void'
-                ORDER BY a.DocumentNumberRequestId DESC";
+                ORDER BY a.DocumentNumberRequestId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<DocumentNumberRequest>(sql);
         }
 
@@ -44,8 +48,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(request);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[DocumentNumberRequest]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "DocumentNumberRequest")}
                 (DocumentNumberRequestGuid, DocumentType, DocumentNo, AutoNumberLogId, ExternalReference,
                  Description, Status, CompanyId, OfficeId, OrgUnitId, CreatedById, CreatedTime)
                 VALUES
@@ -68,8 +72,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetDocumentNumberRequestAsync(request.DocumentNumberRequestGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[DocumentNumberRequest]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "DocumentNumberRequest")}
                 SET DocumentType = @DocumentType,
                     DocumentNo = @DocumentNo,
                     AutoNumberLogId = @AutoNumberLogId,
@@ -100,8 +104,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetDocumentNumberRequestAsync(request.DocumentNumberRequestGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[DocumentNumberRequest]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "DocumentNumberRequest")}
                 SET Status = 'Void',
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -123,7 +127,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetDocumentNumberRequestAsync(requestGuid, false);
 
-            const string sql = @"DELETE FROM [app].[DocumentNumberRequest] WHERE DocumentNumberRequestGuid = @requestGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "DocumentNumberRequest")} WHERE DocumentNumberRequestGuid = @requestGuid";
             await conn.ExecuteAsync(sql, new { requestGuid }, transaction);
 
             await _audit.LogAsync(
@@ -151,31 +155,31 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(documentType))
             {
-                var param = SqlFilterHelper.BuildFilter("a.DocumentType", "@documentType", documentTypeSearchType, parameters, "documentType", documentType);
+                var param = SqlFilterHelper.BuildFilter("a.DocumentType", "@documentType", documentTypeSearchType, parameters, "documentType", documentType, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(documentNo))
             {
-                var param = SqlFilterHelper.BuildFilter("a.DocumentNo", "@documentNo", documentNoSearchType, parameters, "documentNo", documentNo);
+                var param = SqlFilterHelper.BuildFilter("a.DocumentNo", "@documentNo", documentNoSearchType, parameters, "documentNo", documentNo, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(externalReference))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ExternalReference", "@externalReference", externalReferenceSearchType, parameters, "externalReference", externalReference);
+                var param = SqlFilterHelper.BuildFilter("a.ExternalReference", "@externalReference", externalReferenceSearchType, parameters, "externalReference", externalReference, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(description))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description);
+                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(status))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Status", "@status", statusSearchType, parameters, "status", status);
+                var param = SqlFilterHelper.BuildFilter("a.Status", "@status", statusSearchType, parameters, "status", status, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -199,9 +203,9 @@ namespace Repository
 
             var sql = $@"
                 SELECT a.*
-                FROM [app].[DocumentNumberRequest] a
+                FROM {_dialect.Qualify("app", "DocumentNumberRequest")} a
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.DocumentNumberRequestId DESC";
+                ORDER BY a.DocumentNumberRequestId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<DocumentNumberRequest>(sql, parameters, transaction);
         }

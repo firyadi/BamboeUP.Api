@@ -3,6 +3,7 @@ using Contracts;
 using Dapper;
 using Entities.Models;
 using System.Data;
+using Repository.Database;
 using Repository.Extensions;
 
 namespace Repository
@@ -11,17 +12,20 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _auditService;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public ProgramRepository(RepositoryContext context, IAuditService auditService)
+        public ProgramRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _auditService = auditService;
         }
 
         public async Task<Programs?> GetProgramAsync(Guid programGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
-            var sql = $@"SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) * FROM [core].[Programs] 
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "*")} FROM {_dialect.Qualify("core", "Programs")} 
                                  WHERE ProgramGuid = @programGuid AND StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<Programs>(sql, new { programGuid });
         }
@@ -31,7 +35,7 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 SELECT a.*
-                FROM [core].[Programs] a
+                FROM {_dialect.Qualify("core", "Programs")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
                 ORDER BY a.ProgramCode, a.ProgramId ASC";
 
@@ -42,7 +46,7 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(program);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"INSERT INTO [core].[Programs]
+            var sql = $@"INSERT INTO {_dialect.Qualify("core", "Programs")}
                                  (ProgramGuid, ProgramCode, ParentId, IconCode, ProgramName, TopLevelProgramId, RootLevel, RowIndex, Note, 
                                   IsParentProgram, IsProgram, IsBeginGroup, ProgramType, IsProgramAddAble, IsProgramEditAble, 
                                   IsProgramDeleteAble, IsProgramViewAble, IsProgramApprovalAble, IsProgramUnApprovalAble, 
@@ -74,7 +78,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetProgramAsync(program.ProgramGuid, false);
 
-            const string sql = @"UPDATE [core].[Programs]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "Programs")}
                                  SET ProgramCode = @ProgramCode,
                                      ParentId = @ParentId,
                                      IconCode = @IconCode,
@@ -129,7 +133,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetProgramAsync(program.ProgramGuid, false);
 
-            const string sql = @"UPDATE [core].[Programs]
+            var sql = $@"UPDATE {_dialect.Qualify("core", "Programs")}
                                  SET StatusId = 0,
                                      DeletedById = @DeletedById,
                                      DeletedTime = @DeletedTime
@@ -151,7 +155,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetProgramAsync(programGuid, false);
 
-            const string sql = @"DELETE FROM [core].[Programs]
+            var sql = $@"DELETE FROM {_dialect.Qualify("core", "Programs")}
                                  WHERE ProgramGuid = @programGuid";
             await conn.ExecuteAsync(sql, new { programGuid }, transaction);
 
@@ -181,19 +185,19 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(programName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ProgramName", "@programName", programNameSearchType, parameters, "programName", programName);
+                var param = SqlFilterHelper.BuildFilter("a.ProgramName", "@programName", programNameSearchType, parameters, "programName", programName, _dialect);
                 whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(programCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.ProgramCode", "@programCode", programCodeSearchType, parameters, "programCode", programCode);
+                var param = SqlFilterHelper.BuildFilter("a.ProgramCode", "@programCode", programCodeSearchType, parameters, "programCode", programCode, _dialect);
                 whereClauses.Add(param);
             }
 
             var sql = $@"
                 SELECT a.*
-                FROM [core].[Programs] a
+                FROM {_dialect.Qualify("core", "Programs")} a
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.RowIndex ASC";
 
@@ -212,7 +216,7 @@ namespace Repository
             parameters.Add("UserGuid", userGuid);
 
             var sqlBuilder = new System.Text.StringBuilder();
-            sqlBuilder.Append(@"
+            sqlBuilder.Append($@"
                 SELECT DISTINCT 
                     p.ProgramId, p.ProgramGuid, p.ProgramCode, p.ParentId, p.IconCode, p.ProgramName, 
                     p.TopLevelProgramId, p.RootLevel, p.RowIndex, p.Note, p.IsParentProgram, p.IsProgram, 
@@ -230,7 +234,7 @@ namespace Repository
                     p.IsProgramVoidAble,
                     p.IsProgramUnVoidAble,
                     p.IsProgramPrintAble
-                FROM [core].[Programs] p
+                FROM {_dialect.Qualify("core", "Programs")} p
                 WHERE p.ProgramType = 'MNU'
                   AND p.StatusId > 0 AND p.DeletedTime IS NULL
 
@@ -253,10 +257,10 @@ namespace Repository
                     ugp.IsUserGroupVoidAble AS IsProgramVoidAble,
                     ugp.IsUserGroupUnVoidAble AS IsProgramUnVoidAble,
                     ugp.IsUserGroupExportAble AS IsProgramPrintAble
-                FROM [core].[Programs] p
-                INNER JOIN [core].[UserGroupProgram] ugp ON ugp.ProgramsId = p.ProgramId
-                INNER JOIN [core].[UserGroupScope] ugs ON ugs.UserGroupId = ugp.UserGroupId
-                INNER JOIN [core].[Users] u ON u.UserId = ugs.UserId
+                FROM {_dialect.Qualify("core", "Programs")} p
+                INNER JOIN {_dialect.Qualify("core", "UserGroupProgram")} ugp ON ugp.ProgramsId = p.ProgramId
+                INNER JOIN {_dialect.Qualify("core", "UserGroupScope")} ugs ON ugs.UserGroupId = ugp.UserGroupId
+                INNER JOIN {_dialect.Qualify("core", "Users")} u ON u.UserId = ugs.UserId
                 WHERE u.UserGuid = @UserGuid
                   AND ugs.StatusId > 0 AND ugs.DeletedTime IS NULL
                   AND ugp.StatusId > 0 AND ugp.DeletedTime IS NULL

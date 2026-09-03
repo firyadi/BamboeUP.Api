@@ -30,6 +30,13 @@ namespace Shared.DataTransferObjects
         public string? Description { get; set; }
         public Guid? FileStorageGuid { get; set; }
 
+        public string? AssetCategoryName { get; set; }
+        public string? CompanyName { get; set; }
+        public string? CompanyOfficeName { get; set; }
+        public string? CostCenterName { get; set; }
+        public string? CurrencyName { get; set; }
+        public string? AssetConditionName { get; set; }
+        public string? AssetStatusName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }

@@ -2,6 +2,7 @@ using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
@@ -11,10 +12,13 @@ namespace Repository
     {
         private readonly RepositoryContext _context;
         private readonly IAuditService _audit;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public AutoNumberTemplateRepository(RepositoryContext context, IAuditService auditService)
+        public AutoNumberTemplateRepository(RepositoryContext context, IAuditService auditService, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
             _audit = auditService;
         }
 
@@ -22,8 +26,8 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumberTemplate] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberTemplate")} a
                 WHERE a.AutoNumberTemplateGuid = @autoNumberTemplateGuid
                   AND a.StatusId > 0
                   AND a.DeletedTime IS NULL";
@@ -34,10 +38,10 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
-                FROM [app].[AutoNumberTemplate] a
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
+                FROM {_dialect.Qualify("app", "AutoNumberTemplate")} a
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.AutoNumberTemplateId DESC";
+                ORDER BY a.AutoNumberTemplateId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<AutoNumberTemplate>(sql);
         }
 
@@ -45,8 +49,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(autoNumberTemplate);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[AutoNumberTemplate]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "AutoNumberTemplate")}
                 (AutoNumberTemplateGuid, TemplateName, Description, EffectiveDate,
                  TemplateScopeType, SrFormMappingNumbering, CompanyId, CompanyOfficeId,
                  StatusId, CreatedById, CreatedTime)
@@ -71,8 +75,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberTemplateAsync(autoNumberTemplate.AutoNumberTemplateGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[AutoNumberTemplate]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumberTemplate")}
                 SET TemplateName           = @TemplateName,
                     Description            = @Description,
                     EffectiveDate          = @EffectiveDate,
@@ -101,8 +105,8 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberTemplateAsync(autoNumberTemplate.AutoNumberTemplateGuid, false);
 
-            const string sql = @"
-                UPDATE [app].[AutoNumberTemplate]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "AutoNumberTemplate")}
                 SET StatusId    = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -124,7 +128,7 @@ namespace Repository
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var oldData = await GetAutoNumberTemplateAsync(autoNumberTemplateGuid, false);
 
-            const string sql = @"DELETE FROM [app].[AutoNumberTemplate] WHERE AutoNumberTemplateGuid = @autoNumberTemplateGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "AutoNumberTemplate")} WHERE AutoNumberTemplateGuid = @autoNumberTemplateGuid";
             await conn.ExecuteAsync(sql, new { autoNumberTemplateGuid }, transaction);
 
             await _audit.LogAsync(
@@ -157,14 +161,14 @@ namespace Repository
             // 🔍 TemplateCode
             if (!string.IsNullOrWhiteSpace(templateName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.TemplateName", "@templateName", templateNameSearchType, parameters, "templateName", templateName);
+                var param = SqlFilterHelper.BuildFilter("a.TemplateName", "@templateName", templateNameSearchType, parameters, "templateName", templateName, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             // 🔍 Description
             if (!string.IsNullOrWhiteSpace(description))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description);
+                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
@@ -203,9 +207,9 @@ namespace Repository
 
             var sql = $@"
                 SELECT a.*
-                FROM [app].[AutoNumberTemplate] a
+                FROM {_dialect.Qualify("app", "AutoNumberTemplate")} a
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.AutoNumberTemplateId DESC";
+                ORDER BY a.AutoNumberTemplateId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<AutoNumberTemplate>(sql, parameters, transaction);
         }

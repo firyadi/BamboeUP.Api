@@ -1,21 +1,25 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System.Data;
 
 namespace Repository
 {
-    public partial class AssetRepository(RepositoryContext context) : IAssetRepository
+    public partial class AssetRepository(RepositoryContext context, ISqlDialect dialect) : IAssetRepository
     {
+        private readonly string _table = dialect.Qualify("app", "Asset");
+        private readonly int _maxRows = ParameterContext.MaxResultRecord;
+
         public async Task<Asset?> GetAssetAsync(Guid assetGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[Asset] a
+                FROM {_table} a
 
 
                 WHERE a.AssetGuid = @assetGuid
@@ -28,37 +32,37 @@ namespace Repository
         {
             using var connection = context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
 
-                FROM [app].[Asset] a
+                FROM {_table} a
 
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.AssetId DESC";
+                ORDER BY a.AssetId DESC{dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Asset>(sql);
         }
 
         public async Task CreateAssetAsync(Asset asset, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Asset]
+            var sql = $@"
+                INSERT INTO {_table}
                 (AssetGuid, CreatedById, StatusId, CreatedTime, AssetCode, AssetName, AssetCategoryId, AssetBrand, AssetModel, SerialNumber, Barcode, CompanyId, CompanyOfficeId, CostCenterId, PurchaseDate, PurchasePrice, CurrencyId, WarrantyStartDate, WarrantyEndDate, SrAssetCondition, SrAssetStatus, CurrentLocation, FileStorageId, Description
                 )
                 VALUES
                 (@AssetGuid, @CreatedById, @StatusId, @CreatedTime, @AssetCode, @AssetName, @AssetCategoryId, @AssetBrand, @AssetModel, @SerialNumber, @Barcode, @CompanyId, @CompanyOfficeId, @CostCenterId, @PurchaseDate, @PurchasePrice, @CurrencyId, @WarrantyStartDate, @WarrantyEndDate, @SrAssetCondition, @SrAssetStatus, @CurrentLocation, @FileStorageId, @Description
                 );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                {dialect.ReturnIdentitySuffix("AssetId")}";
             asset.AssetId = await conn.QuerySingleAsync<long>(sql, asset, transaction);
         }
 
         public async Task UpdateAssetAsync(Asset asset, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Asset]
+            var sql = $@"
+                UPDATE {_table}
                 SET                     AssetCode = @AssetCode,
                     AssetName = @AssetName,
                     AssetCategoryId = @AssetCategoryId,
@@ -89,8 +93,8 @@ namespace Repository
         public async Task SoftDeleteAssetAsync(Asset asset, long deletedBy, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Asset]
+            var sql = $@"
+                UPDATE {_table}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -102,7 +106,7 @@ namespace Repository
         public async Task DeleteAssetAsync(Guid assetGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Asset] WHERE AssetGuid = @assetGuid";
+            var sql = $@"DELETE FROM {_table} WHERE AssetGuid = @assetGuid";
             await conn.ExecuteAsync(sql, new { assetGuid }, transaction);
         }
 
@@ -154,128 +158,128 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(assetCode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AssetCode", "@assetCode", assetCodeSearchType, parameters, "assetCode", assetCode);
+                var param = SqlFilterHelper.BuildFilter("a.AssetCode", "@assetCode", assetCodeSearchType, parameters, "assetCode", assetCode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(assetName))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AssetName", "@assetName", assetNameSearchType, parameters, "assetName", assetName);
+                var param = SqlFilterHelper.BuildFilter("a.AssetName", "@assetName", assetNameSearchType, parameters, "assetName", assetName, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(assetCategoryId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AssetCategoryId", "@assetCategoryId", assetCategoryIdSearchType, parameters, "assetCategoryId", assetCategoryId);
+                var param = SqlFilterHelper.BuildFilter("a.AssetCategoryId", "@assetCategoryId", assetCategoryIdSearchType, parameters, "assetCategoryId", assetCategoryId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(assetBrand))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AssetBrand", "@assetBrand", assetBrandSearchType, parameters, "assetBrand", assetBrand);
+                var param = SqlFilterHelper.BuildFilter("a.AssetBrand", "@assetBrand", assetBrandSearchType, parameters, "assetBrand", assetBrand, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(assetModel))
             {
-                var param = SqlFilterHelper.BuildFilter("a.AssetModel", "@assetModel", assetModelSearchType, parameters, "assetModel", assetModel);
+                var param = SqlFilterHelper.BuildFilter("a.AssetModel", "@assetModel", assetModelSearchType, parameters, "assetModel", assetModel, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(serialNumber))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SerialNumber", "@serialNumber", serialNumberSearchType, parameters, "serialNumber", serialNumber);
+                var param = SqlFilterHelper.BuildFilter("a.SerialNumber", "@serialNumber", serialNumberSearchType, parameters, "serialNumber", serialNumber, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(barcode))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Barcode", "@barcode", barcodeSearchType, parameters, "barcode", barcode);
+                var param = SqlFilterHelper.BuildFilter("a.Barcode", "@barcode", barcodeSearchType, parameters, "barcode", barcode, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(companyId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyId", "@companyId", companyIdSearchType, parameters, "companyId", companyId);
+                var param = SqlFilterHelper.BuildFilter("a.CompanyId", "@companyId", companyIdSearchType, parameters, "companyId", companyId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(companyOfficeId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeId", "@companyOfficeId", companyOfficeIdSearchType, parameters, "companyOfficeId", companyOfficeId);
+                var param = SqlFilterHelper.BuildFilter("a.CompanyOfficeId", "@companyOfficeId", companyOfficeIdSearchType, parameters, "companyOfficeId", companyOfficeId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(costCenterId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CostCenterId", "@costCenterId", costCenterIdSearchType, parameters, "costCenterId", costCenterId);
+                var param = SqlFilterHelper.BuildFilter("a.CostCenterId", "@costCenterId", costCenterIdSearchType, parameters, "costCenterId", costCenterId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(purchaseDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PurchaseDate", "@purchaseDate", purchaseDateSearchType, parameters, "purchaseDate", purchaseDate);
+                var param = SqlFilterHelper.BuildFilter("a.PurchaseDate", "@purchaseDate", purchaseDateSearchType, parameters, "purchaseDate", purchaseDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(purchasePrice))
             {
-                var param = SqlFilterHelper.BuildFilter("a.PurchasePrice", "@purchasePrice", purchasePriceSearchType, parameters, "purchasePrice", purchasePrice);
+                var param = SqlFilterHelper.BuildFilter("a.PurchasePrice", "@purchasePrice", purchasePriceSearchType, parameters, "purchasePrice", purchasePrice, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(currencyId))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CurrencyId", "@currencyId", currencyIdSearchType, parameters, "currencyId", currencyId);
+                var param = SqlFilterHelper.BuildFilter("a.CurrencyId", "@currencyId", currencyIdSearchType, parameters, "currencyId", currencyId, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(warrantyStartDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.WarrantyStartDate", "@warrantyStartDate", warrantyStartDateSearchType, parameters, "warrantyStartDate", warrantyStartDate);
+                var param = SqlFilterHelper.BuildFilter("a.WarrantyStartDate", "@warrantyStartDate", warrantyStartDateSearchType, parameters, "warrantyStartDate", warrantyStartDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(warrantyEndDate))
             {
-                var param = SqlFilterHelper.BuildFilter("a.WarrantyEndDate", "@warrantyEndDate", warrantyEndDateSearchType, parameters, "warrantyEndDate", warrantyEndDate);
+                var param = SqlFilterHelper.BuildFilter("a.WarrantyEndDate", "@warrantyEndDate", warrantyEndDateSearchType, parameters, "warrantyEndDate", warrantyEndDate, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srAssetCondition))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrAssetCondition", "@srAssetCondition", srAssetConditionSearchType, parameters, "srAssetCondition", srAssetCondition);
+                var param = SqlFilterHelper.BuildFilter("a.SrAssetCondition", "@srAssetCondition", srAssetConditionSearchType, parameters, "srAssetCondition", srAssetCondition, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(srAssetStatus))
             {
-                var param = SqlFilterHelper.BuildFilter("a.SrAssetStatus", "@srAssetStatus", srAssetStatusSearchType, parameters, "srAssetStatus", srAssetStatus);
+                var param = SqlFilterHelper.BuildFilter("a.SrAssetStatus", "@srAssetStatus", srAssetStatusSearchType, parameters, "srAssetStatus", srAssetStatus, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(currentLocation))
             {
-                var param = SqlFilterHelper.BuildFilter("a.CurrentLocation", "@currentLocation", currentLocationSearchType, parameters, "currentLocation", currentLocation);
+                var param = SqlFilterHelper.BuildFilter("a.CurrentLocation", "@currentLocation", currentLocationSearchType, parameters, "currentLocation", currentLocation, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(description))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description);
+                var param = SqlFilterHelper.BuildFilter("a.Description", "@description", descriptionSearchType, parameters, "description", description, dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 
 
-                FROM [app].[Asset] a
+                FROM {_table} a
 
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.AssetId DESC";
+                ORDER BY a.AssetId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Asset>(sql, parameters, transaction);
         }

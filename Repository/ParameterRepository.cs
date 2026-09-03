@@ -1,6 +1,7 @@
 using Contracts;
 using Dapper;
 using Entities.Models;
+using Repository.Database;
 using Repository.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,19 +13,22 @@ namespace Repository
     public partial class ParameterRepository : IParameterRepository
     {
         private readonly RepositoryContext _context;
+        private readonly ISqlDialect _dialect;
+        private readonly int _maxRows = Contracts.ParameterContext.MaxResultRecord;
 
-        public ParameterRepository(RepositoryContext context)
+        public ParameterRepository(RepositoryContext context, ISqlDialect dialect)
         {
             _context = context;
+            _dialect = dialect;
         }
 
         public async Task<Parameter?> GetParameterAsync(Guid parameterGuid, bool trackChanges)
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 
-                FROM [app].[Parameter] a
+                FROM {_dialect.Qualify("app", "Parameter")} a
 
                 WHERE a.ParameterGuid = @parameterGuid
                   AND a.StatusId > 0
@@ -36,9 +40,9 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 
-                FROM [app].[Parameter] a
+                FROM {_dialect.Qualify("app", "Parameter")} a
 
                 WHERE a.ParameterId = @parameterId
                   AND a.StatusId > 0
@@ -50,12 +54,12 @@ namespace Repository
         {
             using var connection = _context.CreateConnection();
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 
-                FROM [app].[Parameter] a
+                FROM {_dialect.Qualify("app", "Parameter")} a
 
                 WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
-                ORDER BY a.ParameterId DESC";
+                ORDER BY a.ParameterId DESC{_dialect.AppendLimit(_maxRows)}";
             return await connection.QueryAsync<Parameter>(sql);
         }
 
@@ -63,16 +67,15 @@ namespace Repository
         {
             AuditTimestampHelper.StampCreate(parameter);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                INSERT INTO [app].[Parameter]
+            var sql = $@"
+                INSERT INTO {_dialect.Qualify("app", "Parameter")}
                 (ParameterGuid, CreatedById, StatusId, CreatedTime, Parametername, Parametervalue
 
                 )
                 VALUES
                 (@ParameterGuid, @CreatedById, @StatusId, @CreatedTime, @Parametername, @Parametervalue
 
-                );
-                SELECT CAST(SCOPE_IDENTITY() as bigint);";
+                ){_dialect.ReturnIdentitySuffix("ParameterId")}";
             parameter.ParameterId = await conn.QuerySingleAsync<long>(sql, parameter, transaction);
         }
 
@@ -80,8 +83,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampUpdate(parameter);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Parameter]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "Parameter")}
                 SET Parametername = @Parametername,
                     Parametervalue = @Parametervalue,
 
@@ -96,8 +99,8 @@ namespace Repository
         {
             AuditTimestampHelper.StampSoftDelete(parameter, deletedBy);
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"
-                UPDATE [app].[Parameter]
+            var sql = $@"
+                UPDATE {_dialect.Qualify("app", "Parameter")}
                 SET StatusId = 0,
                     DeletedById = @DeletedById,
                     DeletedTime = @DeletedTime
@@ -109,7 +112,7 @@ namespace Repository
         public async Task DeleteParameterAsync(Guid parameterGuid, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();
-            const string sql = @"DELETE FROM [app].[Parameter] WHERE ParameterGuid = @parameterGuid";
+            var sql = $@"DELETE FROM {_dialect.Qualify("app", "Parameter")} WHERE ParameterGuid = @parameterGuid";
             await conn.ExecuteAsync(sql, new { parameterGuid }, transaction);
         }
 
@@ -125,25 +128,25 @@ namespace Repository
 
             if (!string.IsNullOrWhiteSpace(parametername))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Parametername", "@parametername", parameternameSearchType, parameters, "parametername", parametername);
+                var param = SqlFilterHelper.BuildFilter("a.Parametername", "@parametername", parameternameSearchType, parameters, "parametername", parametername, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(parametervalue))
             {
-                var param = SqlFilterHelper.BuildFilter("a.Parametervalue", "@parametervalue", parametervalueSearchType, parameters, "parametervalue", parametervalue);
+                var param = SqlFilterHelper.BuildFilter("a.Parametervalue", "@parametervalue", parametervalueSearchType, parameters, "parametervalue", parametervalue, _dialect);
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
 
 
             var sql = $@"
-                SELECT TOP ({Contracts.ParameterContext.MaxResultRecord}) a.*
+                {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
 
-                FROM [app].[Parameter] a
+                FROM {_dialect.Qualify("app", "Parameter")} a
 
                 WHERE {string.Join(" AND ", whereClauses)}
-                ORDER BY a.ParameterId DESC";
+                ORDER BY a.ParameterId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<Parameter>(sql, parameters, transaction);
         }

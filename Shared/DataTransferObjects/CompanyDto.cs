@@ -14,7 +14,7 @@ namespace Shared.DataTransferObjects
         public string? RegistrationNo { get; set; }
         public long? ParentCompanyId { get; set; }
         public string? DefaultCurrency { get; set; }
-        public string? CompanyLogo { get; set; }
+        public byte[]? CompanyLogo { get; set; }
 public string? LeaderName { get; set; }
 public string? ParentCompanyName { get; set; }
 
@@ -37,7 +37,7 @@ public string? ParentCompanyName { get; set; }
         public string? RegistrationNo { get; set; }
         public long? ParentCompanyId { get; set; }
         public string? DefaultCurrency { get; set; }
-        public string? CompanyLogo { get; set; }
+        public byte[]? CompanyLogo { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
@@ -51,7 +51,7 @@ public string? ParentCompanyName { get; set; }
         public string? RegistrationNo { get; set; }
         public long? ParentCompanyId { get; set; }
         public string? DefaultCurrency { get; set; }
-        public string? CompanyLogo { get; set; }
+        public byte[]? CompanyLogo { get; set; }
         public long UpdatedById { get; set; }
     }
 
