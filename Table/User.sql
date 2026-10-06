@@ -45,3 +45,18 @@ ALTER TABLE [core].[User] ADD CONSTRAINT [DF_User_StatusId] DEFAULT ((1)) FOR [S
 GO
 ALTER TABLE [core].[User] ADD CONSTRAINT [DF_User_CreatedTime] DEFAULT (sysdatetime()) FOR [CreatedTime]
 GO
+
+-- Live catalog table is core.Users. One active user per person.
+SET QUOTED_IDENTIFIER ON;
+SET ANSI_NULLS ON;
+GO
+IF COL_LENGTH('core.Users', 'PersonId') IS NULL
+    ALTER TABLE [core].[Users] ADD [PersonId] bigint NULL;
+GO
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes
+    WHERE name = 'UQ_Users_PersonId_Active' AND object_id = OBJECT_ID('core.Users'))
+    CREATE UNIQUE INDEX [UQ_Users_PersonId_Active]
+        ON [core].[Users]([PersonId])
+        WHERE [PersonId] IS NOT NULL AND [DeletedTime] IS NULL AND [StatusId] > 0;
+GO

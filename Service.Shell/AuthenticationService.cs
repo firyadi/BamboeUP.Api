@@ -81,16 +81,46 @@ namespace Service.Shell
             }
             else
             {
-                var defaultScope = dbScopes.FirstOrDefault(s => s.IsDefault) ?? dbScopes.FirstOrDefault();
-                if (defaultScope == null)
+                if (isAdmin)
                 {
-                    throw new UnauthorizedAccessException(
-                        "No scope is assigned to your account. Please contact your administrator.");
+                    var adminScopes = await BuildAdminScopesAsync();
+                    var defaultDb = dbScopes.FirstOrDefault(s => s.IsDefault) ?? dbScopes.FirstOrDefault();
+                    if (defaultDb != null)
+                    {
+                        activeScope = await MapDbScopeToActiveAsync(defaultDb);
+                        availableScopes = BuildAvailableScopes(adminScopes.Count > 0 ? adminScopes : dbScopes);
+                    }
+                    else
+                    {
+                        var defaultAdmin = adminScopes.FirstOrDefault(s => s.IsDefault) ?? adminScopes.FirstOrDefault();
+                        if (defaultAdmin == null)
+                        {
+                            activeScope = (null, null, null, null, null, null, null);
+                            availableScopes = [];
+                        }
+                        else
+                        {
+                            activeScope = await ResolveScopeDetailsAsync(
+                                defaultAdmin.CompanyId,
+                                defaultAdmin.CompanyOfficeId,
+                                adminScopes,
+                                isSyntheticAdminScopes: true);
+                            availableScopes = BuildAvailableScopes(adminScopes);
+                        }
+                    }
                 }
+                else
+                {
+                    var defaultScope = dbScopes.FirstOrDefault(s => s.IsDefault) ?? dbScopes.FirstOrDefault();
+                    if (defaultScope == null)
+                    {
+                        throw new UnauthorizedAccessException(
+                            "No scope is assigned to your account. Please contact your administrator.");
+                    }
 
-                activeScope = await MapDbScopeToActiveAsync(defaultScope);
-                availableScopes = BuildAvailableScopes(
-                    isAdmin ? await BuildAdminScopesAsync() : dbScopes);
+                    activeScope = await MapDbScopeToActiveAsync(defaultScope);
+                    availableScopes = BuildAvailableScopes(dbScopes);
+                }
             }
 
             var (activeCompanyId, activeCompanyGuid, activeCompanyName,
@@ -98,6 +128,7 @@ namespace Service.Shell
                  activeUserGroupScopeId) = activeScope;
 
             var token = GenerateToken(user, isAdmin, activeCompanyId, activeOfficeId, activeUserGroupScopeId, out var expired);
+            var (personId, personName) = await ResolveLoginPersonAsync(user.UserId, activeUserGroupScopeId, activeCompanyId, activeOfficeId);
 
             return new TokenDto
             {
@@ -109,6 +140,8 @@ namespace Service.Shell
                 FullName = user.FullName ?? user.UserName,
                 Role = isAdmin ? "Admin" : "User",
                 IsAdmin = isAdmin,
+                PersonId = personId,
+                PersonName = personName,
                 ActiveCompanyId = activeCompanyId,
                 ActiveCompanyGuid = activeCompanyGuid,
                 ActiveCompanyName = activeCompanyName,
@@ -145,6 +178,7 @@ namespace Service.Shell
             var availableScopes = BuildAvailableScopes(selectableScopes);
 
             var token = GenerateToken(user, isAdmin, activeCompanyId, activeOfficeId, activeUserGroupScopeId, out var expired);
+            var (personId, personName) = await ResolveLoginPersonAsync(user.UserId, activeUserGroupScopeId, activeCompanyId, activeOfficeId);
 
             return new TokenDto
             {
@@ -156,6 +190,8 @@ namespace Service.Shell
                 FullName = user.FullName ?? user.UserName,
                 Role = isAdmin ? "Admin" : "User",
                 IsAdmin = isAdmin,
+                PersonId = personId,
+                PersonName = personName,
                 ActiveCompanyId = activeCompanyId,
                 ActiveCompanyGuid = activeCompanyGuid,
                 ActiveCompanyName = activeCompanyName,
@@ -177,6 +213,12 @@ namespace Service.Shell
             var dbScopes = await GetDbScopesAsync(user.UserId);
             var selectableScopes = await GetSelectableScopesAsync(user.UserId, isAdmin);
             var (defaultCompanyId, defaultOfficeId) = ResolveDefaultScopeIdsFromDb(dbScopes);
+            if (isAdmin && !defaultCompanyId.HasValue)
+            {
+                var fallback = selectableScopes.FirstOrDefault(s => s.IsDefault) ?? selectableScopes.FirstOrDefault();
+                defaultCompanyId = fallback?.CompanyId;
+                defaultOfficeId = fallback?.CompanyOfficeId;
+            }
 
             return new LoginScopesPreviewDto
             {
@@ -185,6 +227,30 @@ namespace Service.Shell
                 DefaultOfficeId = defaultOfficeId,
                 AvailableScopes = BuildAvailableScopes(selectableScopes)
             };
+        }
+
+        private async Task<(long? PersonId, string? PersonName)> ResolveLoginPersonAsync(
+            long userId, long? scopeId, long? companyId, long? officeId)
+        {
+            var scopes = (await _repository.UserGroupScope.GetAllByUserIdAsync(userId)).ToList();
+            var match = scopeId is > 0
+                ? scopes.FirstOrDefault(s => s.UserGroupScopeId == scopeId)
+                : null;
+            match ??= scopes.FirstOrDefault(s =>
+                companyId is > 0 && s.CompanyId == companyId && s.CompanyOfficeId == officeId && s.PersonId is > 0);
+            match ??= scopes.FirstOrDefault(s =>
+                companyId is > 0 && s.CompanyId == companyId && s.PersonId is > 0);
+            if (match?.PersonId is not > 0)
+                return (null, null);
+
+            var person = await _repository.Person.GetPersonByIdAsync(match.PersonId.Value, false);
+            if (person == null)
+                return (null, null);
+
+            var name = string.IsNullOrWhiteSpace(person.PersonName)
+                ? string.Join(" ", new[] { person.FirstName, person.MiddleName, person.LastName }.Where(part => !string.IsNullOrWhiteSpace(part)))
+                : person.PersonName;
+            return (person.PersonId, name);
         }
 
         private async Task<List<Entities.Models.UserGroupScope>> GetDbScopesAsync(long userId)

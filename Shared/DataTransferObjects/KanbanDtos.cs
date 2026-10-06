@@ -11,6 +11,7 @@ public sealed class KanbanCardDto
     public string? Module { get; set; }
     public string? Type { get; set; }
     public string? Owner { get; set; }
+    public long? PersonId { get; set; }
     public string? Version { get; set; }
     public string? Description { get; set; }
     public string? Color { get; set; }

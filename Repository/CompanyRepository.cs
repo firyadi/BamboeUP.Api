@@ -81,7 +81,7 @@ LEFT JOIN {dialect.Qualify("app", "Company")} j_ParentCompanyId ON a.ParentCompa
             var conn = transaction?.Connection ?? context.CreateConnection();
             var sql = $@"
                 INSERT INTO {_table}
-                (CompanyGuid, LeaderId, CreatedById, StatusId, CreatedTime, [CompanyName], [InitialName], [TaxCompulsionNo], [RegistrationNo], [ParentCompanyId], [DefaultCurrency], [CompanyLogo])
+                (CompanyGuid, LeaderId, CreatedById, StatusId, CreatedTime, CompanyName, InitialName, TaxCompulsionNo, RegistrationNo, ParentCompanyId, DefaultCurrency, CompanyLogo)
                 VALUES
                 (@CompanyGuid, @LeaderId, @CreatedById, @StatusId, @CreatedTime, @CompanyName, @InitialName, @TaxCompulsionNo, @RegistrationNo, @ParentCompanyId, @DefaultCurrency, @CompanyLogo){dialect.ReturnIdentitySuffix("CompanyId")}";
             company.CompanyId = await conn.QuerySingleAsync<long>(sql, company, transaction);

@@ -894,6 +894,7 @@ CREATE TABLE IF NOT EXISTS core."Users" (
     "PasswordSalt"  VARCHAR(128) NOT NULL,
     "FullName"      VARCHAR(200),
     "Email"         VARCHAR(200),
+    "PersonId"      BIGINT,
     "IsAdmin"       INT NOT NULL DEFAULT 0,
     "StatusId"      BIGINT NOT NULL DEFAULT 1,
     "CreatedById"   BIGINT NOT NULL DEFAULT 0,
@@ -905,6 +906,8 @@ CREATE TABLE IF NOT EXISTS core."Users" (
     CONSTRAINT "UQ_Users_Guid" UNIQUE ("UserGuid"),
     CONSTRAINT "UQ_Users_UserName" UNIQUE ("UserName")
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS "UQ_Users_PersonId_Active" ON core."Users" ("PersonId") WHERE "PersonId" IS NOT NULL AND "DeletedTime" IS NULL AND "StatusId" > 0;
 
 CREATE TABLE IF NOT EXISTS core."UserGroup" (
     "UserGroupId"   BIGSERIAL PRIMARY KEY,
@@ -999,6 +1002,7 @@ CREATE TABLE IF NOT EXISTS core."UserGroupScope" (
     "CompanyGuid"           UUID,
     "CompanyOfficeId"       BIGINT,
     "CompanyOfficeGuid"     UUID,
+    "PersonId"              BIGINT,
     "IsDefault"             INT NOT NULL DEFAULT 0,
     "StatusId"              BIGINT NOT NULL DEFAULT 1,
     "CreatedById"           BIGINT NOT NULL DEFAULT 0,

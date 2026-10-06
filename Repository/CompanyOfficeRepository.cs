@@ -105,9 +105,9 @@ OUTER APPLY (
             var conn = transaction?.Connection ?? context.CreateConnection();
             var sql = $@"
                 INSERT INTO {_table}
-                (CompanyOfficeGuid, CompanyId, CompanyGuid, CreatedById, StatusId, CreatedTime, [CompanyOfficeName], [SrAddressType], [CountryId], [StateId], [CityId], [PostalCodeId], [Address])
+                (CompanyOfficeGuid, CompanyId, CompanyGuid, CreatedById, StatusId, CreatedTime, [CompanyOfficeName], [SrAddressType], [CountryId], [StateId], [CityId], [PostalCodeId], [Address], [Latitude], [Longitude], [RadiusMeters])
                 VALUES
-                (@CompanyOfficeGuid, @CompanyId, @CompanyGuid, @CreatedById, @StatusId, @CreatedTime, @CompanyOfficeName, @SrAddressType, @CountryId, @StateId, @CityId, @PostalCodeId, @Address);
+                (@CompanyOfficeGuid, @CompanyId, @CompanyGuid, @CreatedById, @StatusId, @CreatedTime, @CompanyOfficeName, @SrAddressType, @CountryId, @StateId, @CityId, @PostalCodeId, @Address, @Latitude, @Longitude, @RadiusMeters);
                 {dialect.ReturnIdentitySuffix("CompanyOfficeId")}";
             companyOffice.CompanyOfficeId = await conn.QuerySingleAsync<long>(sql, companyOffice, transaction);
         }
@@ -126,6 +126,9 @@ OUTER APPLY (
                     [CityId] = @CityId,
                     [PostalCodeId] = @PostalCodeId,
                     [Address] = @Address,
+                    [Latitude] = @Latitude,
+                    [Longitude] = @Longitude,
+                    [RadiusMeters] = @RadiusMeters,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime

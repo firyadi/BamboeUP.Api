@@ -11,6 +11,13 @@ namespace Contracts
         Task<RoomBooking?> GetRoomBookingAsync(Guid roomBookingGuid, bool trackChanges);
         Task<RoomBooking?> GetByPersonGuidAndRoomBookingGuidAsync(Guid personGuid, Guid roomBookingGuid);
         Task<IEnumerable<RoomBooking>> GetAllByPersonGuidAsync(Guid personGuid);
+        Task<IEnumerable<RoomBooking>> GetAllRoomBookingsAsync(bool trackChanges);
+        Task<IEnumerable<RoomBooking>> GetRoomBookingsByDateRangeAsync(
+            DateTime start,
+            DateTime end,
+            string? category = null,
+            string? search = null,
+            IDbTransaction? transaction = null);
 
         Task CreateRoomBookingAsync(RoomBooking roomBooking, IDbTransaction? transaction = null);
         Task UpdateRoomBookingAsync(RoomBooking roomBooking, IDbTransaction? transaction = null);

@@ -8,6 +8,8 @@ namespace Service.Modules.Extensions
         public static void ConfigureModulesServices(this IServiceCollection services)
         {
             services.AddScoped<IServiceModulesManager, ServiceModulesManager>();
+            services.AddScoped<IMobileSyncService, MobileSyncService>();
+            services.AddScoped<IPhysicalInventoryService, PhysicalInventoryService>();
         }
     }
 }

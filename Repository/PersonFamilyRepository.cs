@@ -32,7 +32,7 @@ public async Task<PersonFamily?> GetPersonFamilyAsync(Guid personFamilyGuid, boo
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
 LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.StateId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrFamilyRelation", "SrFamilyRelation", "FamilyRelation")}
@@ -61,7 +61,7 @@ LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.S
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
 LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.StateId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrFamilyRelation", "SrFamilyRelation", "FamilyRelation")}
@@ -91,7 +91,7 @@ LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.S
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
 LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.StateId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrFamilyRelation", "SrFamilyRelation", "FamilyRelation")}
@@ -242,7 +242,7 @@ LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.S
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
 LEFT JOIN {dialect.Qualify("app", "State")} j_StateId ON a.StateId = j_StateId.StateId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrEducationLevel", "SrEducationLevel", "EducationLevel")}
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrFamilyRelation", "SrFamilyRelation", "FamilyRelation")}

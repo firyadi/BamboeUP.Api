@@ -15,7 +15,7 @@ namespace Service.Contracts.Modules
         Task DeletePersonBankAccountByAdminAsync(Guid personBankAccountGuid, bool trackChanges);
 
         Task<IEnumerable<PersonBankAccountDto>> SearchPersonBankAccountAsync(
-            string? bankId, string? bankIdSearchType, string? bankBranch, string? bankBranchSearchType, string? accountNumber, string? accountNumberSearchType, string? accountName, string? accountNameSearchType, string? swiftCode, string? swiftCodeSearchType, string? iBAN, string? iBANSearchType, string? currencyId, string? currencyIdSearchType, string? srBankAccountType, string? srBankAccountTypeSearchType, string? isPrimary, string? isPrimarySearchType, string? isPayrollAccount, string? isPayrollAccountSearchType, string? isActive, string? isActiveSearchType, string? remarks, string? remarksSearchType,
+            string? bankBranch, string? bankBranchSearchType, string? accountNumber, string? accountNumberSearchType, string? accountName, string? accountNameSearchType, string? swiftCode, string? swiftCodeSearchType, string? iBAN, string? iBANSearchType, string? isPrimary, string? isPrimarySearchType, string? isPayrollAccount, string? isPayrollAccountSearchType, string? isActive, string? isActiveSearchType, string? remarks, string? remarksSearchType,
             Guid personGuid, Guid personBankAccountGuid);
 
         // Detail (child) helpers

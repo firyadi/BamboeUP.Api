@@ -15,15 +15,18 @@ namespace Presentation.Shell.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthenticationService _authService;
+    private readonly IDevelopmentLoginBootstrap _developmentLogin;
     private readonly ILogger<AuthController> _logger;
     private readonly IWebHostEnvironment _environment;
 
     public AuthController(
         IAuthenticationService authService,
+        IDevelopmentLoginBootstrap developmentLogin,
         ILogger<AuthController> logger,
         IWebHostEnvironment environment)
     {
         _authService = authService;
+        _developmentLogin = developmentLogin;
         _logger = logger;
         _environment = environment;
     }
@@ -49,6 +52,35 @@ public class AuthController : ControllerBase
                 ? $"Failed to load login scopes: {ex.Message}"
                 : "Failed to load login scopes. Please contact the administrator.";
             return StatusCode(StatusCodes.Status500InternalServerError, new { message });
+        }
+    }
+
+    [HttpPost("dev-login")]
+    [AllowAnonymous]
+    [EnableRateLimiting("LoginPolicy")]
+    public async Task<IActionResult> DevLogin()
+    {
+        if (!_environment.IsDevelopment())
+            return NotFound();
+
+        try
+        {
+            await _developmentLogin.EnsureReadyAsync();
+            var authResult = await _authService.LoginAsync(new LoginRequestDto
+            {
+                Username = IDevelopmentLoginBootstrap.UserName,
+                Password = IDevelopmentLoginBootstrap.Password
+            });
+            return Ok(authResult);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Development login bootstrap failed.");
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
         }
     }
 

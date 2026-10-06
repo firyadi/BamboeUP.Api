@@ -15,7 +15,6 @@ public class PersonEmployeeDialectGuardTests
         "PersonIdentificationRepository.cs",
         "PersonEmergencyContactRepository.cs",
         "PersonBankAccountRepository.cs",
-        "PersonWorkExperienceRepository.cs",
         "PersonPhysicalCharacteristicRepository.cs",
         "EmployeeRepository.cs",
         "EmployeeAssignmentRepository.cs",

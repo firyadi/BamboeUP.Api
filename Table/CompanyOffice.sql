@@ -21,6 +21,9 @@ CREATE TABLE [app].[CompanyOffice]
 	[CityId] [bigint] NOT NULL,
 	[PostalCodeId] [varchar](8) NOT NULL,
 	[Address] [varchar](500) NOT NULL,
+	[Latitude] [decimal](9, 6) NULL,
+	[Longitude] [decimal](9, 6) NULL,
+	[RadiusMeters] [int] NULL,
 	[CreatedById] [bigint] NOT NULL,
 	[CreatedTime] [datetime2] NOT NULL,
 	[UpdatedById] [bigint] NULL,
@@ -50,4 +53,14 @@ GO
 ALTER TABLE [core].[CompanyOffice] ADD CONSTRAINT [DF_CompanyOffice_CreatedTime] DEFAULT (sysdatetime()) FOR [CreatedTime]
 GO
 ALTER TABLE [core].[CompanyOffice] ADD CONSTRAINT [DF_CompanyOffice_StatusId] DEFAULT ((1)) FOR [StatusId]
+GO
+
+IF COL_LENGTH('app.CompanyOffice', 'Latitude') IS NULL
+    ALTER TABLE [app].[CompanyOffice] ADD [Latitude] [decimal](9, 6) NULL
+GO
+IF COL_LENGTH('app.CompanyOffice', 'Longitude') IS NULL
+    ALTER TABLE [app].[CompanyOffice] ADD [Longitude] [decimal](9, 6) NULL
+GO
+IF COL_LENGTH('app.CompanyOffice', 'RadiusMeters') IS NULL
+    ALTER TABLE [app].[CompanyOffice] ADD [RadiusMeters] [int] NULL
 GO

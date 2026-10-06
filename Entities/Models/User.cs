@@ -33,6 +33,8 @@ namespace Entities.Models
         [MaxLength(200)]
         public string Email { get; set; } = string.Empty;
 
+        public long? PersonId { get; set; }
+
         public bool IsAdmin { get; set; }
 
         [Required]

@@ -15,6 +15,7 @@ namespace Service.Contracts.Shell
 
         Task<UserGroupScopeDto> CreateAsync(Guid userGroupGuid, UserGroupScopeForCreationDto input);
         Task<UserGroupScopeDto> CreateByUserAsync(Guid userGuid, UserGroupScopeForCreationDto input);
+        Task UpdatePersonByUserAsync(Guid userGuid, Guid userGroupScopeGuid, UserGroupScopePersonDto input);
         Task DeleteAsync(Guid userGroupGuid, Guid userGroupScopeGuid, UserGroupScopeForDeleteDto input, bool trackChanges);
         Task DeleteByUserAsync(Guid userGuid, Guid userGroupScopeGuid, UserGroupScopeForDeleteDto input, bool trackChanges);
         Task DeleteByAdminAsync(Guid userGroupScopeGuid, bool trackChanges);

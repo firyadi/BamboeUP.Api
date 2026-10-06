@@ -19,8 +19,6 @@ namespace Contracts
         Task DeleteByPersonGuidAsync(Guid personGuid, IDbTransaction? transaction = null);
 
         Task<IEnumerable<PersonBankAccount>> SearchPersonBankAccountAsync(
-            string? bankId,
-            string? bankIdSearchType,
             string? bankBranch,
             string? bankBranchSearchType,
             string? accountNumber,
@@ -31,10 +29,6 @@ namespace Contracts
             string? swiftCodeSearchType,
             string? iBAN,
             string? iBANSearchType,
-            string? currencyId,
-            string? currencyIdSearchType,
-            string? srBankAccountType,
-            string? srBankAccountTypeSearchType,
             string? isPrimary,
             string? isPrimarySearchType,
             string? isPayrollAccount,

@@ -66,9 +66,25 @@ namespace Service.Shell
 
             var entity = input.Adapt<UserGroupScope>();
             entity.UserId = user.UserId;
+            entity.PersonId = input.PersonId is > 0 ? input.PersonId : null;
+            await EnsurePersonIsFreeAsync(entity.CompanyId, entity.PersonId, entity.UserId);
 
             await _repository.UserGroupScope.CreateAsync(entity);
             return entity.Adapt<UserGroupScopeDto>();
+        }
+
+        public async Task UpdatePersonByUserAsync(Guid userGuid, Guid userGroupScopeGuid, UserGroupScopePersonDto input)
+        {
+            var user = await _repository.User.GetUserAsync(userGuid, false)
+                ?? throw new KeyNotFoundException($"User '{userGuid}' not found.");
+            var entity = await _repository.UserGroupScope.GetAsync(userGroupScopeGuid, false)
+                ?? throw new KeyNotFoundException($"UserGroupScope '{userGroupScopeGuid}' not found.");
+            if (entity.UserId != user.UserId)
+                throw new InvalidOperationException("Scope ini bukan milik user tersebut.");
+
+            var personId = input.PersonId is > 0 ? input.PersonId : null;
+            await EnsurePersonIsFreeAsync(entity.CompanyId, personId, user.UserId);
+            await _repository.UserGroupScope.UpdatePersonAsync(userGroupScopeGuid, personId, input.UpdatedById);
         }
 
         public async Task DeleteAsync(Guid userGroupGuid, Guid userGroupScopeGuid, UserGroupScopeForDeleteDto input, bool trackChanges)
@@ -112,6 +128,20 @@ namespace Service.Shell
                 input.UpdatedById);
 
             return updatedEntity.Adapt<UserGroupScopeDto>();
+        }
+
+        private async Task EnsurePersonIsFreeAsync(long companyId, long? personId, long userId)
+        {
+            if (personId is not > 0 || companyId <= 0)
+                return;
+
+            var person = await _repository.Person.GetPersonByIdAsync(personId.Value, false);
+            if (person == null)
+                throw new InvalidOperationException("Person tidak ditemukan.");
+
+            var owner = await _repository.UserGroupScope.GetOtherUserByCompanyPersonAsync(companyId, personId.Value, userId);
+            if (owner != null)
+                throw new InvalidOperationException($"Person ini sudah terikat ke user {owner.UserName} di company yang sama.");
         }
     }
 }

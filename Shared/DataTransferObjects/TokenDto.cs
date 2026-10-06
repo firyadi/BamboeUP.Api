@@ -13,6 +13,9 @@ public class TokenDto
     public string Role { get; set; } = string.Empty;
     public bool IsAdmin { get; set; }
 
+    public long? PersonId { get; set; }
+    public string? PersonName { get; set; }
+
     // Active scope (company/office yang dipilih saat login)
     public long? ActiveCompanyId { get; set; }
     public Guid? ActiveCompanyGuid { get; set; }

@@ -11,6 +11,7 @@ namespace Contracts
     {
         Task<User?> GetUserByUserNameAsync(string userName, bool trackChanges);
         Task<User?> GetUserAsync(Guid userGuid, bool trackChanges);
+        Task<User?> GetActiveUserByPersonIdAsync(long personId);
         Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges);
         Task CreateUserAsync(User user, IDbTransaction? transaction = null);
         Task UpdateUserAsync(User user, IDbTransaction? transaction = null);

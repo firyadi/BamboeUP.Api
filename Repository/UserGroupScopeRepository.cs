@@ -30,12 +30,14 @@ namespace Repository
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
-                        co.CompanyOfficeName
+                        co.CompanyOfficeName,
+                        p.PersonName
                 FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
                 JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
                 JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
                 JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
                 LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                LEFT JOIN {_dialect.Qualify("app", "Person")}           p   ON p.PersonId         = ugs.PersonId
                 WHERE   ugs.UserGroupScopeGuid = @userGroupScopeGuid
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL";
@@ -50,12 +52,14 @@ namespace Repository
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
-                        co.CompanyOfficeName
+                        co.CompanyOfficeName,
+                        p.PersonName
                 FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
                 JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
                 JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
                 JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
                 LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                LEFT JOIN {_dialect.Qualify("app", "Person")}           p   ON p.PersonId         = ugs.PersonId
                 WHERE   ug.UserGroupGuid = @userGroupGuid
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL
@@ -71,12 +75,14 @@ namespace Repository
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
-                        co.CompanyOfficeName
+                        co.CompanyOfficeName,
+                        p.PersonName
                 FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
                 JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
                 JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
                 JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
                 LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                LEFT JOIN {_dialect.Qualify("app", "Person")}           p   ON p.PersonId         = ugs.PersonId
                 WHERE   ugs.UserId = @userId
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL
@@ -92,12 +98,14 @@ namespace Repository
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
-                        co.CompanyOfficeName
+                        co.CompanyOfficeName,
+                        p.PersonName
                 FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
                 JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
                 JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
                 JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
                 LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                LEFT JOIN {_dialect.Qualify("app", "Person")}           p   ON p.PersonId         = ugs.PersonId
                 WHERE   ugs.CompanyId = @companyId
                   AND   ugs.StatusId > 0
                   AND   ugs.DeletedTime IS NULL
@@ -113,12 +121,14 @@ namespace Repository
                         u.FullName, u.UserName,
                         ug.UserGroupName,
                         c.CompanyName,
-                        co.CompanyOfficeName
+                        co.CompanyOfficeName,
+                        p.PersonName
                 FROM    {_dialect.Qualify("core", "UserGroupScope")}   ugs
                 JOIN    {_dialect.Qualify("core", "Users")}             u   ON u.UserId           = ugs.UserId
                 JOIN    {_dialect.Qualify("core", "UserGroup")}         ug  ON ug.UserGroupId     = ugs.UserGroupId
                 JOIN    {_dialect.Qualify("app", "Company")}            c   ON c.CompanyId        = ugs.CompanyId
                 LEFT JOIN {_dialect.Qualify("app", "CompanyOffice")}    co  ON co.CompanyOfficeId = ugs.CompanyOfficeId
+                LEFT JOIN {_dialect.Qualify("app", "Person")}           p   ON p.PersonId         = ugs.PersonId
                 WHERE   ug.UserGroupGuid = @userGroupGuid
                   AND   ugs.UserGroupScopeGuid = @userGroupScopeGuid
                   AND   ugs.StatusId > 0
@@ -153,10 +163,10 @@ namespace Repository
 
                     var insertSql = $@"
                         INSERT INTO {_dialect.Qualify("core", "UserGroupScope")}
-                            (UserGroupScopeGuid, UserId, UserGuid, UserGroupId, UserGroupGuid, CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid,
+                            (UserGroupScopeGuid, UserId, UserGuid, UserGroupId, UserGroupGuid, CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid, PersonId,
                              IsDefault, StatusId, CreatedById, CreatedTime)
                         VALUES
-                            (@UserGroupScopeGuid, @UserId, @UserGuid, @UserGroupId, @UserGroupGuid, @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid,
+                            (@UserGroupScopeGuid, @UserId, @UserGuid, @UserGroupId, @UserGroupGuid, @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid, @PersonId,
                              @IsDefault, @StatusId, @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("UserGroupScopeId")}";
                     entity.UserGroupScopeId = await conn.ExecuteScalarAsync<long>(insertSql, entity, localTran);
 
@@ -172,10 +182,10 @@ namespace Repository
             {
                 var sql = $@"
                     INSERT INTO {_dialect.Qualify("core", "UserGroupScope")}
-                        (UserGroupScopeGuid, UserId, UserGuid, UserGroupId, UserGroupGuid, CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid,
+                        (UserGroupScopeGuid, UserId, UserGuid, UserGroupId, UserGroupGuid, CompanyId, CompanyGuid, CompanyOfficeId, CompanyOfficeGuid, PersonId,
                          IsDefault, StatusId, CreatedById, CreatedTime)
                     VALUES
-                        (@UserGroupScopeGuid, @UserId, @UserGuid, @UserGroupId, @UserGroupGuid, @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid,
+                        (@UserGroupScopeGuid, @UserId, @UserGuid, @UserGroupId, @UserGroupGuid, @CompanyId, @CompanyGuid, @CompanyOfficeId, @CompanyOfficeGuid, @PersonId,
                          @IsDefault, @StatusId, @CreatedById, @CreatedTime){_dialect.ReturnIdentitySuffix("UserGroupScopeId")}";
                 entity.UserGroupScopeId = await conn.ExecuteScalarAsync<long>(sql, entity, transaction);
             }
@@ -183,6 +193,41 @@ namespace Repository
             await _audit.LogAsync("CREATE", "UserGroupScope",
                 entity.UserGroupScopeGuid.ToString(),
                 entity.CreatedById.ToString(), null, entity);
+        }
+
+        public async Task UpdatePersonAsync(Guid userGroupScopeGuid, long? personId, long updatedBy, IDbTransaction? transaction = null)
+        {
+            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var ownsConnection = transaction == null;
+            try
+            {
+                var sql = $@"
+                    UPDATE {_dialect.Qualify("core", "UserGroupScope")}
+                    SET    PersonId    = @personId,
+                           UpdatedById = @updatedBy,
+                           UpdatedTime = @updatedTime
+                    WHERE  UserGroupScopeGuid = @userGroupScopeGuid";
+                await conn.ExecuteAsync(sql, new { userGroupScopeGuid, personId, updatedBy, updatedTime = DateTime.UtcNow }, transaction);
+            }
+            finally
+            {
+                if (ownsConnection)
+                    conn.Dispose();
+            }
+        }
+
+        public async Task<UserGroupScope?> GetOtherUserByCompanyPersonAsync(long companyId, long personId, long userId)
+        {
+            using var connection = _context.CreateConnection();
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, 1, "ugs.*")}, u.UserName
+                FROM {_dialect.Qualify("core", "UserGroupScope")} ugs
+                JOIN {_dialect.Qualify("core", "Users")} u ON u.UserId = ugs.UserId
+                WHERE ugs.CompanyId = @companyId
+                  AND ugs.PersonId = @personId
+                  AND ugs.UserId <> @userId
+                  AND ugs.StatusId > 0
+                  AND ugs.DeletedTime IS NULL";
+            return await connection.QueryFirstOrDefaultAsync<UserGroupScope>(sql, new { companyId, personId, userId });
         }
 
         public async Task SoftDeleteAsync(UserGroupScope entity, long deletedBy, IDbTransaction? transaction = null)

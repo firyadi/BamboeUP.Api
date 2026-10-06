@@ -15,8 +15,12 @@ public class TelerikPivotPayloadReaderTests
     {
         var templateRoot = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
-            "..", "..", "..", "..",
+            "..", "..", "..", "..", "..",
             "BamboeUp.Report"));
+
+        Assert.True(
+            Directory.Exists(templateRoot),
+            $"Pivot template root not found: {templateRoot}");
 
         var handler = new PivotReportHandler(
             new TelerikPivotPayloadReaderTests.FakeProvider(),
@@ -42,11 +46,14 @@ public class TelerikPivotPayloadReaderTests
         Assert.Equal(3, document.Rows.Count);
         Assert.Equal(3, document.DisplayedRowCount);
         Assert.False(document.WasRowLimited);
+
+        var catalog = document.Catalog;
         Assert.All(document.Rows, row =>
         {
-            Assert.Equal(2025, row.PeriodYear);
-            Assert.Equal(1, row.PeriodMonth);
-            Assert.False(string.IsNullOrWhiteSpace(row.ProductCategory));
+            Assert.Equal("2025", row.GetDimension(catalog.BindAs("PeriodYear")));
+            Assert.Equal("Jan", row.GetDimension(catalog.BindAs("PeriodMonth")));
+            Assert.False(string.IsNullOrWhiteSpace(row.GetDimension(catalog.BindAs("ProductCategory"))));
+            Assert.NotNull(row.GetMeasure(catalog.BindAs("NetAmount")));
         });
 
         var config = TelerikPivotConfigParser.Parse(document.VendorConfig);
@@ -54,7 +61,8 @@ public class TelerikPivotPayloadReaderTests
         Assert.Equal("100%", config.Height);
         Assert.Equal(2, config.Rows.Count);
         Assert.Equal(2, config.Columns.Count);
-        Assert.Single(config.Measures);
+        Assert.Equal(2, config.Measures.Count);
+        Assert.Equal(20_000, config.MaxRows);
     }
 
     private sealed class FakeProvider : IReportDataProvider
@@ -65,18 +73,17 @@ public class TelerikPivotPayloadReaderTests
             CancellationToken cancellationToken = default)
         {
             var table = new System.Data.DataTable();
-            table.Columns.Add("SalesTransactionId", typeof(long));
             table.Columns.Add("PeriodYear", typeof(int));
             table.Columns.Add("PeriodMonth", typeof(int));
-            table.Columns.Add("TransactionDate", typeof(DateTime));
             table.Columns.Add("ProductCategory", typeof(string));
             table.Columns.Add("ProductName", typeof(string));
+            table.Columns.Add("SalesTransactionCount", typeof(long));
             table.Columns.Add("NetAmount", typeof(decimal));
+            table.Columns.Add("Quantity", typeof(decimal));
 
-            var date = new DateTime(2025, 1, 1);
-            table.Rows.Add(1L, 2025, 1, date, "Electronics", "Laptop", 1000m);
-            table.Rows.Add(2L, 2025, 1, date, "FMCG", "Snack", 200m);
-            table.Rows.Add(3L, 2025, 1, date, "Electronics", "Phone", 500m);
+            table.Rows.Add(2025, 1, "Electronics", "Laptop", 1L, 1000m, 1m);
+            table.Rows.Add(2025, 1, "FMCG", "Snack", 1L, 200m, 1m);
+            table.Rows.Add(2025, 1, "Electronics", "Phone", 1L, 500m, 1m);
 
             return Task.FromResult(table);
         }

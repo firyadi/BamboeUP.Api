@@ -1,7 +1,9 @@
+using Shared.DataTransferObjects;
+
 namespace Service.Contracts.Shell
 {
     public partial interface ICompanyService
     {
-        // Custom service methods can be added here
+        Task<IEnumerable<CompanyDto>> GetAllByPersonGuidAsync(Guid personGuid);
     }
 }

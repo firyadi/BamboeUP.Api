@@ -39,7 +39,7 @@ Apply in order when standardizing a paste:
 | 6 | `*Id` types | Every column ending in `Id` → `bigint`, **except** `StatusId` → `int` |
 | 7 | `Sr*` | `bigint NULL` unless input marks `NOT NULL` |
 | 8 | Preserve business cols | Keep names/meanings from paste; only upgrade type / nullability per rules |
-| 9 | Audit block | Append mandatory audit columns (see §4) if missing |
+| 9 | Audit block | Append mandatory audit columns (see §4) if missing. Map legacy aliases (`LastUpdateDateTime` → `UpdatedTime`, `LastUpdateByUserID` → `UpdatedById`, …) and **do not emit the old names** |
 | 10 | Defaults | `StatusId = (1)`, `CreatedTime = (sysdatetime())`, plus bit defaults if present |
 | 11 | Status check | Optional `CHK_{Table}_Status` for master data: `StatusId IN (0,1,2)` |
 | 12 | Indexes | Emit PK/UQ + FK/Sr/Date/Active indexes (see §5) |
@@ -89,6 +89,19 @@ Always last columns before constraints, in this order:
 Repository convention: active rows = `StatusId > 0 AND DeletedTime IS NULL`.
 
 PostgreSQL audit types: `StatusId` `INT`, times `TIMESTAMPTZ`, `RowVersion` `BYTEA` with zero default — column present for mapping/`SELECT` parity only; it does not auto-increment like SQL Server `timestamp`.
+
+### 4.1 Legacy audit aliases
+
+If the paste uses older HRIS / SSMS names, **rename and drop** them — do not keep both. Canonical BamboeUP names are the only ones in the output.
+
+| Legacy name (examples) | Becomes |
+|------------------------|---------|
+| `LastUpdateDateTime`, `LastModifiedDate`, `ModifiedDateTime` | `UpdatedTime` |
+| `LastUpdateByUserID`, `ModifiedById`, `UpdatedByUserId` | `UpdatedById` |
+| `CreateDate`, `CreatedOn`, `CreatedDateTime` | `CreatedTime` |
+| `CreatedByUserID`, `CreatedBy` | `CreatedById` |
+| `DeletedDate`, `DeleteDateTime` | `DeletedTime` |
+| `DeletedByUserID`, `DeletedBy` | `DeletedById` |
 
 ---
 

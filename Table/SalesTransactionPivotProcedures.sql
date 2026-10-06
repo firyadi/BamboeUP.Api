@@ -7,14 +7,14 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 /*
-    Pivot data source — flat rows for WebDataRocks (ReportKind=PVT).
-    Source: [app].[SalesTransaction] (100k bulk seed)
-    StoreProcedureName: app.pvt_SalesTransaction
+    AUTO-GENERATED - pivot (PVT) aggregate stub for SalesTransaction
+    DataSource: Table [app].[SalesTransaction]
+    ReportDefinition StoreProcedureName: app.pvt_SalesTransaction
+    ParameterProfile: period
 
-    Suggested WDR slice:
-      Rows:    RegionCode, ProductCategory
-      Columns: SalesChannel, PeriodYear
-      Values:  SUM(NetAmount), SUM(Quantity), SUM(CostAmount)
+    Returns a pre-aggregated grain, not detail rows. Dimensions: 8,
+    measures: 5.
+        Skipped (grain cap / unique code): TransactionCode, ProductCode, TransactionDate, CompanyOfficeId, StatusId
 */
 
 IF OBJECT_ID(N'[app].[pvt_SalesTransaction]', N'P') IS NOT NULL
@@ -22,66 +22,52 @@ IF OBJECT_ID(N'[app].[pvt_SalesTransaction]', N'P') IS NOT NULL
 GO
 
 CREATE PROCEDURE [app].[pvt_SalesTransaction]
-    @CompanyId BIGINT = NULL,
-    @CompanyOfficeId BIGINT = NULL,
-    @PeriodYear INT = NULL,
-    @PeriodMonth INT = NULL,
+    @CompanyId NVARCHAR(50) = NULL,
+    @CompanyOfficeId NVARCHAR(50) = NULL,
     @DateFrom DATETIME = NULL,
     @DateTo DATETIME = NULL
-AS
+            AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT
-        t.SalesTransactionId,
-        t.TransactionCode,
-        t.CompanyId,
-        t.CompanyOfficeId,
-        t.PeriodYear,
-        t.PeriodMonth,
-        t.TransactionDate,
-        t.RegionCode,
+    -- Server-side guard: the client must never be the one deciding what to discard.
+    DECLARE @PivotMaxRows INT = 50000;
+
+    SELECT TOP (@PivotMaxRows)
+        t.ProductCategory AS ProductCategory,
+        t.SalesChannel AS SalesChannel,
+        t.CustomerSegment AS CustomerSegment,
+        t.RegionCode AS RegionCode,
+        t.PeriodYear AS PeriodYear,
+        t.PeriodMonth AS PeriodMonth,
+        t.ProductName AS ProductName,
+        t.CompanyId AS CompanyId,
+        COUNT_BIG(*) AS SalesTransactionCount,
+        SUM(t.Quantity) AS Quantity,
+        SUM(t.UnitPrice) AS UnitPrice,
+        SUM(t.DiscountAmount) AS DiscountAmount,
+        SUM(t.NetAmount) AS NetAmount,
+        SUM(t.CostAmount) AS CostAmount
+    FROM [app].[SalesTransaction] t
+    WHERE 1 = 1
+      AND t.StatusId > 0
+      AND t.DeletedTime IS NULL
+      AND (@CompanyId IS NULL OR CAST(t.CompanyId AS NVARCHAR(50)) = @CompanyId)
+      AND (@CompanyOfficeId IS NULL OR CAST(t.CompanyOfficeId AS NVARCHAR(50)) = @CompanyOfficeId)
+      AND (@DateFrom IS NULL OR t.CreatedTime >= @DateFrom)
+      AND (@DateTo IS NULL OR t.CreatedTime < DATEADD(day, 1, CAST(CAST(@DateTo AS DATE) AS DATETIME)))
+    GROUP BY
         t.ProductCategory,
-        t.ProductCode,
-        t.ProductName,
         t.SalesChannel,
         t.CustomerSegment,
-        t.Quantity,
-        t.UnitPrice,
-        t.DiscountAmount,
-        t.NetAmount,
-        t.CostAmount,
-        t.NetAmount - t.CostAmount AS GrossMargin,
-        SYSDATETIME() AS PrintedAt
-    FROM [app].[SalesTransaction] t
-    WHERE t.StatusId > 0
-      AND t.DeletedTime IS NULL
-      AND (@CompanyId IS NULL OR t.CompanyId = @CompanyId)
-      AND (@CompanyOfficeId IS NULL OR t.CompanyOfficeId = @CompanyOfficeId)
-      AND (@PeriodYear IS NULL OR t.PeriodYear = @PeriodYear)
-      AND (@PeriodMonth IS NULL OR t.PeriodMonth = @PeriodMonth)
-      AND (@DateFrom IS NULL OR t.TransactionDate >= CAST(@DateFrom AS DATE))
-      AND (@DateTo IS NULL OR t.TransactionDate <= CAST(@DateTo AS DATE));
+        t.RegionCode,
+        t.PeriodYear,
+        t.PeriodMonth,
+        t.ProductName,
+        t.CompanyId
+    ORDER BY Quantity DESC;
 END
 GO
 
 PRINT 'app.pvt_SalesTransaction created.';
-GO
-
-/*
-    Quick smoke test (optional — comment out on deploy):
-
-    EXEC [app].[pvt_SalesTransaction]
-        @CompanyId = 1,
-        @PeriodYear = 2024;
-
-    SELECT RegionCode, ProductCategory, SalesChannel,
-           SUM(NetAmount) AS TotalNet, SUM(Quantity) AS TotalQty, COUNT(*) AS Cnt
-    FROM (
-        EXEC [app].[pvt_SalesTransaction] @CompanyId = 1, @PeriodYear = 2024
-    ) x
-    GROUP BY RegionCode, ProductCategory, SalesChannel
-    ORDER BY TotalNet DESC;
-*/
-
 GO

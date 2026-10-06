@@ -20,6 +20,9 @@ namespace Shared.DataTransferObjects
         public bool IsActive { get; set; }
         public string? Remarks { get; set; }
 public string? PersonName { get; set; }
+public string? BankName { get; set; }
+public string? CurrencyName { get; set; }
+public string? BankAccountTypeName { get; set; }
 
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -73,9 +76,6 @@ public string? PersonName { get; set; }
 
     public partial class PersonBankAccountSearchDto
     {
-        public string? BankId { get; set; }
-        public SearchType BankIdSearchType { get; set; } = SearchType.Contains;
-
         public string? BankBranch { get; set; }
         public SearchType BankBranchSearchType { get; set; } = SearchType.Contains;
 
@@ -90,12 +90,6 @@ public string? PersonName { get; set; }
 
         public string? IBAN { get; set; }
         public SearchType IBANSearchType { get; set; } = SearchType.Contains;
-
-        public string? CurrencyId { get; set; }
-        public SearchType CurrencyIdSearchType { get; set; } = SearchType.Contains;
-
-        public string? SrBankAccountType { get; set; }
-        public SearchType SrBankAccountTypeSearchType { get; set; } = SearchType.Contains;
 
         public string? IsPrimary { get; set; }
         public SearchType IsPrimarySearchType { get; set; } = SearchType.Contains;

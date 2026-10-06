@@ -108,6 +108,14 @@ namespace Presentation.Shell.Controllers
             return Ok(result);
         }
 
+        [HttpPut("{userId:guid}/usergroupscopes/{id:guid}/person")]
+        public async Task<IActionResult> UpdateUserGroupScopePerson(Guid userId, Guid id, [FromBody] UserGroupScopePersonDto input)
+        {
+            if (input == null) return BadRequest("UserGroupScopePersonDto object is null");
+            await _service.UserGroupScopeService.UpdatePersonByUserAsync(userId, id, input);
+            return NoContent();
+        }
+
         [HttpDelete("{userId:guid}/usergroupscopes/{id:guid}")]
         public async Task<IActionResult> DeleteUserGroupScopeByUser(Guid userId, Guid id, [FromBody] UserGroupScopeForDeleteDto input)
         {

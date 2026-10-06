@@ -21,14 +21,11 @@ public async Task<RoomBooking?> GetRoomBookingAsync(Guid roomBookingGuid, bool t
             using var connection = context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
-, j_MeetingRoomId.MeetingRoomName AS MeetingRoomName
-, j_BookedByUserId.BookedbyUserName AS BookedbyUserName
-
-, j_BookedByUserId.PersonName AS PersonName
-
+, j_MeetingRoomId.RoomName AS MeetingRoomName
+, j_BookedByUserId.PersonName AS BookedbyUserName
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "MeetingRoom")} j_MeetingRoomId ON a.MeetingRoomId = j_MeetingRoomId.MeetingRoomId
-LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.BookedbyUserId
+LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.PersonId
 
                 WHERE a.RoomBookingGuid = @roomBookingGuid
                   AND a.StatusId > 0
@@ -41,14 +38,11 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserI
             using var connection = context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
-, j_MeetingRoomId.MeetingRoomName AS MeetingRoomName
-, j_BookedByUserId.BookedbyUserName AS BookedbyUserName
-
-, j_BookedByUserId.PersonName AS PersonName
-
+, j_MeetingRoomId.RoomName AS MeetingRoomName
+, j_BookedByUserId.PersonName AS BookedbyUserName
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "MeetingRoom")} j_MeetingRoomId ON a.MeetingRoomId = j_MeetingRoomId.MeetingRoomId
-LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.BookedbyUserId
+LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.PersonId
 
                 WHERE j_BookedByUserId.PersonGuid = @personGuid
                   AND a.RoomBookingGuid = @roomBookingGuid
@@ -62,14 +56,11 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserI
             using var connection = context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
-, j_MeetingRoomId.MeetingRoomName AS MeetingRoomName
-, j_BookedByUserId.BookedbyUserName AS BookedbyUserName
-
-, j_BookedByUserId.PersonName AS PersonName
-
+, j_MeetingRoomId.RoomName AS MeetingRoomName
+, j_BookedByUserId.PersonName AS BookedbyUserName
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "MeetingRoom")} j_MeetingRoomId ON a.MeetingRoomId = j_MeetingRoomId.MeetingRoomId
-LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.BookedbyUserId
+LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.PersonId
 
                 WHERE j_BookedByUserId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -199,19 +190,69 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserI
 
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
-, j_MeetingRoomId.MeetingRoomName AS MeetingRoomName
-, j_BookedByUserId.BookedbyUserName AS BookedbyUserName
-
-, j_BookedByUserId.PersonName AS PersonName
-
+, j_MeetingRoomId.RoomName AS MeetingRoomName
+, j_BookedByUserId.PersonName AS BookedbyUserName
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "MeetingRoom")} j_MeetingRoomId ON a.MeetingRoomId = j_MeetingRoomId.MeetingRoomId
-LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.BookedbyUserId
+LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.PersonId
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.RoomBookingId DESC{dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<RoomBooking>(sql, parameters, transaction);
+        }
+
+        public async Task<IEnumerable<RoomBooking>> GetAllRoomBookingsAsync(bool trackChanges)
+        {
+            using var connection = context.CreateConnection();
+            var sql = $@"
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_MeetingRoomId.RoomName AS MeetingRoomName
+, j_BookedByUserId.PersonName AS BookedbyUserName
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "MeetingRoom")} j_MeetingRoomId ON a.MeetingRoomId = j_MeetingRoomId.MeetingRoomId
+LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.PersonId
+                WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
+                ORDER BY a.StartDateTime DESC{dialect.AppendLimit(_maxRows)}";
+            return await connection.QueryAsync<RoomBooking>(sql);
+        }
+
+        public async Task<IEnumerable<RoomBooking>> GetRoomBookingsByDateRangeAsync(
+            DateTime start,
+            DateTime end,
+            string? category = null,
+            string? search = null,
+            IDbTransaction? transaction = null)
+        {
+            var connection = transaction?.Connection ?? context.CreateConnection();
+            var searchTerm = string.IsNullOrWhiteSpace(search) ? null : $"%{search.Trim()}%";
+            var categoryTerm = string.IsNullOrWhiteSpace(category) ? null : category.Trim();
+            var sql = $@"
+                {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
+, j_MeetingRoomId.RoomName AS MeetingRoomName
+, j_BookedByUserId.PersonName AS BookedbyUserName
+                FROM {_table} a
+LEFT JOIN {dialect.Qualify("app", "MeetingRoom")} j_MeetingRoomId ON a.MeetingRoomId = j_MeetingRoomId.MeetingRoomId
+LEFT JOIN {dialect.Qualify("app", "Person")} j_BookedByUserId ON a.BookedByUserId = j_BookedByUserId.PersonId
+                WHERE a.StatusId > 0 AND a.DeletedTime IS NULL
+                  AND a.StartDateTime < @End
+                  AND a.EndDateTime > @Start
+                  AND (@Category IS NULL OR j_MeetingRoomId.RoomName = @Category OR j_MeetingRoomId.RoomCode = @Category)
+                  AND (@Search IS NULL
+                       OR {dialect.LikeContains("a.Subject", "@Search")}
+                       OR {dialect.LikeContains("a.RoomBookingCode", "@Search")}
+                       OR {dialect.LikeContains("a.Note", "@Search")}
+                       OR {dialect.LikeContains("j_MeetingRoomId.RoomName", "@Search")}
+                       OR {dialect.LikeContains("j_BookedByUserId.PersonName", "@Search")})
+                ORDER BY a.StartDateTime, a.Subject{dialect.AppendLimit(_maxRows)}";
+
+            return await connection.QueryAsync<RoomBooking>(sql, new
+            {
+                Start = start,
+                End = end,
+                Category = categoryTerm,
+                Search = searchTerm
+            }, transaction);
         }
     }
 }

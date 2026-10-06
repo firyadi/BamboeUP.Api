@@ -1,0 +1,68 @@
+1	191a9668-6911-49d9-a993-c3c83e23abe3	Gender	Gender	Gender reference values	1	0	2026-07-14 01:56:36.690+00	\N	\N	\N	\N
+2	9f731f48-d9d8-4905-b3fc-9260d9bb8ca8	Religion	Religion	Religion reference values	1	0	2026-07-14 01:56:36.696+00	\N	\N	\N	\N
+3	3549fcaa-05a1-419f-9b9e-f00d88ec4af4	Nationality	Nationality	Nationality reference values	1	0	2026-07-14 01:56:36.706+00	\N	\N	\N	\N
+4	39562be1-916e-46dd-8831-368ee6a35422	Language	Language	Language reference values	1	0	2026-07-14 01:56:36.710+00	\N	\N	\N	\N
+5	09ee8396-f860-4fe6-8ec1-64bf5a0377bf	Currency	Currency	Currency reference values	1	0	2026-07-14 01:56:36.720+00	\N	\N	\N	\N
+6	5431bce5-6d89-47d8-8a67-ba0d4d7e15ca	Identification Type	IdentificationType	Identification Type reference values	1	0	2026-07-14 01:56:36.723+00	\N	\N	\N	\N
+7	11856933-fa6e-47b1-bbaa-6417f3055235	Blood Type	BloodType	Blood Type reference values	1	0	2026-07-14 01:56:36.743+00	\N	\N	\N	\N
+8	a78d896e-73f8-414a-8542-a1391b5a8793	Marital Status	MaritalStatus	Marital Status reference values	1	0	2026-07-14 01:56:36.750+00	\N	\N	\N	\N
+9	66185fdd-4c54-4e04-9d7b-c2c7aabd4520	Physical Characteristic	PhysicalCharacteristic	Physical Characteristic reference values	1	0	2026-07-14 01:56:36.760+00	\N	\N	\N	\N
+10	3a92c444-55a4-4f0a-83d2-70ebe66cedb2	Measurement Unit	MeasurementUnit	Measurement Unit reference values	1	0	2026-07-14 01:56:36.776+00	\N	\N	\N	\N
+11	c43ba74f-d386-44fe-9af4-e26e46fd7998	Address Type	AddressType	Address Type reference values	1	0	2026-07-14 01:56:36.783+00	\N	\N	\N	\N
+12	e2aeb76d-ddc6-4f75-9186-187bc518a81a	Contact Type	ContactType	Contact Type reference values	1	0	2026-07-14 01:56:36.790+00	\N	\N	\N	\N
+13	5f083d95-1a4c-4f49-816d-69161a4868d2	Relationship	Relationship	Relationship reference values	1	0	2026-07-14 01:56:36.800+00	\N	\N	\N	\N
+14	bc69df89-a2cf-4041-836a-eb63bdb27a5e	Employment Type	EmploymentType	Employment Type reference values	1	0	2026-07-14 01:56:36.810+00	\N	\N	\N	\N
+15	ba2f1872-0345-4707-a692-101c602c8f3b	Employment Status	EmploymentStatus	Employment Status reference values	1	0	2026-07-14 01:56:36.823+00	\N	\N	\N	\N
+16	3a93bb37-0093-428d-90a8-997856293063	Industry	Industry	Industry reference values	1	0	2026-07-14 01:56:36.836+00	\N	\N	\N	\N
+17	71a4ae45-90e3-4811-a1af-744bd940584a	Job Level	JobLevel	Job Level reference values	1	0	2026-07-14 01:56:36.853+00	\N	\N	\N	\N
+18	8a2daea6-80aa-43d9-968e-d0eb66a8f5e0	Grade	Grade	Grade reference values	1	0	2026-07-14 01:56:36.873+00	\N	\N	\N	\N
+19	45802ac5-eba3-4f4a-bb0f-ae5854d3dc58	Position Type	PositionType	Position Type reference values	1	0	2026-07-14 01:56:36.893+00	\N	\N	\N	\N
+20	03319ba5-71df-4e9f-b92f-f32d71f385f1	Company Type	CompanyType	Company Type reference values	1	0	2026-07-14 01:56:36.900+00	\N	\N	\N	\N
+21	495fe7fa-213d-4dc6-9b9d-2dcaac2065af	Cost Center Type	CostCenterType	Cost Center Type reference values	1	0	2026-07-14 01:56:36.906+00	\N	\N	\N	\N
+22	eb1e0634-efcf-4d5e-8c83-574d990fa4e9	Organization Unit Type	OrganizationUnitType	Organization Unit Type reference values	1	0	2026-07-14 01:56:36.913+00	\N	\N	\N	\N
+23	519b2a16-6817-4fba-adce-3652e7088f6a	Payroll Frequency	PayrollFrequency	Payroll Frequency reference values	1	0	2026-07-14 01:56:36.923+00	\N	\N	\N	\N
+24	f27c63bd-c8e1-45fe-81ae-418fe94ffa7b	Tax Status	TaxStatus	Tax Status reference values	1	0	2026-07-14 01:56:36.930+00	\N	\N	\N	\N
+25	1eb4deb8-4b53-47f8-bc71-90bae44d7ddf	Applicant Status	ApplicantStatus	Applicant Status reference values	1	0	2026-07-14 01:56:36.950+00	\N	\N	\N	\N
+26	65032999-a56f-4dc6-b816-d9e5fc562a15	Source of Hire	SourceOfHire	Source of Hire reference values	1	0	2026-07-14 01:56:36.963+00	\N	\N	\N	\N
+27	458915a3-3be4-4bf1-9985-1ee018f22cd1	Interview Result	InterviewResult	Interview Result reference values	1	0	2026-07-14 01:56:36.980+00	\N	\N	\N	\N
+28	751eca56-b36e-4845-b43e-a52e4577e417	KPI Category	KpiCategory	KPI Category reference values	1	0	2026-07-14 01:56:36.990+00	\N	\N	\N	\N
+29	6776e2a1-cbca-43f9-a386-98f280d3a713	Competency Level	CompetencyLevel	Competency Level reference values	1	0	2026-07-14 01:56:37.000+00	\N	\N	\N	\N
+30	488f5421-fe97-4e54-814a-180ac6034ffa	Rating Scale	RatingScale	Rating Scale reference values	1	0	2026-07-14 01:56:37.010+00	\N	\N	\N	\N
+31	c85c5b73-5633-4c48-9ccf-5380d71977da	Course Type	CourseType	Course Type reference values	1	0	2026-07-14 01:56:37.023+00	\N	\N	\N	\N
+32	af956d2e-9b01-4e5a-9021-4ae5356b8564	Certificate Type	CertificateType	Certificate Type reference values	1	0	2026-07-14 01:56:37.033+00	\N	\N	\N	\N
+33	2174f16f-7c0f-4355-b20c-de81a1ff41d4	Approval Status	ApprovalStatus	Approval Status reference values	1	0	2026-07-14 01:56:37.040+00	\N	\N	\N	\N
+34	baf01f8f-9ebe-43e3-8ea8-dc1d4656ec2b	Workflow Status	WorkflowStatus	Workflow Status reference values	1	0	2026-07-14 01:56:37.050+00	\N	\N	\N	\N
+35	e081248d-6246-46e1-a977-041b130b4eef	Notification Type	NotificationType	Notification Type reference values	1	0	2026-07-14 01:56:37.060+00	\N	\N	\N	\N
+36	5cb29c46-0cae-4e26-847e-132dd502c3f5	Education Level	EducationLevel	Education Level reference values	1	0	2026-07-14 01:56:37.070+00	\N	\N	\N	\N
+37	76c59e96-7c09-40ad-8424-199b54818c2e	Major	Major	Major / Field of study reference values	1	0	2026-07-14 01:56:37.080+00	\N	\N	\N	\N
+38	c30d878f-87e7-443b-8aa6-007d49b1dd6e	Termination Reason	TerminationReason	Termination Reason reference values	1	0	2026-07-14 01:56:37.093+00	\N	\N	\N	\N
+39	c398bb64-bba6-4345-8679-38873459096a	Career Action Type	CareerActionType	Career Action Type reference values	1	0	2026-07-14 01:56:37.103+00	\N	\N	\N	\N
+40	a4ff2cec-2015-4c46-ae91-8beeeea1b08c	Leave Type	LeaveType	Leave Type reference values	1	0	2026-07-14 01:56:37.116+00	\N	\N	\N	\N
+41	3cb82b0c-9d24-4c12-acb2-dfb70108c56a	Shift Type	ShiftType	Shift Type reference values	1	0	2026-07-14 01:56:37.126+00	\N	\N	\N	\N
+42	c4fd8155-c600-4e40-9e6a-6852f28415e1	Overtime Type	OvertimeType	Overtime Type reference values	1	0	2026-07-14 01:56:37.136+00	\N	\N	\N	\N
+43	8cc0d064-77f5-40c3-8861-80a7d5598640	Allowance Type	AllowanceType	Allowance Type reference values	1	0	2026-07-14 01:56:37.140+00	\N	\N	\N	\N
+44	cef19631-a651-43d6-accd-3e681542bf34	Deduction Type	DeductionType	Deduction Type reference values	1	0	2026-07-14 01:56:37.150+00	\N	\N	\N	\N
+45	5b69dc2a-67d9-491c-a319-17d974292ff0	Bank	Bank	Bank reference values	1	0	2026-07-14 01:56:37.160+00	\N	\N	\N	\N
+46	e5bfe3a9-b5b9-4038-ad45-c388b9aa593a	Asset Type	AssetType	Asset Type reference values	1	0	2026-07-14 01:56:37.170+00	\N	\N	\N	\N
+47	f6910bf5-47dc-4420-8126-cea836ff631c	Asset Status	AssetStatus	Asset Status reference values	1	0	2026-07-14 01:56:37.183+00	\N	\N	\N	\N
+48	0c346a39-0112-4bae-a889-5cb2903ebaf8	Document Type	DocumentType	Document Type reference values	1	0	2026-07-14 01:56:37.196+00	\N	\N	\N	\N
+49	af2b62f8-eb1e-4eb8-a91c-1459c73b7070	Disciplinary Action Type	DisciplinaryActionType	Disciplinary Action Type reference values	1	0	2026-07-14 01:56:37.210+00	\N	\N	\N	\N
+50	07e43da2-b8ef-4d63-a77f-13db3083119c	Salutation 	Salutation	Salutation Type	1	1	2026-07-15 02:29:42.810+00	\N	\N	\N	\N
+10050	946ca221-ca3f-4e85-8e53-6a16af321248	File Category Criteria	FileCategory	Used in FileStorage module	1	1	2026-07-17 19:52:53.420+00	\N	\N	\N	\N
+20050	0ce93e16-790e-46b5-8dc8-7323fa1a61f0	Bank Account Type	BankAccountType	Bank Account Type	2	1	2026-07-20 20:34:11.490+00	1	2026-07-21 04:11:35.356+00	\N	\N
+20051	713f062c-8bc5-4d58-9adf-0b3d112bceb5	Career Event	CareerEvent	Career Event	1	1	2026-07-21 00:36:01.646+00	\N	\N	\N	\N
+20052	284305cb-8cbc-484b-8d9b-748a0b9fea45	Career Reason	CareerReason	Career Reason	1	1	2026-07-21 00:38:56.010+00	\N	\N	\N	\N
+20053	efaf0530-84fe-4edb-9d85-c210df3fa869	Asset Condition	AssetCondition	Asset Condition	1	1	2026-07-21 02:48:42.310+00	\N	\N	\N	\N
+20054	a1fe2423-3043-466d-8580-ab000353c84d	Certification Category	CertificationCategory	\N	1	1	2026-07-21 03:06:55.333+00	\N	\N	\N	\N
+20055	06c0216f-2fef-4813-a40a-a632c315be69	Certification Provider	CertificationProvider	Certification Provider	1	1	2026-07-21 03:09:42.263+00	\N	\N	\N	\N
+20056	e5d30831-d6c1-4630-a7fd-2cd2f428d6bd	Language Level	LanguageLevel	Language Proficiency Level	2	1	2026-07-21 03:14:20.453+00	1	2026-07-27 00:45:33.586+00	\N	\N
+20057	747692b6-bb19-4804-836f-228c944bc284	Training Category	TrainingCategory	Training Category	1	1	2026-07-21 04:03:55.566+00	\N	\N	\N	\N
+20058	484b2870-0555-4148-a2ba-37340996a519	Training Type	TrainingType	Training Type	1	1	2026-07-21 04:05:56.100+00	\N	\N	\N	\N
+20059	702d6c16-668f-48b3-964a-47ae5fdf416b	Skill Category	SkillCategory	Skill Category Employee	2	1	2026-07-21 19:29:42.430+00	1	2026-07-21 19:31:45.043+00	\N	\N
+20060	fb86ced0-e111-4226-b11b-979f21d6af63	Skill Type	SkillType	Skill type reference values for [app].[Skill].SrSkillType	1	0	2026-07-21 20:51:41.933+00	\N	\N	\N	\N
+20061	af5d6c65-cee4-48bf-a398-f46b0d7e25f2	Default Skill Level	DefaultSkillLevel	Default skill level reference values for [app].[Skill].SrDefaultSkillLevel	1	0	2026-07-21 20:51:41.936+00	\N	\N	\N	\N
+30059	763bd5aa-058a-4e65-b43b-34ccfff779b9	Contract Type	ContractType	Contract type reference values	1	0	2026-07-26 07:44:51.250+00	\N	\N	\N	\N
+30060	981a1132-77ec-4c01-91e3-a164b842d4a3	Contract Status	ContractStatus	Contract status reference values	1	0	2026-07-26 07:44:51.253+00	\N	\N	\N	\N
+40059	ca8d42c6-e433-4686-8d45-ed4b82060a60	HolidayType	HolidayType	\N	1	1	2026-08-07 18:55:01.296+00	\N	\N	\N	\N
+50059	fef78351-3273-4fac-8d9f-ac94a4217190	Award Type	AwardType	Award category/type for [app].[Award].SrAwardType	1	0	2026-08-10 20:37:48.283+00	\N	\N	\N	\N
+50060	7f468a7e-2a78-4158-a18f-f0ce4068ad63	Rule Operator	RuleOperator	Comparison operator for [app].[AwardCriteriaRule].SrRuleOperator	1	0	2026-08-10 20:37:48.290+00	\N	\N	\N	\N

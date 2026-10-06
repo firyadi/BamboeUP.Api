@@ -31,19 +31,15 @@ public string? ReligionName { get; set; }
 public string? SalutationName { get; set; }
 
 
-                public IEnumerable<CostCenterAssignmentDto>? CostCenterAssignments { get; set; }
-                public IEnumerable<PersonAddressDto>? PersonAddresses { get; set; }
+                public IEnumerable<PersonBankAccountDto>? PersonBankAccounts { get; set; }
                 public IEnumerable<PersonContactDto>? PersonContacts { get; set; }
                 public IEnumerable<PersonEducationDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactDto>? PersonEmergencyContacts { get; set; }
                 public IEnumerable<PersonFamilyDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonIdentificationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicDto>? PersonPhysicalCharacteristics { get; set; }
-                public IEnumerable<PersonWorkExperienceDto>? PersonWorkExperiences { get; set; }
-                public IEnumerable<RoomBookingDto>? RoomBookings { get; set; }
-                public IEnumerable<WorkItemDto>? WorkItems { get; set; }
         // ##HeaderDetailCollections##
-        public IEnumerable<CompanyDto>? Companies { get; set; }
+        public IEnumerable<PersonAddressDto>? PersonAddresses { get; set; }
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
         public long CreatedById { get; set; }
@@ -71,19 +67,15 @@ public string? SalutationName { get; set; }
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
         public long? FileStorageId { get; set; }
-                public IEnumerable<CostCenterAssignmentForCreationDto>? CostCenterAssignments { get; set; }
-                public IEnumerable<PersonAddressForCreationDto>? PersonAddresses { get; set; }
+                public IEnumerable<PersonBankAccountForCreationDto>? PersonBankAccounts { get; set; }
                 public IEnumerable<PersonContactForCreationDto>? PersonContacts { get; set; }
                 public IEnumerable<PersonEducationForCreationDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactForCreationDto>? PersonEmergencyContacts { get; set; }
                 public IEnumerable<PersonFamilyForCreationDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonIdentificationForCreationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicForCreationDto>? PersonPhysicalCharacteristics { get; set; }
-                public IEnumerable<PersonWorkExperienceForCreationDto>? PersonWorkExperiences { get; set; }
-                public IEnumerable<RoomBookingForCreationDto>? RoomBookings { get; set; }
-                public IEnumerable<WorkItemForCreationDto>? WorkItems { get; set; }
         // ##HeaderDetailCreateCollections##
-        public IEnumerable<CompanyForCreationDto>? Companies { get; set; }
+        public IEnumerable<PersonAddressForCreationDto>? PersonAddresses { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
@@ -104,19 +96,15 @@ public string? SalutationName { get; set; }
         public long? SrBloodType { get; set; }
         public long? SrMaritalStatus { get; set; }
         public long? FileStorageId { get; set; }
-                public IEnumerable<CostCenterAssignmentForUpdateDto>? CostCenterAssignments { get; set; }
-                public IEnumerable<PersonAddressForUpdateDto>? PersonAddresses { get; set; }
+                public IEnumerable<PersonBankAccountForUpdateDto>? PersonBankAccounts { get; set; }
                 public IEnumerable<PersonContactForUpdateDto>? PersonContacts { get; set; }
                 public IEnumerable<PersonEducationForUpdateDto>? PersonEducations { get; set; }
                 public IEnumerable<PersonEmergencyContactForUpdateDto>? PersonEmergencyContacts { get; set; }
                 public IEnumerable<PersonFamilyForUpdateDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonIdentificationForUpdateDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicForUpdateDto>? PersonPhysicalCharacteristics { get; set; }
-                public IEnumerable<PersonWorkExperienceForUpdateDto>? PersonWorkExperiences { get; set; }
-                public IEnumerable<RoomBookingForUpdateDto>? RoomBookings { get; set; }
-                public IEnumerable<WorkItemForUpdateDto>? WorkItems { get; set; }
         // ##HeaderDetailUpdateCollections##
-        public IEnumerable<CompanyForUpdateDto>? Companies { get; set; }
+        public IEnumerable<PersonAddressForUpdateDto>? PersonAddresses { get; set; }
         public long UpdatedById { get; set; }
     }
 

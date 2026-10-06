@@ -34,6 +34,15 @@ namespace BamboeUp.Api.Extensions
             services.AddScoped<IUserContext, BamboeUp.Api.Context.UserContext>();
             services.AddHttpContextAccessor();
             services.Configure<FileStorageOptions>(config.GetSection(FileStorageOptions.SectionName));
+            services.AddSingleton(_ =>
+            {
+                var options = config.GetSection(OfflinePermitOptions.SectionName).Get<OfflinePermitOptions>()
+                    ?? new OfflinePermitOptions();
+                if (!string.IsNullOrWhiteSpace(options.PrivateKeyBase64) && !string.IsNullOrWhiteSpace(options.PublicKeyBase64))
+                    return new OfflinePermitKeyRing(options.PrivateKeyBase64, options.PublicKeyBase64);
+                return OfflinePermitKeyRing.CreateEphemeral();
+            });
+            services.AddScoped<IPhysicalInventoryService, PhysicalInventoryService>();
 
         }
 

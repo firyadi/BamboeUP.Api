@@ -29,10 +29,10 @@ public async Task<PersonAddress?> GetPersonAddressAsync(Guid personAddressGuid, 
 
 
                 FROM {_table} a
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN {dialect.Qualify("app", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN {dialect.Qualify("core", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrAddressType", "SrAddressType", "AddressType")}
 
                 WHERE a.PersonAddressGuid = @personAddressGuid
@@ -54,10 +54,10 @@ LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_
 
 
                 FROM {_table} a
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN {dialect.Qualify("app", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN {dialect.Qualify("core", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrAddressType", "SrAddressType", "AddressType")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
@@ -80,10 +80,10 @@ LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_
 
 
                 FROM {_table} a
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN {dialect.Qualify("app", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN {dialect.Qualify("core", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrAddressType", "SrAddressType", "AddressType")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
@@ -189,10 +189,10 @@ LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_
 
 
                 FROM {_table} a
-LEFT JOIN {dialect.Qualify("app", "City")} j_CityId ON a.CityId = j_CityId.CityId
-LEFT JOIN {dialect.Qualify("app", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
+LEFT JOIN {dialect.Qualify("core", "City")} j_CityId ON a.CityId = j_CityId.CityId
+LEFT JOIN {dialect.Qualify("core", "Country")} j_CountryId ON a.CountryId = j_CountryId.CountryId
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
-LEFT JOIN {dialect.Qualify("app", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
+LEFT JOIN {dialect.Qualify("core", "Province")} j_ProvinceId ON a.ProvinceId = j_ProvinceId.ProvinceId
 {SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrAddressType", "SrAddressType", "AddressType")}
 
                 WHERE {string.Join(" AND ", whereClauses)}

@@ -11,6 +11,8 @@ namespace Contracts
         Task<IEnumerable<UserGroupScope>> GetAllByCompanyIdAsync(long companyId);
         Task<UserGroupScope?> GetByUserGroupAndGuidAsync(Guid userGroupGuid, Guid userGroupScopeGuid);
         Task CreateAsync(UserGroupScope entity, IDbTransaction? transaction = null);
+        Task UpdatePersonAsync(Guid userGroupScopeGuid, long? personId, long updatedBy, IDbTransaction? transaction = null);
+        Task<UserGroupScope?> GetOtherUserByCompanyPersonAsync(long companyId, long personId, long userId);
         Task SoftDeleteAsync(UserGroupScope entity, long deletedBy, IDbTransaction? transaction = null);
         Task DeleteAsync(Guid userGroupScopeGuid, IDbTransaction? transaction = null);
 

@@ -80,14 +80,11 @@ namespace Presentation.Modules.Controllers
         public async Task<IActionResult> Search([FromQuery] PersonBankAccountSearchDto input, [FromQuery] Guid headerGuid, [FromQuery] Guid detailGuid)
         {
             var result = await _service.PersonBankAccountService.SearchPersonBankAccountAsync(
-                                input.BankId, input.BankIdSearchType.ToString(),
-                input.BankBranch, input.BankBranchSearchType.ToString(),
+                                input.BankBranch, input.BankBranchSearchType.ToString(),
                 input.AccountNumber, input.AccountNumberSearchType.ToString(),
                 input.AccountName, input.AccountNameSearchType.ToString(),
                 input.SwiftCode, input.SwiftCodeSearchType.ToString(),
                 input.IBAN, input.IBANSearchType.ToString(),
-                input.CurrencyId, input.CurrencyIdSearchType.ToString(),
-                input.SrBankAccountType, input.SrBankAccountTypeSearchType.ToString(),
                 input.IsPrimary, input.IsPrimarySearchType.ToString(),
                 input.IsPayrollAccount, input.IsPayrollAccountSearchType.ToString(),
                 input.IsActive, input.IsActiveSearchType.ToString(),

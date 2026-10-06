@@ -6,6 +6,9 @@ namespace Shared.DataTransferObjects
         public UserDto User { get; set; } = new();
         public CompanyDto Company { get; set; } = new();
         public CompanyOfficeDto Office { get; set; } = new();
+
+        /// <summary>The single person bound to this login. Self Service screens read PersonId from here.</summary>
+        public PersonDto? Person { get; set; }
         public List<LoginScopeDto> AvailableScopes { get; set; } = new();
 
         /// <summary>

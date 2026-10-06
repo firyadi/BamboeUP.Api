@@ -19,8 +19,12 @@ public class TelerikPivotSimulationTests
     {
         var templateRoot = Path.GetFullPath(Path.Combine(
             AppContext.BaseDirectory,
-            "..", "..", "..", "..",
+            "..", "..", "..", "..", "..",
             "BamboeUp.Report"));
+
+        Assert.True(
+            Directory.Exists(templateRoot),
+            $"Pivot template root not found: {templateRoot}");
 
         var handler = new PivotReportHandler(
             new DateFilteredReportDataProvider(new DateTime(2025, 1, 1)),
@@ -73,20 +77,19 @@ public class TelerikPivotSimulationTests
             Assert.Equal(_filterDate, parameters["DateTo"]);
 
             var table = new DataTable();
-            table.Columns.Add("SalesTransactionId", typeof(long));
             table.Columns.Add("PeriodYear", typeof(int));
             table.Columns.Add("PeriodMonth", typeof(int));
-            table.Columns.Add("TransactionDate", typeof(DateTime));
             table.Columns.Add("RegionCode", typeof(string));
             table.Columns.Add("ProductCategory", typeof(string));
             table.Columns.Add("ProductName", typeof(string));
             table.Columns.Add("SalesChannel", typeof(string));
+            table.Columns.Add("SalesTransactionCount", typeof(long));
             table.Columns.Add("NetAmount", typeof(decimal));
             table.Columns.Add("Quantity", typeof(decimal));
 
-            table.Rows.Add(1001L, 2025, 1, _filterDate, "R01", "Electronics", "Laptop A", "Online", 1500m, 2m);
-            table.Rows.Add(1002L, 2025, 1, _filterDate, "R02", "FMCG", "Snack B", "Retail", 250m, 10m);
-            table.Rows.Add(1003L, 2025, 1, _filterDate, "R01", "Electronics", "Phone C", "Online", 800m, 1m);
+            table.Rows.Add(2025, 1, "R01", "Electronics", "Laptop A", "Online", 1L, 1500m, 2m);
+            table.Rows.Add(2025, 1, "R02", "FMCG", "Snack B", "Retail", 1L, 250m, 10m);
+            table.Rows.Add(2025, 1, "R01", "Electronics", "Phone C", "Online", 1L, 800m, 1m);
 
             return Task.FromResult(table);
         }

@@ -3,44 +3,19 @@ namespace Service.Contracts.Modules
     public interface IServiceModulesManager
     {
 		// ##IServiceManager Start##
-        IBankService BankService { get; }
-        ICityService CityService { get; }
-        ICountryService CountryService { get; }
-        IDistrictService DistrictService { get; }
-        IProvinceService ProvinceService { get; }
-        ISubDistrictService SubDistrictService { get; }
-        IPostalCodeService PostalCodeService { get; }
         IAdministrativeAreaDisplayService AdministrativeAreaDisplayService { get; }
-        IStandardReferenceItemDisplayService StandardReferenceItemDisplayService { get; }
-		IHospitalService HospitalService { get; }
-		
-		
-		
-		// ##IServiceManager Start##
-        IPersonBankAccountService PersonBankAccountService { get; }
-        ISkillService SkillService { get; }
-        ITrainingService TrainingService { get; }
         IAssetService AssetService { get; }
-        ICertificationService CertificationService { get; }
-        IHolidayService HolidayService { get; }
-        IProcessExecutionService ProcessExecutionService { get; }
+        IAttendanceService AttendanceService { get; }
         IAwardService AwardService { get; }
         IAwardCriteriaService AwardCriteriaService { get; }
         IAwardCriteriaRuleService AwardCriteriaRuleService { get; }
-        IMeetingRoomService MeetingRoomService { get; }
-        IPersonService PersonService { get; }
+        IBankService BankService { get; }
+        ICertificationService CertificationService { get; }
+        ICityService CityService { get; }
         ICompanyService CompanyService { get; }
         ICostCenterAssignmentService CostCenterAssignmentService { get; }
-        IPersonAddressService PersonAddressService { get; }
-        IPersonContactService PersonContactService { get; }
-        IPersonEducationService PersonEducationService { get; }
-        IPersonEmergencyContactService PersonEmergencyContactService { get; }
-        IPersonFamilyService PersonFamilyService { get; }
-        IPersonIdentificationService PersonIdentificationService { get; }
-        IPersonPhysicalCharacteristicService PersonPhysicalCharacteristicService { get; }
-        IPersonWorkExperienceService PersonWorkExperienceService { get; }
-        IRoomBookingService RoomBookingService { get; }
-        IWorkItemService WorkItemService { get; }
+        ICountryService CountryService { get; }
+        IDistrictService DistrictService { get; }
         IEmployeeService EmployeeService { get; }
         IEmployeeAssetService EmployeeAssetService { get; }
         IEmployeeAssignmentService EmployeeAssignmentService { get; }
@@ -50,5 +25,41 @@ namespace Service.Contracts.Modules
         IEmployeeLanguageService EmployeeLanguageService { get; }
         IEmployeeSkillService EmployeeSkillService { get; }
         IEmployeeTrainingService EmployeeTrainingService { get; }
+        IHolidayService HolidayService { get; }
+        IHospitalService HospitalService { get; }
+        IMeetingRoomService MeetingRoomService { get; }
+        IOvertimeRequestService OvertimeRequestService { get; }
+        IPersonService PersonService { get; }
+        IPersonAddressService PersonAddressService { get; }
+        IPersonBankAccountService PersonBankAccountService { get; }
+        IPersonContactService PersonContactService { get; }
+        IPersonEducationService PersonEducationService { get; }
+        IPersonEmergencyContactService PersonEmergencyContactService { get; }
+        IPersonFamilyService PersonFamilyService { get; }
+        IPersonIdentificationService PersonIdentificationService { get; }
+        IPersonPhysicalCharacteristicService PersonPhysicalCharacteristicService { get; }
+        IPositionService PositionService { get; }
+        IPositionGradeService PositionGradeService { get; }
+        IPositionLevelService PositionLevelService { get; }
+        IPostalCodeService PostalCodeService { get; }
+        IProvinceService ProvinceService { get; }
+        IRoomBookingService RoomBookingService { get; }
+        ISalesAnalysisService SalesAnalysisService { get; }
+        ISalesTransactionService SalesTransactionService { get; }
+        ISalesTransactionPieService SalesTransactionPieService { get; }
+        ISkillService SkillService { get; }
+        IStandardReferenceItemDisplayService StandardReferenceItemDisplayService { get; }
+        ISubDistrictService SubDistrictService { get; }
+        ITempContoh1Service TempContoh1Service { get; }
+        ITrainingService TrainingService { get; }
+        IWorkItemService WorkItemService { get; }
+        IWorkNoticeService WorkNoticeService { get; }
+        IWorkTeamService WorkTeamService { get; }
+        IWorkTeamCapabilityService WorkTeamCapabilityService { get; }
+        IProcessExecutionService ProcessExecutionService { get; }
+		
+		
+		
+		// ##IServiceManager Start##
 }
 }

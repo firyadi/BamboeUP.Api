@@ -43,6 +43,9 @@ namespace Entities.Models
 
         public string? Remarks { get; set; }
 
+public string? BankName { get; set; }
+public string? CurrencyName { get; set; }
+public string? BankAccountTypeName { get; set; }
 
 
         [Column("StatusId")]

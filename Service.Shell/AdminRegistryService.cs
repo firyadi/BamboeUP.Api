@@ -87,6 +87,96 @@ public sealed class AdminRegistryService : IAdminRegistryService
             return _entries.ToList();
     }
 
+    public void EnsureAdministrator(long userId, string userName)
+    {
+        if (userId <= 0)
+            throw new ArgumentOutOfRangeException(nameof(userId));
+        if (string.IsNullOrWhiteSpace(userName))
+            throw new ArgumentException("UserName is required.", nameof(userName));
+
+        lock (_sync)
+        {
+            if (_adminUserIds.Contains(userId))
+                return;
+
+            var entries = _entries
+                .Where(e => e.UserId != userId)
+                .Select(Clone)
+                .ToList();
+
+            entries.Insert(0, new AdminRegistryEntry
+            {
+                UserId = userId,
+                UserName = userName.Trim(),
+                GrantedById = userId,
+                GrantedAt = DateTime.UtcNow
+            });
+
+            while (entries.Count > AdminRegistryLimits.MaximumAdministrators)
+                entries.RemoveAt(entries.Count - 1);
+
+            var placeholderId = NextPlaceholderUserId(entries, userId);
+            while (entries.Count < AdminRegistryLimits.MinimumAdministrators)
+            {
+                entries.Add(new AdminRegistryEntry
+                {
+                    UserId = placeholderId,
+                    UserName = "ops",
+                    GrantedById = userId,
+                    GrantedAt = DateTime.UtcNow
+                });
+                placeholderId++;
+            }
+
+            PersistUnlocked(new AdminRegistryDocument
+            {
+                Version = AdminRegistryDocument.CurrentVersion,
+                GeneratedAt = DateTime.UtcNow,
+                Administrators = entries
+            });
+        }
+    }
+
+    private void PersistUnlocked(AdminRegistryDocument document)
+    {
+        AdminRegistryLimits.Validate(document.Administrators);
+
+        var absolutePath = ResolveAbsolutePath(_settings.FilePath);
+        var directory = Path.GetDirectoryName(absolutePath);
+        if (!string.IsNullOrEmpty(directory))
+            Directory.CreateDirectory(directory);
+
+        var encrypted = AdminRegistryCrypto.Encrypt(document, _settings.EncryptionKey);
+        File.WriteAllBytes(absolutePath, encrypted);
+
+        _entries = document.Administrators.ToList();
+        _adminUserIds = _entries.Select(e => e.UserId).ToHashSet();
+        _adminUserNames = _entries.Select(e => e.UserName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        _logger.LogInformation(
+            "Admin registry updated: {Count} administrator(s) at {Path}.",
+            _entries.Count,
+            absolutePath);
+    }
+
+    private static AdminRegistryEntry Clone(AdminRegistryEntry entry) => new()
+    {
+        UserId = entry.UserId,
+        UserName = entry.UserName,
+        GrantedById = entry.GrantedById,
+        GrantedAt = entry.GrantedAt
+    };
+
+    private static long NextPlaceholderUserId(IReadOnlyList<AdminRegistryEntry> entries, long adminUserId)
+    {
+        var used = entries.Select(e => e.UserId).ToHashSet();
+        used.Add(adminUserId);
+        var candidate = adminUserId == 1 ? 2 : 1;
+        while (used.Contains(candidate))
+            candidate++;
+        return candidate;
+    }
+
     private string ResolveAbsolutePath(string configuredPath)
     {
         if (Path.IsPathRooted(configuredPath))

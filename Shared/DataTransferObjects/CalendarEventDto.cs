@@ -16,6 +16,7 @@ public sealed class CalendarEventDto
     public string? Description { get; set; }
     public string? Location { get; set; }
     public string? ResourceId { get; set; }
+    public long? PersonId { get; set; }
     public bool CanEdit { get; set; } = true;
     public bool CanDelete { get; set; } = true;
 

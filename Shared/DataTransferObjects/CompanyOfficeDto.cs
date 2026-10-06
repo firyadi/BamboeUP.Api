@@ -15,6 +15,9 @@ namespace Shared.DataTransferObjects
         public long CityId { get; set; }
         public string PostalCodeId { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public int? RadiusMeters { get; set; }
 public string? CityName { get; set; }
 public string? CompanyName { get; set; }
 public string? CountryName { get; set; }
@@ -42,6 +45,9 @@ public string? StateName { get; set; }
         public long CityId { get; set; }
         public string PostalCodeId { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public int? RadiusMeters { get; set; }
         public long CreatedById { get; set; } = 0;
     }
 
@@ -56,6 +62,9 @@ public string? StateName { get; set; }
         public long CityId { get; set; }
         public string PostalCodeId { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        public int? RadiusMeters { get; set; }
         public long UpdatedById { get; set; }
     }
 

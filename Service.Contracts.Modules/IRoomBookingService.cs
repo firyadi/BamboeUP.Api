@@ -21,5 +21,8 @@ namespace Service.Contracts.Modules
         // Detail (child) helpers
         Task<IEnumerable<RoomBookingDto>> GetAllByPersonGuidAsync(Guid personGuid);
         Task<RoomBookingDto?> GetByPersonGuidAndRoomBookingGuidAsync(Guid personGuid, Guid roomBookingGuid);
+
+        Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(
+            DateTime start, DateTime end, string? category = null, string? search = null);
     }
 }

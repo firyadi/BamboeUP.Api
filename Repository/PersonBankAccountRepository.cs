@@ -13,20 +13,25 @@ namespace Repository
 {
     public partial class PersonBankAccountRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonBankAccountRepository
     {
-
         private readonly string _table = dialect.Qualify("app", "PersonBankAccount");
         private readonly int _maxRows = ParameterContext.MaxResultRecord;
 
-        public async Task<PersonBankAccount?> GetPersonBankAccountAsync(Guid personBankAccountGuid, bool trackChanges)
+public async Task<PersonBankAccount?> GetPersonBankAccountAsync(Guid personBankAccountGuid, bool trackChanges)
         {
             using var connection = context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
+, j_BankId.BankName AS BankName
+, j_CurrencyId.CurrencyName AS CurrencyName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBankAccountType.StandardReferenceItemName")} AS BankAccountTypeName
 
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN {dialect.Qualify("core", "Bank")} j_BankId ON a.BankId = j_BankId.BankId
+LEFT JOIN {dialect.Qualify("app", "Currency")} j_CurrencyId ON a.CurrencyId = j_CurrencyId.CurrencyId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBankAccountType", "SrBankAccountType", "BankAccountType")}
 
                 WHERE a.PersonBankAccountGuid = @personBankAccountGuid
                   AND a.StatusId > 0
@@ -40,10 +45,16 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
+, j_BankId.BankName AS BankName
+, j_CurrencyId.CurrencyName AS CurrencyName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBankAccountType.StandardReferenceItemName")} AS BankAccountTypeName
 
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN {dialect.Qualify("core", "Bank")} j_BankId ON a.BankId = j_BankId.BankId
+LEFT JOIN {dialect.Qualify("app", "Currency")} j_CurrencyId ON a.CurrencyId = j_CurrencyId.CurrencyId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBankAccountType", "SrBankAccountType", "BankAccountType")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.PersonBankAccountGuid = @personBankAccountGuid
@@ -58,10 +69,16 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
+, j_BankId.BankName AS BankName
+, j_CurrencyId.CurrencyName AS CurrencyName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBankAccountType.StandardReferenceItemName")} AS BankAccountTypeName
 
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN {dialect.Qualify("core", "Bank")} j_BankId ON a.BankId = j_BankId.BankId
+LEFT JOIN {dialect.Qualify("app", "Currency")} j_CurrencyId ON a.CurrencyId = j_CurrencyId.CurrencyId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBankAccountType", "SrBankAccountType", "BankAccountType")}
 
                 WHERE j_PersonId.PersonGuid = @personGuid
                   AND a.StatusId > 0
@@ -76,7 +93,7 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             var conn = transaction?.Connection ?? context.CreateConnection();
             var sql = $@"
                 INSERT INTO {_table}
-                (PersonBankAccountGuid, PersonId, CreatedById, StatusId, CreatedTime, BankBranch, AccountNumber, AccountName, SwiftCode, IBAN, CurrencyId, SrBankAccountType, IsPrimary, IsPayrollAccount, IsActive, Remarks)
+                (PersonBankAccountGuid, PersonId, CreatedById, StatusId, CreatedTime, [BankBranch], [AccountNumber], [AccountName], [SwiftCode], [IBAN], [CurrencyId], [SrBankAccountType], [IsPrimary], [IsPayrollAccount], [IsActive], [Remarks])
                 VALUES
                 (@PersonBankAccountGuid, @PersonId, @CreatedById, @StatusId, @CreatedTime, @BankBranch, @AccountNumber, @AccountName, @SwiftCode, @IBAN, @CurrencyId, @SrBankAccountType, @IsPrimary, @IsPayrollAccount, @IsActive, @Remarks){dialect.ReturnIdentitySuffix("PersonBankAccountId")}";
             personBankAccount.PersonBankAccountId = await conn.QuerySingleAsync<long>(sql, personBankAccount, transaction);
@@ -88,18 +105,18 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             var conn = transaction?.Connection ?? context.CreateConnection();
             var sql = $@"
                 UPDATE {_table}
-                SET                     PersonId = @PersonId,
-                    BankBranch = @BankBranch,
-                    AccountNumber = @AccountNumber,
-                    AccountName = @AccountName,
-                    SwiftCode = @SwiftCode,
-                    IBAN = @IBAN,
-                    CurrencyId = @CurrencyId,
-                    SrBankAccountType = @SrBankAccountType,
-                    IsPrimary = @IsPrimary,
-                    IsPayrollAccount = @IsPayrollAccount,
-                    IsActive = @IsActive,
-                    Remarks = @Remarks,
+                SET                     [PersonId] = @PersonId,
+                    [BankBranch] = @BankBranch,
+                    [AccountNumber] = @AccountNumber,
+                    [AccountName] = @AccountName,
+                    [SwiftCode] = @SwiftCode,
+                    [IBAN] = @IBAN,
+                    [CurrencyId] = @CurrencyId,
+                    [SrBankAccountType] = @SrBankAccountType,
+                    [IsPrimary] = @IsPrimary,
+                    [IsPayrollAccount] = @IsPayrollAccount,
+                    [IsActive] = @IsActive,
+                    [Remarks] = @Remarks,
                     StatusId = @StatusId,
                     UpdatedById = @UpdatedById,
                     UpdatedTime = @UpdatedTime
@@ -136,8 +153,6 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
         }
 
         public async Task<IEnumerable<PersonBankAccount>> SearchPersonBankAccountAsync(
-            string? bankId,
-            string? bankIdSearchType,
             string? bankBranch,
             string? bankBranchSearchType,
             string? accountNumber,
@@ -148,10 +163,6 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             string? swiftCodeSearchType,
             string? iBAN,
             string? iBANSearchType,
-            string? currencyId,
-            string? currencyIdSearchType,
-            string? srBankAccountType,
-            string? srBankAccountTypeSearchType,
             string? isPrimary,
             string? isPrimarySearchType,
             string? isPayrollAccount,
@@ -176,12 +187,6 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             {
                 whereClauses.Add("a.PersonBankAccountGuid = @personBankAccountGuid");
                 parameters.Add("@personBankAccountGuid", personBankAccountGuid);
-            }
-
-            if (!string.IsNullOrWhiteSpace(bankId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.BankId", "@bankId", bankIdSearchType, parameters, "bankId", bankId, dialect);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
             if (!string.IsNullOrWhiteSpace(bankBranch))
@@ -214,18 +219,6 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
                 if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
             }
 
-            if (!string.IsNullOrWhiteSpace(currencyId))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.CurrencyId", "@currencyId", currencyIdSearchType, parameters, "currencyId", currencyId, dialect);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
-            if (!string.IsNullOrWhiteSpace(srBankAccountType))
-            {
-                var param = SqlFilterHelper.BuildFilter("a.SrBankAccountType", "@srBankAccountType", srBankAccountTypeSearchType, parameters, "srBankAccountType", srBankAccountType, dialect);
-                if (!string.IsNullOrWhiteSpace(param)) whereClauses.Add(param);
-            }
-
             if (!string.IsNullOrWhiteSpace(isPrimary))
             {
                 var param = SqlFilterHelper.BuildFilter("a.IsPrimary", "@isPrimary", isPrimarySearchType, parameters, "isPrimary", isPrimary, dialect);
@@ -253,10 +246,16 @@ LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_Person
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(dialect, _maxRows, "a.*")}
 , j_PersonId.PersonName AS PersonName
+, j_BankId.BankName AS BankName
+, j_CurrencyId.CurrencyName AS CurrencyName
+, {SqlDialectQueryHelper.CoalesceEmpty(dialect, "v_SrBankAccountType.StandardReferenceItemName")} AS BankAccountTypeName
 
 
                 FROM {_table} a
 LEFT JOIN {dialect.Qualify("app", "Person")} j_PersonId ON a.PersonId = j_PersonId.PersonId
+LEFT JOIN {dialect.Qualify("core", "Bank")} j_BankId ON a.BankId = j_BankId.BankId
+LEFT JOIN {dialect.Qualify("app", "Currency")} j_CurrencyId ON a.CurrencyId = j_CurrencyId.CurrencyId
+{SqlDialectQueryHelper.BuildGlobalStandardReferenceLookup(dialect, "v_SrBankAccountType", "SrBankAccountType", "BankAccountType")}
 
                 WHERE {string.Join(" AND ", whereClauses)}
                 ORDER BY a.PersonBankAccountId DESC{dialect.AppendLimit(_maxRows)}";

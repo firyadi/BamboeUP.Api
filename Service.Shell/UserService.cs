@@ -30,7 +30,10 @@ namespace Service.Shell
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync(bool trackChanges)
         {
             var entities = await _repository.User.GetAllUsersAsync(trackChanges);
-            return entities.Select(MapToDto);
+            var dtos = new List<UserDto>();
+            foreach (var entity in entities)
+                dtos.Add(await MapToDtoAsync(entity));
+            return dtos;
         }
 
         public async Task<UserDto> GetUserByGuidAsync(Guid userGuid, bool trackChanges)
@@ -38,7 +41,7 @@ namespace Service.Shell
             var entity = await _repository.User.GetUserAsync(userGuid, trackChanges);
             if (entity == null)
                 throw new KeyNotFoundException($"User with GUID {userGuid} not found.");
-            return MapToDto(entity);
+            return await MapToDtoAsync(entity);
         }
 
         public async Task<UserDto> CreateUserAsync(UserForCreationDto input)
@@ -50,8 +53,10 @@ namespace Service.Shell
             model.PasswordSalt = salt;
             model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(salt + input.PasswordHash, workFactor: 12);
             model.StatusId = 1;
+            model.PersonId = input.PersonId is > 0 ? input.PersonId : null;
+            await EnsurePersonIsFreeAsync(model.PersonId, null);
             await _repository.User.CreateUserAsync(model);
-            return MapToDto(model);
+            return await MapToDtoAsync(model);
         }
 
         public async Task UpdateUserAsync(Guid userGuid, UserForUpdateDto input, bool trackChanges)
@@ -76,6 +81,8 @@ namespace Service.Shell
                 model.PasswordHash = BCrypt.Net.BCrypt.HashPassword(salt + input.PasswordHash, workFactor: 12);
             }
 
+            model.PersonId = input.PersonId is > 0 ? input.PersonId : null;
+            await EnsurePersonIsFreeAsync(model.PersonId, userGuid);
             await _repository.User.UpdateUserAsync(model);
         }
 
@@ -106,7 +113,10 @@ namespace Service.Shell
                 userName, userNameSearchType,
                 fullName, fullNameSearchType,
                 email, emailSearchType);
-            return data.Select(MapToDto);
+            var dtos = new List<UserDto>();
+            foreach (var entity in data)
+                dtos.Add(await MapToDtoAsync(entity));
+            return dtos;
         }
 
         public async Task ResetPasswordAsync(UserResetPasswordDto dto)
@@ -141,10 +151,29 @@ namespace Service.Shell
             return allowedPrograms.Adapt<IEnumerable<ProgramDto>>();
         }
 
-        private UserDto MapToDto(User entity)
+        private async Task EnsurePersonIsFreeAsync(long? personId, Guid? exceptUserGuid)
+        {
+            if (personId is not > 0)
+                return;
+
+            var person = await _repository.Person.GetPersonByIdAsync(personId.Value, false);
+            if (person == null)
+                throw new InvalidOperationException("Person tidak ditemukan.");
+
+            var owner = await _repository.User.GetActiveUserByPersonIdAsync(personId.Value);
+            if (owner != null && owner.UserGuid != exceptUserGuid)
+                throw new InvalidOperationException($"Person ini sudah terikat ke user {owner.UserName}.");
+        }
+
+        private async Task<UserDto> MapToDtoAsync(User entity)
         {
             var dto = entity.Adapt<UserDto>();
             dto.IsAdmin = _adminRegistry.IsAdministrator(entity.UserId);
+            if (entity.PersonId is > 0)
+            {
+                var person = await _repository.Person.GetPersonByIdAsync(entity.PersonId.Value, false);
+                dto.PersonName = person?.PersonName;
+            }
             return dto;
         }
     }

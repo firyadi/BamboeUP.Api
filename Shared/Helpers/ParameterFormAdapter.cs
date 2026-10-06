@@ -230,6 +230,27 @@ public static class ParameterFormAdapter
         }
     }
 
+    /// <summary>
+    /// Self Service process only: PersonId is the login person and cannot be picked.
+    /// Call this from a generated Self Service page. Admin processes keep the person combo.
+    /// </summary>
+    public static void ApplySelfServicePerson(
+        ParameterSchemaDto schema,
+        Dictionary<string, object?> values,
+        LoginContext? login)
+    {
+        var personId = login?.Person?.PersonId ?? 0;
+        foreach (var field in schema.Fields)
+        {
+            if (!field.ParameterCode.Equals("PersonId", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            field.ControlType = "ReadonlyText";
+            field.FieldKey = "Person";
+            values[field.ParameterCode] = personId;
+        }
+    }
+
     public static Dictionary<string, object?> BuildInitialValues(ParameterSchemaDto schema)
     {
         var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);

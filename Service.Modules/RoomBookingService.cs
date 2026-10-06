@@ -7,6 +7,7 @@ using Service.Contracts.Modules;
 using Shared.DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Service.Modules
@@ -44,7 +45,7 @@ namespace Service.Modules
 
         public async Task<IEnumerable<RoomBookingDto>> GetAllRoomBookingsAsync(bool trackChanges)
         {
-            var entities = await _repository.RoomBooking.GetAllByPersonGuidAsync(Guid.Empty);
+            var entities = await _repository.RoomBooking.GetAllRoomBookingsAsync(trackChanges);
             return entities.Adapt<IEnumerable<RoomBookingDto>>();
         }
 
@@ -185,5 +186,55 @@ namespace Service.Modules
             if (result == null) return null;
             return result.Adapt<RoomBookingDto>();
         }
+
+        public async Task<IReadOnlyList<CalendarEventDto>> GetCalendarEventsAsync(
+            DateTime start, DateTime end, string? category = null, string? search = null)
+        {
+            var rows = await _repository.RoomBooking.GetRoomBookingsByDateRangeAsync(start, end, category, search);
+            return rows.Select(MapCalendarEvent).ToList();
+        }
+
+        private static CalendarEventDto MapCalendarEvent(RoomBooking row)
+        {
+            var status = MapStatus(row.StatusId);
+            return new CalendarEventDto
+            {
+                EventGuid = row.RoomBookingGuid,
+                Title = string.IsNullOrWhiteSpace(row.Subject) ? row.RoomBookingCode : row.Subject,
+                Start = row.StartDateTime,
+                End = row.EndDateTime,
+                IsAllDay = false,
+                Category = row.BookedbyUserName,
+                Status = status,
+                Color = MapStatusColor(status),
+                Description = row.Note,
+                Location = row.MeetingRoomName,
+                ResourceId = row.MeetingRoomId.ToString(),
+                CanEdit = true,
+                CanDelete = true,
+                Metadata = new Dictionary<string, object?>
+                {
+                    ["Organizer"] = row.BookedbyUserName,
+                    ["RoomBookingCode"] = row.RoomBookingCode,
+                    ["MeetingRoomId"] = row.MeetingRoomId
+                }
+            };
+        }
+
+        private static string MapStatus(long statusId) => statusId switch
+        {
+            0 => "Canceled",
+            2 => "Tentative",
+            3 => "Pending",
+            _ => "Confirmed"
+        };
+
+        private static string MapStatusColor(string status) => status switch
+        {
+            "Tentative" => "#2563eb",
+            "Pending" => "#d97706",
+            "Canceled" => "#dc2626",
+            _ => "#059669"
+        };
     }
 }

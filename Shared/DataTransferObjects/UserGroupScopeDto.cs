@@ -17,6 +17,8 @@ namespace Shared.DataTransferObjects
         public long? CompanyOfficeId { get; set; }
         public Guid? CompanyOfficeGuid { get; set; }
         public string? CompanyOfficeName { get; set; } // joined from app.CompanyOffice
+        public long? PersonId { get; set; }
+        public string? PersonName { get; set; }
         public bool IsDefault { get; set; }
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -39,9 +41,16 @@ namespace Shared.DataTransferObjects
         /// <summary>NULL = role berlaku semua office. NOT NULL = office spesifik.</summary>
         public long? CompanyOfficeId { get; set; }
         public Guid? CompanyOfficeGuid { get; set; }
+        public long? PersonId { get; set; }
         /// <summary>Jika true, semua scope default lain milik UserId ini akan di-unset secara atomik.</summary>
         public bool IsDefault { get; set; } = false;
         public long CreatedById { get; set; }
+    }
+
+    public record UserGroupScopePersonDto
+    {
+        public long? PersonId { get; set; }
+        public long UpdatedById { get; set; }
     }
 
     public record UserGroupScopeForDeleteDto

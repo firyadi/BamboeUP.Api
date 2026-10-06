@@ -6,86 +6,96 @@ namespace Contracts
     public interface IRepositoryManager
     {
         // ##IRepositoryManager##
-        IEmployeeTrainingRepository EmployeeTraining { get; }
-        IEmployeeSkillRepository EmployeeSkill { get; }
-        IEmployeeLanguageRepository EmployeeLanguage { get; }
-        IEmployeeContractRepository EmployeeContract { get; }
-        IEmployeeCertificationRepository EmployeeCertification { get; }
-        IEmployeeCareerRepository EmployeeCareer { get; }
-        IEmployeeAssignmentRepository EmployeeAssignment { get; }
-        IEmployeeAssetRepository EmployeeAsset { get; }
-        IEmployeeRepository Employee { get; }
-        IWorkItemRepository WorkItem { get; }
-        IRoomBookingRepository RoomBooking { get; }
-        IPersonWorkExperienceRepository PersonWorkExperience { get; }
-        IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic { get; }
-        IPersonIdentificationRepository PersonIdentification { get; }
-        IPersonFamilyRepository PersonFamily { get; }
-        IPersonEmergencyContactRepository PersonEmergencyContact { get; }
-        IPersonEducationRepository PersonEducation { get; }
-        IPersonContactRepository PersonContact { get; }
-        IPersonAddressRepository PersonAddress { get; }
-        ICostCenterAssignmentRepository CostCenterAssignment { get; }
-        ICompanyRepository Company { get; }
-        IPersonRepository Person { get; }
-        IMeetingRoomRepository MeetingRoom { get; }
-        IAwardCriteriaRuleRepository AwardCriteriaRule { get; }
-        IAwardCriteriaRepository AwardCriteria { get; }
-        IAwardRepository Award { get; }
-        ICompanyOfficeRepository CompanyOffice { get; }
-        IHolidayRepository Holiday { get; }
-        ICertificationRepository Certification { get; }
-        IAssetRepository Asset { get; }
-        ITrainingRepository Training { get; }
-        ISkillRepository Skill { get; }
-        IPersonBankAccountRepository PersonBankAccount { get; }
-        IFileStorageRepository FileStorage { get; }
-        ICostCenterScopeRepository CostCenterScope { get; }
-        ICostCenterRepository CostCenter { get; }
-        IHospitalRepository Hospital { get; }
-        IParameterscopeRepository Parameterscope { get; }
+        IAdministrativeAreaDisplayRepository AdministrativeAreaDisplay { get; }
         IApprovalDelegationRepository ApprovalDelegation { get; }
         IApprovalHistoryRepository ApprovalHistory { get; }
         IApprovalRequestRepository ApprovalRequest { get; }
         IApprovalStepRepository ApprovalStep { get; }
+        IApprovalTemplateRepository ApprovalTemplate { get; }
         IApprovalTemplateLevelRepository ApprovalTemplateLevel { get; }
         IApprovalTemplateLevelApproverRepository ApprovalTemplateLevelApprover { get; }
-        IApprovalTemplateRepository ApprovalTemplate { get; }
-        IAdministrativeAreaDisplayRepository AdministrativeAreaDisplay { get; }
+        IAssetRepository Asset { get; }
+        IAttendanceRepository Attendance { get; }
         IAutoNumberRepository AutoNumber { get; }
-        IAutoNumberTemplateRepository AutoNumberTemplate { get; }
-        IAutoNumberCounterRepository AutoNumberCounter { get; }
         IAutoNumberComponentRepository AutoNumberComponent { get; }
-        IAutoNumberLogRepository AutoNumberLog { get; }
+        IAutoNumberCounterRepository AutoNumberCounter { get; }
         IAutoNumberGenerateRepository AutoNumberGenerate { get; }
+        IAutoNumberLogRepository AutoNumberLog { get; }
+        IAutoNumberTemplateRepository AutoNumberTemplate { get; }
+        IAwardRepository Award { get; }
+        IAwardCriteriaRepository AwardCriteria { get; }
+        IAwardCriteriaRuleRepository AwardCriteriaRule { get; }
         IBankRepository Bank { get; }
+        ICertificationRepository Certification { get; }
         ICityRepository City { get; }
+        ICompanyRepository Company { get; }
+        ICompanyOfficeRepository CompanyOffice { get; }
+        ICostCenterRepository CostCenter { get; }
+        ICostCenterAssignmentRepository CostCenterAssignment { get; }
+        ICostCenterScopeRepository CostCenterScope { get; }
         ICountryRepository Country { get; }
         IDistrictRepository District { get; }
         IDocumentNumberRequestRepository DocumentNumberRequest { get; }
+        IEmployeeRepository Employee { get; }
+        IEmployeeAssetRepository EmployeeAsset { get; }
+        IEmployeeAssignmentRepository EmployeeAssignment { get; }
+        IEmployeeCareerRepository EmployeeCareer { get; }
+        IEmployeeCertificationRepository EmployeeCertification { get; }
+        IEmployeeContractRepository EmployeeContract { get; }
+        IEmployeeLanguageRepository EmployeeLanguage { get; }
+        IEmployeeSkillRepository EmployeeSkill { get; }
+        IEmployeeTrainingRepository EmployeeTraining { get; }
+        IFileStorageRepository FileStorage { get; }
+        IHolidayRepository Holiday { get; }
+        IHospitalRepository Hospital { get; }
+        IMeetingRoomRepository MeetingRoom { get; }
         IOrganizationUnitRepository OrganizationUnit { get; }
         IOrganizationUnitScopeRepository OrganizationUnitScope { get; }
+        IOvertimeRequestRepository OvertimeRequest { get; }
         IParameterRepository Parameter { get; }
         IParameterscopeRepository ParameterScope { get; }
+        IPersonRepository Person { get; }
+        IPersonAddressRepository PersonAddress { get; }
+        IPersonBankAccountRepository PersonBankAccount { get; }
+        IPersonContactRepository PersonContact { get; }
+        IPersonEducationRepository PersonEducation { get; }
+        IPersonEmergencyContactRepository PersonEmergencyContact { get; }
+        IPersonFamilyRepository PersonFamily { get; }
+        IPersonIdentificationRepository PersonIdentification { get; }
+        IPersonPhysicalCharacteristicRepository PersonPhysicalCharacteristic { get; }
+        IPositionRepository Position { get; }
+        IPositionGradeRepository PositionGrade { get; }
+        IPositionLevelRepository PositionLevel { get; }
         IPostalCodeRepository PostalCode { get; }
-        IProvinceRepository Province { get; }
         IProgramRepository Program { get; }
+        IProvinceRepository Province { get; }
         IReportRepository Report { get; }
         IReportDefinitionRepository ReportDefinition { get; }
         IReportExecutionLogRepository ReportExecutionLog { get; }
+        IRoomBookingRepository RoomBooking { get; }
+        ISalesAnalysisRepository SalesAnalysis { get; }
+        ISalesTransactionRepository SalesTransaction { get; }
+        ISalesTransactionPieRepository SalesTransactionPie { get; }
+        ISkillRepository Skill { get; }
         IStandardReferenceRepository StandardReference { get; }
+        IStandardReferenceDisplayRepository StandardReferenceDisplay { get; }
         IStandardReferenceItemRepository StandardReferenceItem { get; }
+        IStandardReferenceItemDisplayRepository StandardReferenceItemDisplay { get; }
         IStandardReferenceScopeRepository StandardReferenceScope { get; }
         IStandardReferenceScopeItemRepository StandardReferenceScopeItem { get; }
-        IStandardReferenceDisplayRepository StandardReferenceDisplay { get; }
-        IStandardReferenceItemDisplayRepository StandardReferenceItemDisplay { get; }
         ISubDistrictRepository SubDistrict { get; }
+        ITempContoh1Repository TempContoh1 { get; }
+        ITrainingRepository Training { get; }
         IUserRepository User { get; }
-        IUserGroupRepository UserGroup { get; }
-        IUserGroupScopeRepository UserGroupScope { get; }
-        IUserGroupProgramRepository UserGroupProgram { get; }
         IUserCompanyScopeRepository UserCompanyScope { get; }
+        IUserGroupRepository UserGroup { get; }
+        IUserGroupProgramRepository UserGroupProgram { get; }
+        IUserGroupScopeRepository UserGroupScope { get; }
         IUserScopeRepository UserScope { get; }
         IVwStandardReferenceItemRepository VwStandardReferenceItem { get; }
+        IWorkItemRepository WorkItem { get; }
+        IWorkNoticeRepository WorkNotice { get; }
+        IWorkTeamRepository WorkTeam { get; }
+        IWorkTeamCapabilityRepository WorkTeamCapability { get; }
     }
 }

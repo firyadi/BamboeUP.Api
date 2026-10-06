@@ -50,6 +50,9 @@ namespace Entities.Models
         [Column("CompanyOfficeGuid")]
         public Guid? CompanyOfficeGuid { get; set; }
 
+        [Column("PersonId")]
+        public long? PersonId { get; set; }
+
         /// <summary>
         /// Menandakan scope ini adalah scope default/utama user saat login.
         /// Hanya boleh ada 1 IsDefault = true per UserId.
@@ -96,5 +99,8 @@ namespace Entities.Models
 
         [NotMapped]
         public string? CompanyOfficeName { get; set; } // joined from app.CompanyOffice
+
+        [NotMapped]
+        public string? PersonName { get; set; }
     }
 }

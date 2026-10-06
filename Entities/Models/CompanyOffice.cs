@@ -40,6 +40,12 @@ namespace Entities.Models
         [Required]
         public string Address { get; set; } = string.Empty;
 
+        public decimal? Latitude { get; set; }
+
+        public decimal? Longitude { get; set; }
+
+        public int? RadiusMeters { get; set; }
+
 public string? CityName { get; set; }
 public string? CountryName { get; set; }
 public string? PostalCodeName { get; set; }

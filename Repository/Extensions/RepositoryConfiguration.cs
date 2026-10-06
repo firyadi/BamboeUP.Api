@@ -8,6 +8,8 @@ namespace Repository.Extensions
         public static void ConfigureRepositories(this IServiceCollection services)
         {            
             services.AddScoped<IRepositoryManager, RepositoryManager>();
+            services.AddScoped<IMobileSyncRepository, MobileSyncRepository>();
+            services.AddScoped<IPhysicalInventoryRepository, PhysicalInventoryRepository>();
             // + GENERATED_REPOSITORY_REGISTRATION
             services.AddScoped<IBankRepository, BankRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

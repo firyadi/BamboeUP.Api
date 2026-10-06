@@ -1,0 +1,184 @@
+1	bba829d7-ec65-4059-ba86-2d3352bc92ec	01			Master Template	1	0	0		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1	/dashboard						1	1	1	2026-04-15T14:27:08.4430000	1	2026-08-27T03:55:09.4270000		
+2	7d14a419-0618-4c0b-bf3c-f633aa128753	02		@Icons.Material.Filled.Apps	Human Resources	2	0	0		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4430000	1	2026-04-15T08:39:25.9930000		
+3	8f14afa0-42f2-44d1-9f25-d5573f9a4e1b	03			Payroll Management	3	0	0		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4430000				
+4	f52c6ab0-2a82-4460-ae92-740f21b3e6e8	04			Attendance Management	4	0	0		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4430000				
+5	14209e6c-e0ba-4625-ac79-4b302f5a934f	05			Travel & Training Administration	5	0	0		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4430000				
+6	88057a49-15a4-4f93-8554-05996f22b87f	80			My Menu		0	0		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4430000				
+7	ddc0f864-2463-498b-94a1-69c4000b6528	90			Report	7	0	0		1	0	0	MNU													1							1	1	1	2026-04-15T14:27:08.4430000				
+8	ab219631-fbca-4c3e-9545-9c5415ab7c4d	95			Control Panel	8	0	0		1	0	0	MNU													1							1	1	1	2026-04-15T14:27:08.4430000				
+9	5b21efbb-8a70-4439-9a7c-4c4bcae19da5	RPT.07.0001			TransNusa Pilot CV		0	1		0	1	0	RPT	0	0	0	0	0	0	0	0		0	0	0	1			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.HR.CrewCV.PilotCVRpt	sprpt_PilotCV		1	1	1	2026-04-15T14:27:08.4430000				
+10	4a148240-9e69-4220-9509-f76ea3f2cbba	RPT.07.0002			TransNusa FA CV		0	2		0	1	0	RPT	0	0	0	0	0	0	0	0		0	0	0	1			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.HR.CrewCV.FACVRpt	sprpt_FACV		1	1	1	2026-04-15T14:27:08.4430000				
+11	a79c957b-5a27-4217-8020-05444e58526d	RPT.07.0003			TransNusa FOO CV		0	3		0	1	0	RPT	0	0	0	0	0	0	0	0		0	0	0	1			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.HR.CrewCV.FOOCVRpt	sprpt_FOOCV		1	1	1	2026-04-15T14:27:08.4430000				
+12	09c0eeb6-d8cc-4ef6-be36-a1ee2f064a25	RPT.07.0004			TransNusa ENG CV		0	4		0	1	0	RPT	0	0	0	0	0	0	0	0		0	0	0	1			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.HR.CrewCV.ENGCVRpt	sprpt_ENGCV		1	1	1	2026-04-15T14:27:08.4430000				
+13	9c1a5f9f-ed16-4f56-8fd4-644c1b2e4a19	RPT.07.0005			Employee All		0	5		0	1	0	RPT	0	0	0	0	0	0	0	0		0	0	0	1			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.HR.Common.EmployeeAllRpt	sprpt_EmployeeAllRpt		1	1	1	2026-04-15T14:27:08.4430000				
+14	8977ee14-9959-49f5-8bb2-5ed4f03a854f	SLP.09.0001			DOR Slip		0	1		0	0	0	MNU	0	0	0	0	0	0	0	0		0	0	0	0			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.AirLines.FlightHours.DailyOpetationReportPageSlp	sprpt_DailyOperationReport		1	1	1	2026-04-15T14:27:08.4430000				
+15	7a4684f5-a029-4451-9606-b3922172f33b	SLP.09.0002			Daily Movement Slip		0	2		0	0	0	MNU	0	0	0	0	0	0	0	0		0	0	0	0			Temiang.Avicenna.ReportLibrary	Temiang.Avicenna.ReportLibrary.AirLines.FlightHours.DailyMovementSlip	sprpt_DailyMovementSlip		1	1	1	2026-04-15T14:27:08.4430000				
+16	f82d2af7-4e26-4b5d-8dd3-f00d37f3d675	01.01	1		01. Template 1 Table 	1	1	1		0	1	0	PRG	1	1	1	1	0	0	0	0	0	1	1	0	1	app/worknoticelist						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-07T04:21:47.2500000		
+17	cf25f778-2c17-4734-bbcb-436e77312faa	01.02	1		02. Header-Detail Template	1	1	1		0	1	0	PRG	1	1	1	1	0	0	0	0	0	1	1	0	1	app/template02list						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-07T10:10:01.4200000		
+18	492ca54f-ba82-4271-90c8-ecc6e4b133b1	02.01	2		Position Information	2	1	1		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+19	f26c8735-7c0a-407e-acd8-05230890ef8d	02.02	2		Personal Information	2	1	2		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000	1	2026-07-16T03:18:01.2300000		
+20	ba87090c-298e-4c88-8931-95c9b23e9ded	02.03	2	Icons.Material.Filled.Apps	Query	2	1	3		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000	6	2026-04-28T02:40:45.1670000		
+21	56d86b83-4e95-4ebf-a232-9bdf02b40ea5	02.04	2		Requrement Information	2	1	4		1	0	1	MNU	0	0	0	0	0	0	0	0	0	0	1	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+22	64be8827-8611-4a56-80f7-6193cf7eebea	02.05	2		Medical Information	2	1	5		1	0	1	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+23	f0ca28d2-fda2-4861-b1b1-41f5e86c2a22	02.09	2		Master	2	1	9		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+24	26aedd21-eaf9-4df5-a71a-9a6129a2447b	03.01	3		Goverment Tax Regulation	3	1	1		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+25	d0c558e8-cb9f-48f8-b2e7-a5b5f0a06cad	03.02	3		Salary Information	3	1	2		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+26	9a3c889b-85c8-4a93-beb6-1ae1f19536c0	03.03	3		Payroll Transaction	3	1	3		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+27	4f5cb54e-07f9-4900-b469-bb6c69403a9c	03.04	3		Payroll Process	3	1	4		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+28	24b97d6e-42f0-49d6-b789-7a4557262c7d	03.09	3		Master	3	1	6		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+29	3c5326f2-949c-43cd-88aa-fabd909b428a	04.01	4		Transaction	4	1	1		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+30	ac6b64b3-26fe-4903-9372-9d0d1faacff6	04.09	4		Master	4	1	109		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+31	fbb0fb22-8c9c-4b73-a812-ac8657e7c868	05.01	5		Transaction	5	1	9		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+32	b45c2ecc-5c61-4feb-b8e3-e67fcc20b46b	05.09	5		Master	5	1	90		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
+33	d6d1da82-492a-4c14-ab51-d3c73d69a7ff	80.01	6		My CV		1	1		0	1	0	PRG	0	0	0	0	0	0	0	0		0	0	0	1	~/Module/MyMenu/CV/MyCVList.aspx						1	1	1	2026-04-15T14:27:08.4670000				
+34	29ff88c3-41cf-48ac-92a9-829d69a68c64	80.02	6		My Working Information		1	2		0	1	0	PRG	1	1	1	0	0	0	0	0		0	1	0	0	~/Module/RADT/MedicalRecordHistory/MedicalRecordHistoryList.aspx?						1	1	1	2026-04-15T14:27:08.4670000				
+35	6bfe4740-5a59-4837-b1ac-0ca11cb32844	90.01	7		Report	7	0	0		0	1	0	PRG													1	/app/reportselection?tp=rpt						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-01T02:26:50.3330000		
+36	cfff2b13-51e9-4cb3-b3e4-0a228d2d9be0	90.11	7		FAQ & Document Template Entry	7	2	3		0	1	0	PRG	1	1	1	1	0	0	0	0	0	0	1	0	1	~/Module/Reports/FAQ/FaqDocumentList.aspx						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-01T02:32:14.8200000		
+37	bf413889-d293-456c-ab4e-327c1bbf07e6	90.12	7		FAQ & Document Template	7	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Reports/FAQ/DocumentSelection.aspx						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-01T02:28:43.9830000		
+38	9bc27b9c-979d-445b-b47c-db592484a441	95.01	8		System Authorization	8	1	0		1	0	0	MNU													1							1	1	1	2026-04-15T14:27:08.4670000				
+39	01373209-da3a-4255-9c24-717dcdf5c3d8	95.02	8		Audit Log	8	1	0		1	0	0	MNU													1							1	1	1	2026-04-15T14:27:08.4670000				
+40	4f1d17d3-e0a8-4ca8-a834-864fa6503e82	95.03	8		Setting	8	1	0		1	0	0	MNU													1							1	1	1	2026-04-15T14:27:08.4670000				
+41	02a26a63-c055-4caa-bbb7-734eb2049624	95.04	8		Printer Management	8	1	0		1	0	0	MNU													1							1	1	1	2026-04-15T14:27:08.4670000				
+42	0489acc2-5d4a-4f64-b1c4-cbbd52a11a19	Pvt	7		Query Analysis	7	0	0		0	1	0	PRG													1	~/Module/Reports/PivotSelection.aspx						1	1	1	2026-04-15T14:27:08.4670000				
+43	6cb0d7d0-f6fe-4db6-8780-8a7a5884bbd6	02.01.01	18		Position Grade	2	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/positiongradelist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-09-09T10:15:17.8170000		
+44	ef533b73-fc15-48cf-8870-1557e29a3073	02.01.02	18		Position Level	2	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/positionlevellist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-09-09T10:15:53.9400000		
+45	f67bbb03-7e6e-49c9-a137-b2d3b4c92c1d	02.01.03	18		Position	2	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/positionlist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-09-09T10:16:30.8100000		
+46	cc1edbec-8d16-4d40-8d38-9175e2ef6f68	02.01.04	18		Position Qualification	2	2	5		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1							1	1	1	2026-04-15T14:27:08.4700000	1	2026-09-09T15:46:47.4770000		
+47	92531710-b7fe-433c-b97c-508e49fe1f17	02.02.01	19		Personal Information	2	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	/app/personlist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-16T03:17:34.5970000		
+48	4cf9e641-a438-41a4-9378-9b148ba9d66e	02.02.04	19		Employee Working Information	2	3	4		0	1	0	PRG	1	1	1	1	0	0	0	0	0	0	0	0	1	/app/assetcard						1	1	1	2026-04-15T14:27:08.4700000	1	2026-09-02T07:14:51.5970000		
+49	ca562da6-4a6b-4091-8b43-3a301acd2169	02.02.02	19		Entry Person Wizard	2	2	6		0	1	0	PRG	0	1	1	0	0	0	0	0	0	0	1	0	0	/app/persononboardingwizard						0	1	1	2026-04-15T14:27:08.4700000	1	2026-07-15T03:38:24.2270000		
+50	4ee5021f-c401-4bca-82bd-33827f23bf1f	02.02.06	19		Employee Master Detail	2	4	7		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/employeemastersmasterdetail						1	1	1	2026-04-15T14:27:08.4700000	1	2026-08-12T09:17:20.5630000		
+51	d26d3c77-dc21-4225-b096-6ba1f158c42e	02.02.08	19		Personal Card	2	2	7		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/personcard						1	1	1	2026-04-15T14:27:08.4700000	1	2026-08-13T07:54:54.8030000		
+52	b5254bf2-11b2-4fc0-92bb-a3c17c088b4d	02.03.02	20		Personal Address	2	2	2		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1							1	1	1	2026-04-15T14:27:08.4700000	1	2026-09-09T15:46:58.4900000		
+53	a31a14a0-22a4-4a1c-a9a3-e70312fee0ae	02.03.03	20		Personal Contact	2	2	3		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Contact/PersonalContactList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+54	31182553-f6df-4938-8141-b64bd93d6779	02.03.04	20		Personal Family	2	2	4		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Family/PersonalFamilyList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+55	d3605bba-05f7-4c5b-b1a9-4b53551b4fbe	02.03.05	20		Personal Emergency Contact	2	2	5		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Emergency/PersonalEmergencyContactList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+56	e3ce65b4-950e-48a5-b80e-5e3a7c7eeabe	02.03.06	20		Personal Work Experience	2	2	6		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/Query/WorkExperience/PersonalWorkExperienceList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+57	5e4d3f37-2bfa-407b-aca2-9c59c96ddc31	02.03.07	20		Personal  Education History	2	2	7		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Education/PersonalEducationHistoryList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+58	217f0ddb-247c-4c80-98ba-c98f71de3a1c	02.03.08	20		Personal  Licence	2	2	8		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Licence/PersonalLicenceList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+59	463ac8b1-88d8-4c01-af64-1a06bd89bffc	02.03.09	20		Personal Physical	2	2	9		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Physical/PersonalPhysicalList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+60	28e9d5ac-12f1-47aa-a915-dff24ce02544	02.03.10	20		Personal Age	2	2	10		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Age/PersonalAgeList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+61	4b7fd93d-8761-46ba-b4d0-aa1cb4fee409	02.03.11	20		Personal Religion	2	2	11		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Religion/PersonalReligionList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+62	2a997f27-083f-4d91-8d88-1114a1077b81	02.03.20	20		Employee Employment	2	2	20		0	1	1	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Employment/EmployeeEmploymentPeriodList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+63	7d0e9ff5-78e8-41d8-95dd-68b5c3871e1a	02.03.21	20		Employee Organization	2	2	21		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Organization/EmployeeOrganizationList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+64	a35e8e54-27b8-4cfd-acc8-bd0cb8ec7395	02.03.22	20		Employee Position Assignment	2	2	22		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Position/EmployeePositionList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+65	a36219eb-c0c6-4199-a793-a7fde4be5d83	02.03.23	20		Employee Grade	2	2	23		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/Query/Grade/EmployeeGradeList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+66	3dcb7715-a803-44c4-8bae-24d5a7c4b6da	02.03.24	20		Employee Achievement	2	2	24		0	1	0	PRG	0	0	0	0	0	0	0	0	0	1	0	0	1	~/Module/HR/Query/Achievement/EmployeeAchievementList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+67	18f5f3b5-4faa-4edf-925e-2b098f86efa7	02.04.01	21		Applicant Information	2	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/RecruitmentHR/ApplicantInfo/ApplicantInfoList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+68	85f37846-c526-42bd-bdab-42a23727e92c	02.04.02	21		Personnel Requisition	2	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/RecruitmentHR/PersonnelRequisition/PersonnelRequisitionList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+69	d32b48b8-4cf5-4989-ab17-e6cf4323d822	02.04.03	21		Job Opportunity Advertisement	2	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/RecruitmentHR/JobOpportunity/JobOpportunityList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+70	df52cafb-58bd-428c-82ed-e352cd3feed7	02.04.04	21		Evaluation Process PerCandidate	2	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/RecruitmentHR/EvaluationPerCandidate/EvaluationPerCandidateList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+71	68877587-2ed0-44fa-bb0f-42c07f1c1f3d	02.05.01	22		Employee Medical Benefit Information	2	2	1		0	1	0	PRG	0	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/HR/MedicalHR/MedicalInformation/EmployeeMedicalBenefitList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+72	bd3a05fa-f891-422c-aa15-d478199160a7	02.05.02	22		Medical Benefit Claim	2	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/HR/MedicalHR/MedicalClaim/MedicalBenefitClaimList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+73	c910e872-e6cf-4cab-8d59-854648f65c74	02.05.03	22		Employee Medical Adjustment	2	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/HR/MedicalHR/MedicalAdjustment/EmployeeMedicalAdjustmentList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+74	e67984f7-1a38-4515-9de6-e4b50fefd211	02.05.08	22		Medical Employee Initial	2	2	8		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/HR/MedicalHR/MedicalInitial/MedicalEmployeeInitialList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+75	73d3f647-e677-4d96-a1f0-982113150055	02.05.09	22		Generate Employee Medical	2	2	9		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/HR/MedicalHR/MedicalClaim/MedicalEmployeeInitialList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+76	265e0374-3116-4cab-9171-1e256382ae75	02.09.01	23		Company / Office	2	1	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/companylist						1	1	1	2026-04-15T14:27:08.4700000	6	2026-04-27T02:53:20.9570000		
+77	f0515153-2668-4f34-a8f5-85cecb21ba1f	02.09.02	23		Organisation Unit	2	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/organizationunitlist						1	1	1	2026-04-15T14:27:08.4700000	6	2026-05-01T13:39:56.6800000		
+78	c1fa6e0b-27c1-471c-91e3-0df2fc6459d9	02.09.03	23		Administrative Area	2	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/administrativearea						1	1	1	2026-04-15T14:27:08.4700000	6	2026-04-27T03:03:08.8930000		
+79	966d12be-5dc3-4a2b-958d-0cc56bd64b2a	02.09.04	23		Bank	2	2	4		0	1	0	PRG	1	1	1	1	0	0	0	0	0	1	1	0	1	app/banklist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-12T02:15:08.0230000		
+80	c0c0f897-1ba4-416c-bb22-53d39123b461	02.09.05	23		Costing Center	2	2	5		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/costcenterlist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-10T02:55:23.1670000		
+81	761dea39-a742-4404-87cd-36dfdeec157c	02.09.06	23		Awards	2	2	6		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/awardlist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-10T02:55:12.5530000		
+82	c87fcae9-8bb0-44d9-a659-2e4469143b88	02.09.07	23		File Storage Management	2	2	7		0	1	0	PRG	0	0	0	1	0	0	0	0	0	0	1	0	1	/app/filestoragelist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-18T08:46:15.8530000		
+83	341d0605-d1b8-4b8d-b0ea-aab0c3ab22e0	02.09.08	23		Master Training	2	2	8		0	1	0	PRG	1	1	0	0	0	0	0	0	0	0	1	0	1	/app/traininglist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-22T04:32:16.3970000		
+84	0b10cc4e-fd25-4b99-b72c-985b9201644d	02.09.10	23		Skill	2	2	10		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	/app/skilllist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-22T01:49:54.6700000		
+85	ba8459f8-58db-4e9d-8777-e6f5d654c617	02.09.11	23		Recruitment Plan	2	2	11		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/HR/MASTER/Recruitment/RecruitmentPlan/RecruitmentPlanList.aspx						1	1	1	2026-04-15T14:27:08.4700000	1	2026-08-08T02:52:49.6300000		
+86	95a5448d-4c67-490d-b2a4-c0ad8c4e1ec4	02.09.20	23		Hospital Info	2	2	20		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	/app/hospitallist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-03T06:55:39.6100000		
+87	805299cb-a633-4e50-9943-5baf43c0b108	02.09.24	23		Bank Template 06	2	2	22		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/bank06card						1	1	1	2026-04-15T14:27:08.4700000	1	2026-08-19T10:36:52.3570000		
+88	5442a0a0-e86f-43a6-90a8-49c9227a70dc	03.01.01	24		PTKP	3	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/TaxRegulation/PTKP/PtkpList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+89	319d26f9-8333-44ac-a779-6105d1dc8dd9	03.01.02	24		PKP	3	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/TaxRegulation/PKP/PkpList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+90	63c94853-fbf0-4846-8395-18e4e71bc53c	03.01.03	24		Biaya Jabatan	3	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/TaxRegulation/BiayaJabatan/BiayaJabatanList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+91	bebbb2b8-90bd-4546-af51-6f3fd0ef2998	03.01.04	24		Severance Tax	3	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/TaxRegulation/SeveranceTax/SeveranceTaxList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+92	02f23c37-fbfc-44d0-8ba7-9394c9242fe8	03.01.05	24		Pension Tax	3	2	5		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/TaxRegulation/PensionTax/PensionTaxList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+93	514ed1ef-5645-4291-93f3-89cdf0df77ed	03.02.01	25		Employee Salary Information	3	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/Payroll/PayrollInfo/EmployeeSalary/EmployeeSalaryInfoList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+94	e6e81bb2-0827-4617-9c9c-39784df446d7	03.03.01	26		Monthly Attedance	3	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/Transaction/Attandance/MontlyAttedanceList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+95	277d5bb4-d432-4308-8b3d-ebfcc9235296	03.03.02	26		Leave Cashable	3	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/Transaction/Leave/EmployeeLeaveCashableList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+96	7220a1f2-69af-4f07-8391-9dc571761e04	03.03.03	26		Personal Loan	3	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/Transaction/Loan/EmployeeLoanList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+97	076821ef-dcb1-4f1f-abbc-d57fec180ebb	03.03.04	26		Employee Periodic Salary	3	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/Transaction/Periodic/EmployeePeriodicSalaryList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+98	16111d55-59bc-428c-8be8-8e35595a7927	03.04.01	27		Process & Closing Wage	3	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	app/payroll-runs/processes						1	1	1	2026-04-15T14:27:08.4700000	1	2026-08-25T13:08:07.8430000		
+99	e2c8d439-7ba7-4f5b-b1c7-841685243ec5	03.04.02	27		Process & Closing Flight Allowance	3	2	1		0	1	0	PRG	1	1	0	1	1	1	0	0	0	0	1	0	1	~/Module/Payroll/Process/FlightAllowance/ClosingFlightAllowanceList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+100	f1486215-e411-45e6-acd3-d69edb0241e7	03.09.01	28		Company Payroll Information	3	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/CompanyInfo/HealthcareList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+101	f532433c-219e-4731-8ea1-37a2a16f2413	03.09.02	28		Payroll Period	3	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/PayrollPeriod/PayrollPeriodList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+102	3e60c7de-5aca-455f-89e4-ba4db2382150	03.09.03	28		Standart Salary	3	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/StandardSalary/StandardSalaryList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+103	78b002fc-7427-43cc-bf25-2e7649b4aa7c	03.09.04	28		Salary Component Rounding	3	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/Rounding/SalaryComponentRoundingList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+104	3ebcb119-d25f-4c62-b803-640d6c986988	03.09.05	28		Attedance Matrix	3	2	5		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/AttedanceMatrix/AttedanceMatrixList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+105	e4c3ab57-058b-4b21-ae31-4916cb1599d9	03.09.06	28		Salary Component	3	2	6		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/SalaryComponent/SalaryComponentList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+106	278f8fe4-d231-4089-8a55-05c5e8697720	03.09.07	28		Salary Template	3	2	7		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Payroll/MASTER/SalaryTemplate/SalaryTemplateList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+107	05502ee0-05c6-4072-b7c1-352487384bf7	04.05.01	29		Employee Leave Information	4	1	1		0	1	1	PRG	0	1	0	1	0	0	0	0	0	1	0	0	1	~/Module/Attendance/Leave/Information/EmployeeLeaveInformationList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+108	71ed34df-62d0-4d00-a73a-8e8be71343e2	04.05.02	29		Leave Request	4	1	2		0	1	0	PRG	1	1	0	0	1	1	1	0	0	1	1	0	1	~/Module/Attendance/Leave/LeaveRequest/LeaveRequestList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+109	8efdf1d7-966a-4305-ac55-eead6cf9d1a8	04.05.03	29		Leave Adjustment	4	1	5		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/Attendance/Leave/Adjustment/EmployeeLeaveAdjustmentList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+110	40d1c924-3161-453a-acd5-4a9f856f347a	04.05.04	29		Leave Request Verification	4	1	3		0	1	0	PRG	0	1	0	0	0	0	0	0	0	0	0	0	1	~/Module/Attendance/Leave/Verification/LeaveRequestVerificationList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+111	2dfba579-9f6c-4aca-959c-3abe252179de	04.05.05	29		HR Leave Request Verification	4	1	4		0	1	0	PRG	0	1	0	0	0	0	0	0	0	0	0	0	1	~/Module/Attendance/Leave/HRVerification/HRLeaveVerification.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+112	c68e18f9-0d19-4472-a6e3-523e82385484	04.05.06	29		Abnormal Attendance	4	1	6		0	1	0	PRG	1	1	0	0	1	1	1	0	0	1	1	0	1	~/Module/Attendance/Abnormal/AbnormalAttendanceList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+113	fe42ea44-ed7a-4703-b1da-37723c7ff0cd	04.09.01	30		Working Type	4	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Attendance/Master/WorkingType/WorkingTypeDetail.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+114	ddca178b-2e1c-46bf-b7fa-bd7983434290	04.09.02	30		Leave Type	4	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Attendance/Master/Leave/LeaveTypeList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+115	42a2ceb5-c090-40f9-a0d2-e46e6d027dd3	04.09.03	30		Initial Leave Information	4	2	3		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	0	0	1	~/Module/Attendance/Master/LeaveInitial/InitialLeaveInformationList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+116	e55ccf73-245a-4266-88c1-ca459594f17a	05.01.01	31		Travel Requests	5	1	2		0	1	0	PRG	1	1	0	0	1	1	1	0	0	0	1	0	1	~/Module/Travel/Transaction/TravelRequest/TravelRequestList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+117	6fa8ff45-80cb-48c5-98dd-9ab637ac537b	05.01.02	31		Travel Request Verification	5	1	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Travel/Transaction/TravelRequestVerification/TravelRequestVerificationList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+118	a2cd8572-f64b-49b4-838a-2a33a4962731	05.01.03	31		Travel Request Payment	5	1	2		0	1	0	PRG	1	1	1	0	1	1	0	0	0	0	1	0	1	~/Module/Travel/Transaction/TravelRequestPayment/TravelPaymentList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+119	1c7a0a06-5196-4bc9-b276-30899cadeb52	05.01.04	31		Travel Request UnApproval	5	1	3		0	1	0	PRG	0	0	0	0	0	0	0	0	0	0	0	0	1	~/Module/Travel/Transaction/UnApproved/UnApprovedTravelRequestList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+120	30201029-a969-4371-a95e-1a9826c391b2	05.02.01	31		Work Order	5	1	21		0	1	0	PRG	1	1	0	0	1	1	1	0	0	0	1	0	1	~/Module/Travel/Transaction/WO/WorkOrderList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+121	81bf2325-197b-4e09-acd7-c15ca946feb2	05.02.02	31		Work Order ( WO 1st )	5	1	22		0	1	0	PRG	1	1	0	0	1	1	1	0	0	0	1	0	1	~/Module/Travel/Transaction/WO1/WorkOrderList1.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+122	b0e8b8dc-50eb-48ad-8954-c9d65ad5046d	05.09.01	32		Travel Destination Zone	5	2	1		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Travel/MASTER/DestinationZone/TravelDestinationZoneList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+123	24a579a8-a87f-406c-87d5-574bb624ab0b	05.09.02	32		Travel Expense Definition	5	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Travel/MASTER/ExpenseDefinition/TravelExpenseDefinitionList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+124	d2d307e8-4687-433f-ab8f-5968e5c54cbc	05.09.03	32		Travel Administration Template	5	2	2		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Travel/MASTER/TravelTemplate/TravelAdministrationTemplateList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+125	2771d06e-c49b-4d96-aa84-95319d2d8b91	05.09.04	32		Estimate Exchange Currency	5	2	4		0	1	1	PRG	1	1	0	0	0	0	0	0	0	0	1	0	1	~/Module/Travel/Master/Estimate/ExchangeCurrencyEstimateList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+126	d31127be-f125-450f-9179-f78ce1e2ec33	05.09.05	32		Exchange Currency	5	2	5		0	1	0	PRG	1	1	0	0	0	0	0	0	0	0	1	0	1	~/Module/Travel/Master/Currency/ExchangeCurrencyList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+127	9092c68e-4281-49b0-a9b2-09bec8dad879	95.01.01	38		User Group & Authorization	8	2	1		0	1	0	PRG	1	1	1										1	app/usergrouplist		Icons.Material.Filled.Group				1	1	1	2026-04-15T14:27:08.4700000	6	2026-04-28T04:23:03.6970000		
+128	386b341a-bced-4021-9fa2-21c493a611a1	95.01.02	38		User	8	2	2		0	1	0	PRG	1	1	1										1	app/userlist						1	1	1	2026-04-15T14:27:08.4700000	6	2026-04-27T02:48:09.2230000		
+129	4166971f-ed67-428d-8e40-0c2cd16dad8e	95.01.03	38		Change Password	8	2	3		0	1	0	PRG	1	1	1										1	~/Login/ChangePassword.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+130	d1a02977-90d0-44c0-802b-ab5103e2e62d	95.01.04	38		Reset Password	8	2	3		0	1	0	PRG	1	1	1	1									1	~/Login/ResetPassword.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+131	be7cecce-4d89-4918-a189-26f1af9d9a3b	95.02.01	39		Audit Center View	8	1	0		0	1	0	PRG	0	0	0										1	/log/auditcenter						1	1	1	2026-04-15T14:27:08.4700000				
+132	ea444e7f-d0d8-4907-bdae-0db937767798	95.02.02	39		Audit Log Setting	8	1	0		0	1	0	PRG	1	1	1	1						1			1	~/Module/ControlPanel/AuditLog/AuditLogSetting/AuditLogSettingList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+133	6ce07df1-f5de-43b7-8da4-80859bff3637	95.03.01	40		Standard Reference	8	2	0		0	1	0	PRG	1	1	1	1									1	app/standardreferencelist						1	1	1	2026-04-15T14:27:08.4700000	6	2026-04-27T02:50:56.3070000		
+134	bff7ecd6-73cf-4f12-8bd1-26efc6a8403e	95.03.02	40		Parameter	8	2	0		0	1	0	PRG	1	1	1	1									1	/app/parameterlist						1	1	1	2026-04-15T14:27:08.4700000				
+135	bf36db9e-7b06-400e-a528-18efa1508284	95.03.03	40		Numbering Setting	8	2	0		0	1	0	PRG	1	1	1	1									1	app/autonumbertemplatelist						1	1	1	2026-04-15T14:27:08.4700000	6	2026-05-02T16:11:56.9730000		
+136	02dc8eda-18ee-417f-bb1f-72f4b37b0c53	95.03.04	40		Transaction Code Numbering Setting	8	2	0		0	1	0	PRG	1	1	1	1									1	~/Module/ControlPanel/Setting/TransactionCode/TransactionCodeList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+137	bb79d867-4566-4f5f-a5fa-2596dc68765f	95.03.05	40		Program	8	2	5		0	1	0	PRG	1	1	1	1									1	app/programlist						1	1	1	2026-04-15T14:27:08.4700000	1	2026-07-02T15:19:33.0130000		
+138	12821068-0502-45ba-9a53-0c01e6b0f088	95.04.01	41		Printer	8	2	2		0	1	0	PRG	1	1	1	1									1	~/Module/ControlPanel/PrinterManagement/Printer/PrinterList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+139	9e9e9d1f-631a-4134-a5e0-2f4f2c93e5fa	95.04.02	41		User Host Printer	8	2	2		0	1	0	PRG	1	1	1	1									1	~/Module/ControlPanel/PrinterManagement/UserHostPrinter/UserHostPrinterList.aspx						1	1	1	2026-04-15T14:27:08.4700000				
+140	1511b5b6-03c1-49a6-ab98-1b670e4c0878	PVT.0001	42		Summary Flight Record Crew	42	0	1		0	1	0	PVT													1					sppvt_SummaryFlightRecordCrew		1	1	1	2026-04-15T14:27:08.4700000				
+141	37adf4c1-fefc-48a9-a7e3-76b0449d416c	PVT.0002	42		Summary Flight Record	42	0	2		0	1	0	PVT													1					sppvt_SummaryFlightRecord		1	1	1	2026-04-15T14:27:08.4700000				
+142	803ce998-084d-49ee-bd9d-9ae4766492fa	PVT.0003	42		Aviastar Summary Flight Record	42	0	3		0	1	0	PVT													1					sppvt_AviastarSummaryFlightRecord		1	1	1	2026-04-15T14:27:08.4700000				
+146	9c025b02-984f-40e6-b7d6-e0b0bfd31408	95.02.03	39		Number System Log	8	1	3			1		PRG				1									1	app/autonumberlogmonitor						1	1	6	2026-05-05T06:25:26.7330000				
+148	a555fd2b-e840-4820-9b11-9cb65d7247fe	06			Number System		1	6					MNU													1							1	1	6	2026-05-05T09:13:17.7300000	6	2026-05-05T09:17:57.6700000		
+149	f0b06a79-c83d-4f00-8a4e-240ca53deb42	06.01	148		Document Number Request	148	1	1					PRG	1	0	1	1	0								1	num/documentnumberrequestlist						1	1	6	2026-05-05T09:20:38.2930000	6	2026-05-05T09:33:00.9300000		
+10143	11539c98-8c33-4819-8ef4-5076b9e47a53	96.00.00		Assessment	Reports		1	1					MNU				1						0			1							1	0	1	2026-07-10T17:30:08.3730000			1	2026-09-01T02:20:33.0270000
+10144	493841b6-729d-45a6-b4dd-7156bd9661db	96.00.01	10143	ListAlt	Report Selection		2	1					PRG				1						1			1	/app/reportselection?tp=rpt						1	0	1	2026-07-10T17:30:08.3830000	1	2026-09-01T02:19:13.3670000	1	2026-09-01T02:19:41.1400000
+10145	d8d0aeea-40a1-4873-a4ae-396c6e1ac80a	90.02	7	PivotTableChart	Pivot Selection	7	2	2			1		PRG				1						1			1	/app/reportselection?tp=pvt						1	1	1	2026-07-10T17:30:08.3830000	1	2026-09-01T02:44:04.3330000		
+10146	3377fae2-d64f-4500-8f26-301ad435c049	96.01.01	10143		Employee List Report		2	3					RPT				1						1			1					app.rpt_EmployeeList		1	1	1	2026-07-10T17:30:08.3870000				
+10147	880ffd1f-e7b5-4ac8-b941-856154230997	96.01.02	10143		Salary Slip		2	4					RPT				1						1			1					app.rpt_SalarySlip		1	1	1	2026-07-10T17:30:08.3870000				
+10148	bf381b7b-b0d2-4c1e-86a9-354591a8055c	96.02.01	10143		Payroll Summary Pivot		2	5					PVT				1						1			1					app.pvt_PayrollSummary		1	1	1	2026-07-10T17:30:08.3870000				
+20143	5241dcf3-98f2-437e-8fe8-fcc221b2eade	96.01.03	10143		Engineering CV Report		2	6					RPT				1						1			1					app.rpt_EngineeringCv		1	1	1	2026-07-11T19:33:35.1230000				
+20144	9c4af339-6684-4cd6-b69d-964a8bc1ff2e	90.03	7	History	Report Execution Log	7	2	6					PRG				1						0			1	/app/reportexecutionlog						1	1	1	2026-07-11T23:02:57.1470000	1	2026-09-01T02:34:53.9830000		
+20145	e7b9f770-f249-4eea-ac1c-4168dd857a54	90.04	7	Tune	Report Definition	7	2	7					PRG	1	1	1	1									1	/app/reportdefinitionlist						1	1	1	2026-07-11T23:52:15.0130000	1	2026-09-01T02:35:48.6070000		
+30143	4b28a66f-4844-4604-852d-d15774e67162	02.09.04.01	79		Bank Master Slip (QuestPDF)		3	1					DOC				1						1			0							1	1	1	2026-07-12T09:32:28.4500000				
+30144	cfbbd45b-07b9-42b2-afe2-55dd080f7121	02.09.04.02	79		Bank Confirmation Letter		3	2					DOC				1						1			0							1	1	1	2026-07-12T09:32:28.4530000				
+30145	87702a49-0f25-4e6c-811b-57200a41c144	02.09.04.03	79		Bank Master Slip (FastReport)		3	3					DOC				1						1			0							1	1	1	2026-07-12T18:14:22.9800000				
+30146	d4553aa6-eab0-444f-8bb1-8ee04291856b	02.09.04.04	79		Bank Master Slip (Telerik)		3	4					DOC				1						1			0							1	1	1	2026-07-12T18:14:22.9800000				
+30147	e3315ce9-8072-4a89-9bf7-cafaee0818a4	02.09.04.05	79		Bank Master Slip (DevExpress)		3	5					DOC				1						1			0							1	1	1	2026-07-12T18:14:22.9800000				
+40145	fcf74ce2-0875-470b-94fc-9336a07c189d	RPT.02.09.05	10143		Award Report		2	8					RPT				1						1			1					app.rpt_Award		1	1	1	2026-07-13T17:09:52.1470000				
+50145	38ff5a53-dd23-4461-a902-3039ae3205ec	96.01.06	10143		Award Report		2	9					RPT				1						1			1					app.rpt_Award		1	1	1	2026-07-13T19:39:38.0900000				
+60145	05289456-afcc-4219-ab84-b33a42dd6033	RPT.02.09.01	10143		Company Report		2	10					RPT				1						1			1					app.rpt_Company		1	1	1	2026-07-14T10:04:08.3130000				
+60146	34641a24-52ab-4c47-816d-f4b1f4b15541	RPT.02.09.20	10143		Hospital Report		2	11					RPT				1						1			1					app.rpt_Hospital		1	1	1	2026-07-14T17:32:18.1570000				
+60147	b2d5090b-b6f6-4cda-b08c-f6f2c01c3019	RPT.02.11	10143		Holiday Report		2	12					RPT				1						1			1					app.rpt_Holiday		1	1	1	2026-08-08T09:38:25.6670000				
+70147	27435ecc-74ad-4dd6-b537-f9bb8101f3de	95.03.06	40	Widgets	Parameter Form Master		2	6					PRG	0	0	0	1						0			1	/app/parameterformmaster						1	1	1	2026-08-26T16:26:38.6470000				
+80147	685bb42b-5274-41c6-98d8-1b018c331639	01.03	1		03. Wizard Aggregate Template	1	1	0		0	1		PRG	1	1	1	1						1	1		1	/app/persononboardingwizard						1	1	1	2026-08-27T03:11:24.8730000	1	2026-09-02T09:01:02.7330000		
+80148	dc955ddb-7981-44ea-94f8-860e4ac1dcbf	01.04	1		04. Header-Detail-SubDetail Template	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/awardlist						1	1	1	2026-08-27T03:12:40.0300000	1	2026-09-02T09:04:59.0570000		
+80149	9ce9d9f3-6f2a-4beb-94a2-5d5417847c8f	01.05	1		05. Template Ui Assignment	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/workteamlist						1	1	1	2026-08-27T03:13:09.1100000	1	2026-09-07T03:54:53.4670000		
+80162	c8c8abe3-a0e9-49df-adff-a58bb26972cd	01.06	1		06. TemplateUiCard	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/bank06card						1	1	1	2026-08-27T03:13:42.3130000	1	2026-09-02T09:05:34.9730000		
+80163	93cb6910-b68b-4490-a8ba-ea304716e9b1	01.07	1		07. TemplateUiProces	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/payroll-runs/processes						1	1	1	2026-08-27T03:14:06.4970000	1	2026-09-02T09:05:52.0330000		
+80164	a7100db5-6bb3-45f6-aa3b-b99b6b15d534	01.08	1		08. TemplateUiCalendar	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/room-bookings/calendar						1	1	1	2026-08-27T03:14:21.4670000	1	2026-09-02T09:06:07.2770000		
+80165	2a6e8fab-73f6-4339-be3b-d9c4a256ed36	01.09	1		09. TemplateUiKanban	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/work-items/kanban						1	1	1	2026-08-27T03:14:38.5270000	1	2026-09-02T09:06:19.7870000		
+80166	8926f053-dbe9-4f7a-bf2f-fa55f5ab894a	01.10	1		Template 10	1	1	0		0	1		PRG	1	1	1	1						0	1		1	app/tempcontoh1list						1	1	1	2026-08-27T03:14:54.1330000	1	2026-09-10T04:03:13.8630000		
+80167	82221524-9d14-4516-9d52-725d3bbe5f81	PVT.01.001	10143		SalesTransaction Pivot (WebDataRocks)		2	11					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.0700000				
+80168	75ac4e21-2fa9-4c30-ae9d-eedfeee13bf0	PVT.01.002	10143		SalesTransaction Pivot (VoltCube)		2	12					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.1030000				
+80169	bda10d84-b4af-4f1a-b964-d938746e8fc7	PVT.01.003	10143		SalesTransaction Pivot (Native)		2	13					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.1070000				
+80170	83b1f5c6-8d1e-46e4-b8c4-83d0076e2d2e	PVT.01.004	10143		SalesTransaction Pivot (Telerik)		2	14					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.1070000				
+80171	748588ba-0c5d-4cfb-9a86-1f2b02a462c1	PVT.01.005	10143		SalesTransaction Pivot (DevExpress)		2	15					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.1100000				
+80172	8cb654eb-de95-4675-b0b1-94646d143167	RPT.02.001	10143		Position Report		2	16					RPT				1						1			1					app.rpt_Position		1	1	1	2026-09-09T21:08:53.9030000				
+80173	c1f99f55-a2bd-462f-8e77-b4758745b441	RPT.02.003	10143		Position Report		2	17					RPT				1						1			1					app.rpt_Position		1	1	1	2026-09-09T21:23:41.5370000				
+80175	60a7090b-feb3-435b-82e1-e55addfe9235	RPT.02.004	10143		Position Report		2	18					RPT				1						1			1					app.rpt_Position		1	1	1	2026-09-09T21:35:42.7770000				
+80176	c11d5b21-0b9e-439c-82cc-f05709eb126d	PVT.02.001	10143		Position Pivot		2	19					PVT				1						1			1					app.pvt_Position		1	1	1	2026-09-09T21:43:14.7330000				
+80177	c450023d-da7c-49d0-ab83-b79afb8d4268	PVT.002	10143		SalesTransaction Pivot		2	20					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-09-09T22:43:41.1170000				
+90172	53bf6169-ad77-4b19-87c7-0ef1a747f2e3	RPT.02.12	10143		TempContoh1 Report		2	21					RPT				1						1			1					app.rpt_TempContoh1		1	1	1	2026-09-10T11:09:00.1900000				

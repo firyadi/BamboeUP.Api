@@ -39,6 +39,14 @@ namespace Repository
             return await connection.QuerySingleOrDefaultAsync<User>(sql, new { userGuid });
         }
 
+        public async Task<User?> GetActiveUserByPersonIdAsync(long personId)
+        {
+            using var connection = _context.CreateConnection();
+            var sql = $@"{SqlDialectQueryHelper.SelectLimited(_dialect, 1, "*")} FROM {_dialect.Qualify("core", "Users")}
+                                 WHERE PersonId = @personId AND StatusId > 0 AND DeletedTime IS NULL";
+            return await connection.QueryFirstOrDefaultAsync<User>(sql, new { personId });
+        }
+
         public async Task<IEnumerable<User>> GetAllUsersAsync(bool trackChanges)
         {
             using var connection = _context.CreateConnection();
@@ -57,10 +65,10 @@ namespace Repository
             AuditTimestampHelper.StampCreate(user);
             var conn = transaction?.Connection ?? _context.CreateConnection();
             var sql = $@"INSERT INTO {_dialect.Qualify("core", "Users")}
-                                 (UserGuid, CreatedById, StatusId, CreatedTime, UserName, PasswordHash, PasswordSalt, FullName, Email, IsAdmin)
+                                 (UserGuid, CreatedById, StatusId, CreatedTime, UserName, PasswordHash, PasswordSalt, FullName, Email, PersonId, IsAdmin)
                                  VALUES
-                                 (@UserGuid, @CreatedById, @StatusId, @CreatedTime, @UserName, @PasswordHash, @PasswordSalt, @FullName, @Email, @IsAdmin)";
-            await conn.ExecuteAsync(sql, user, transaction);
+                                 (@UserGuid, @CreatedById, @StatusId, @CreatedTime, @UserName, @PasswordHash, @PasswordSalt, @FullName, @Email, @PersonId, @IsAdmin){_dialect.ReturnIdentitySuffix("UserId")}";
+            user.UserId = await conn.QuerySingleAsync<long>(sql, user, transaction);
 
             await _auditService.LogAsync(
                 actionType: "CREATE",
@@ -84,6 +92,7 @@ namespace Repository
                                       PasswordSalt = @PasswordSalt,
                                       FullName = @FullName,
                                       Email = @Email,
+                                      PersonId = @PersonId,
                                       StatusId = @StatusId,
                                       UpdatedById = @UpdatedById,
                                       UpdatedTime = @UpdatedTime

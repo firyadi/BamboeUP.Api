@@ -9,6 +9,8 @@ namespace Service.Shell.Extensions
         public static void ConfigureShellServices(this IServiceCollection services)
         {
             services.AddSingleton<IAdminRegistryService, AdminRegistryService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IDevelopmentLoginBootstrap, DevelopmentLoginBootstrap>();
             services.AddScoped<IServiceShellManager, ServiceShellManager>();
         }
     }

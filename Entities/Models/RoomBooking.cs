@@ -34,6 +34,7 @@ namespace Entities.Models
         public string? Note { get; set; }
 
 public string? MeetingRoomName { get; set; }
+        public string? BookedbyUserName { get; set; }
 
 
         [Column("StatusId")]

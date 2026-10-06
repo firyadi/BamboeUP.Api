@@ -10,6 +10,8 @@ namespace Shared.DataTransferObjects
         // PasswordHash sengaja tidak disertakan di response DTO — tidak boleh dikirim ke client
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public long? PersonId { get; set; }
+        public string? PersonName { get; set; }
         public bool IsAdmin { get; set; }
         public int StatusId { get; set; }
         public string? StatusName { get; set; }
@@ -30,6 +32,7 @@ namespace Shared.DataTransferObjects
         // NOTE: PasswordSalt intentionally omitted — always generated server-side
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public long? PersonId { get; set; }
         public long CreatedById { get; set; }
     }
 
@@ -41,6 +44,7 @@ namespace Shared.DataTransferObjects
         // NOTE: PasswordSalt intentionally omitted — always generated server-side
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public long? PersonId { get; set; }
         public long? UpdatedById { get; set; }
     }
 
