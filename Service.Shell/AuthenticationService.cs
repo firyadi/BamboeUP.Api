@@ -436,6 +436,23 @@ namespace Service.Shell
             return rawScopes;
         }
 
+        public async Task ChangePasswordAsync(string userName, ChangePasswordDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+                throw new ArgumentException("New password is required.");
+            if (request.NewPassword != request.ConfirmPassword)
+                throw new ArgumentException("New password and confirmation password do not match.");
+            if (request.NewPassword == request.CurrentPassword)
+                throw new ArgumentException("New password must be different from the current password.");
+
+            var user = await _repository.User.GetUserByUserNameAsync(userName, false);
+            if (user == null || !VerifyPassword(request.CurrentPassword, user.PasswordHash, user.PasswordSalt))
+                throw new UnauthorizedAccessException("Current password is incorrect.");
+
+            var (hash, salt) = HashPassword(request.NewPassword);
+            await UpgradePasswordHashAsync(user.UserId, hash, salt);
+        }
+
         public (string Hash, string Salt) HashPassword(string password)
         {
             var saltBytes = RandomNumberGenerator.GetBytes(32);

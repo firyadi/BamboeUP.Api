@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
 
@@ -51,6 +52,7 @@ namespace Presentation.Shell.Controllers
         }
 
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {
             await _service.ProgramService.DeleteProgramByAdminAsync(guid, trackChanges: false);

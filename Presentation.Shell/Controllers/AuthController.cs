@@ -108,6 +108,28 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("change-password")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+    {
+        var userName = User.Identity?.Name;
+        if (string.IsNullOrEmpty(userName))
+            return Unauthorized(new { message = "Invalid token claims." });
+        if (request == null)
+            return BadRequest(new { message = "Request body is null." });
+
+        try
+        {
+            await _authService.ChangePasswordAsync(userName, request);
+            return Ok(new { message = "Password has been changed successfully." });
+        }
+        // 400 rather than 401: the token is valid, only the supplied current password is wrong.
+        catch (Exception ex) when (ex is ArgumentException or UnauthorizedAccessException)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpPost("switch-scope")]
     [Authorize]
     public async Task<IActionResult> SwitchScope([FromBody] SwitchScopeRequestDto request)

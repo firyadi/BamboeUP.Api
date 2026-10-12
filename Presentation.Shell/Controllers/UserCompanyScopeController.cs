@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
 
@@ -58,6 +59,7 @@ namespace Presentation.Controllers
         }
 
         [HttpDelete("admin/{guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AdminDeleteUserCompanyScope(Guid userGuid, Guid guid)
         {
             await _service.UserCompanyScopeService.DeleteByAdminAsync(guid, trackChanges: false);

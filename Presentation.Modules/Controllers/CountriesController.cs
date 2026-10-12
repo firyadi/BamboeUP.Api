@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Modules;
 using Shared.DataTransferObjects;
 using Shared.Settings.Enums;
@@ -52,6 +53,7 @@ namespace Presentation.Modules.Controllers
         }
 
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {
             await _service.CountryService.DeleteCountryByAdminAsync(guid, trackChanges: false);

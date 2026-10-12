@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
@@ -74,6 +75,7 @@ namespace Presentation.Shell.Controllers
 
         /// <summary>Hard delete StandardReference (Admin)</summary>
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         [SwaggerOperation(Summary = "Hard Delete (Admin)", Description = "Menghapus data secara permanen.")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {

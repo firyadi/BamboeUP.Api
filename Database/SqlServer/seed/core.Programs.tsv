@@ -30,8 +30,8 @@
 30	ac6b64b3-26fe-4903-9372-9d0d1faacff6	04.09	4		Master	4	1	109		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
 31	fbb0fb22-8c9c-4b73-a812-ac8657e7c868	05.01	5		Transaction	5	1	9		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
 32	b45c2ecc-5c61-4feb-b8e3-e67fcc20b46b	05.09	5		Master	5	1	90		1	0	0	MNU	0	0	0	0	0	0	0	0	0	0	0	0	1							1	1	1	2026-04-15T14:27:08.4670000				
-33	d6d1da82-492a-4c14-ab51-d3c73d69a7ff	80.01	6		My CV		1	1		0	1	0	PRG	0	0	0	0	0	0	0	0		0	0	0	1	~/Module/MyMenu/CV/MyCVList.aspx						1	1	1	2026-04-15T14:27:08.4670000				
-34	29ff88c3-41cf-48ac-92a9-829d69a68c64	80.02	6		My Working Information		1	2		0	1	0	PRG	1	1	1	0	0	0	0	0		0	1	0	0	~/Module/RADT/MedicalRecordHistory/MedicalRecordHistoryList.aspx?						1	1	1	2026-04-15T14:27:08.4670000				
+33	d6d1da82-492a-4c14-ab51-d3c73d69a7ff	80.01	6		My Attendance		1	1		0	1	0	PRG	1	0	0	1	0	0	0	0		0	1	0	1	app/attendancelist						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-24T04:16:21.9700000		
+34	29ff88c3-41cf-48ac-92a9-829d69a68c64	80.02	6		My Overtime Request		1	2		0	1	0	PRG	1	1	1	0	0	0	0	0		0	1	0	0	app/overtimerequestlist						1	1	1	2026-04-15T14:27:08.4670000				
 35	6bfe4740-5a59-4837-b1ac-0ca11cb32844	90.01	7		Report	7	0	0		0	1	0	PRG													1	/app/reportselection?tp=rpt						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-01T02:26:50.3330000		
 36	cfff2b13-51e9-4cb3-b3e4-0a228d2d9be0	90.11	7		FAQ & Document Template Entry	7	2	3		0	1	0	PRG	1	1	1	1	0	0	0	0	0	0	1	0	1	~/Module/Reports/FAQ/FaqDocumentList.aspx						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-01T02:32:14.8200000		
 37	bf413889-d293-456c-ab4e-327c1bbf07e6	90.12	7		FAQ & Document Template	7	2	4		0	1	0	PRG	1	1	1	0	0	0	0	0	0	0	1	0	1	~/Module/Reports/FAQ/DocumentSelection.aspx						1	1	1	2026-04-15T14:27:08.4670000	1	2026-09-01T02:28:43.9830000		
@@ -170,7 +170,7 @@
 80163	93cb6910-b68b-4490-a8ba-ea304716e9b1	01.07	1		07. TemplateUiProces	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/payroll-runs/processes						1	1	1	2026-08-27T03:14:06.4970000	1	2026-09-02T09:05:52.0330000		
 80164	a7100db5-6bb3-45f6-aa3b-b99b6b15d534	01.08	1		08. TemplateUiCalendar	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/room-bookings/calendar						1	1	1	2026-08-27T03:14:21.4670000	1	2026-09-02T09:06:07.2770000		
 80165	2a6e8fab-73f6-4339-be3b-d9c4a256ed36	01.09	1		09. TemplateUiKanban	1	1	0		0	1		PRG	1	1	1	1						1	1		1	app/work-items/kanban						1	1	1	2026-08-27T03:14:38.5270000	1	2026-09-02T09:06:19.7870000		
-80166	8926f053-dbe9-4f7a-bf2f-fa55f5ab894a	01.10	1		Template 10	1	1	0		0	1		PRG	1	1	1	1						0	1		1	app/tempcontoh1list						1	1	1	2026-08-27T03:14:54.1330000	1	2026-09-10T04:03:13.8630000		
+80166	8926f053-dbe9-4f7a-bf2f-fa55f5ab894a	01.10	1		10. Chart	1	1	0		0	1		PRG	1	1	1	1						0	1		1	app/salestransactionpie						1	1	1	2026-08-27T03:14:54.1330000	1	2026-09-25T14:08:12.3870000		
 80167	82221524-9d14-4516-9d52-725d3bbe5f81	PVT.01.001	10143		SalesTransaction Pivot (WebDataRocks)		2	11					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.0700000				
 80168	75ac4e21-2fa9-4c30-ae9d-eedfeee13bf0	PVT.01.002	10143		SalesTransaction Pivot (VoltCube)		2	12					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.1030000				
 80169	bda10d84-b4af-4f1a-b964-d938746e8fc7	PVT.01.003	10143		SalesTransaction Pivot (Native)		2	13					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-08-31T10:41:21.1070000				
@@ -182,3 +182,4 @@
 80176	c11d5b21-0b9e-439c-82cc-f05709eb126d	PVT.02.001	10143		Position Pivot		2	19					PVT				1						1			1					app.pvt_Position		1	1	1	2026-09-09T21:43:14.7330000				
 80177	c450023d-da7c-49d0-ab83-b79afb8d4268	PVT.002	10143		SalesTransaction Pivot		2	20					PVT				1						1			1					app.pvt_SalesTransaction		1	1	1	2026-09-09T22:43:41.1170000				
 90172	53bf6169-ad77-4b19-87c7-0ef1a747f2e3	RPT.02.12	10143		TempContoh1 Report		2	21					RPT				1						1			1					app.rpt_TempContoh1		1	1	1	2026-09-10T11:09:00.1900000				
+90173	6439aa48-3aa7-4ca2-9354-6110d1a79b6c	RPT.01.01	10143		WorkNotice Report		2	22					RPT				1						1			1					app.rpt_WorkNotice		1	1	1	2026-09-21T10:45:34.4130000				

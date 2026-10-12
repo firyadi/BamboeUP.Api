@@ -53,6 +53,7 @@ namespace Presentation.Shell.Controllers
         }
 
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {
             await _service.UserService.DeleteUserByAdminAsync(guid, trackChanges: false);
@@ -139,10 +140,10 @@ namespace Presentation.Shell.Controllers
         }
 
         /// <summary>
-        /// Reset password pengguna berdasarkan username. Tidak memerlukan autentikasi (AllowAnonymous).
+        /// Reset password pengguna lain berdasarkan username. Khusus Admin; user mengubah password sendiri lewat api/auth/change-password.
         /// </summary>
         [HttpPost("reset-password")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDto dto)
         {
             if (dto == null) return BadRequest("Request body is null.");

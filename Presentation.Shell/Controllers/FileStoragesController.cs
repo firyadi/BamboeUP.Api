@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
@@ -53,6 +54,7 @@ namespace BamboeUp.Api.Controllers
         }
 
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         [SwaggerOperation(Summary = "Hard Delete (Admin)")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Modules;
 using Shared.DataTransferObjects;
@@ -54,6 +55,7 @@ namespace Presentation.Modules.Controllers
         }
 
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         [SwaggerOperation(Summary = "Hard Delete (Admin)")]
         public async Task<IActionResult> HardDelete(Guid guid)
         {

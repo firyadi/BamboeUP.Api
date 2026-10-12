@@ -1,0 +1,36 @@
+19	10002	CompanyId	Company	string	1		10		0	1	1	2026-07-11T20:43:23.7569965	Company	ReadonlyText	1	12	Scope		
+20	10002	CompanyOfficeId	Office	string	1		20		0	1	1	2026-07-11T20:43:23.7569965	Office	ReadonlyText	1	12	Scope		
+21	10002	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-07-11T20:43:23.7569965	DateFrom	DatePicker	2	6	Period		
+22	10002	DateTo	Valid To	DateTime	1		20		0	1	1	2026-07-11T20:43:23.7569965	DateTo	DatePicker	2	6	Period		
+23	10002	EmployeeId	Employee	long	0		10	Employee	0	1	1	2026-07-11T20:43:23.7569965	EmployeeId	ComboBox	3	12	Filter		
+24	10002	DepartmentId	Department	long	0		20	OrganizationUnit	0	1	1	2026-07-11T20:43:23.7569965	DepartmentId	ComboBox	3	12	Filter		
+10011	40006	CompanyId	Company	string	1		10		0	1	1	2026-07-14T13:25:04.9213564	Company	ReadonlyText	1	12	Scope		
+10012	40006	CompanyOfficeId	Office	string	1		20		0	1	1	2026-07-14T13:25:04.9223564	Office	ReadonlyText	1	12	Scope		
+10013	50009	CompanyId	Company	string	1		10		0	1	1	2026-08-31T10:41:21.0952846	Company	ReadonlyText	1	12	Scope		
+10014	50009	CompanyOfficeId	Office	string	1		20		0	1	1	2026-08-31T10:41:21.0952846	Office	ReadonlyText	1	12	Scope		
+10015	50009	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-08-31T10:41:21.0952846	DateFrom	DatePicker	2	6	Period		
+10016	50009	DateTo	Valid To	DateTime	1		20		0	1	1	2026-08-31T10:41:21.0952846	DateTo	DatePicker	2	6	Period		
+10017	50010	CompanyId	Company	string	1		10		0	1	1	2026-08-31T10:41:21.1054481	Company	ReadonlyText	1	12	Scope		
+10018	50010	CompanyOfficeId	Office	string	1		20		0	1	1	2026-08-31T10:41:21.1054481	Office	ReadonlyText	1	12	Scope		
+10019	50010	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-08-31T10:41:21.1054481	DateFrom	DatePicker	2	6	Period		
+10020	50010	DateTo	Valid To	DateTime	1		20		0	1	1	2026-08-31T10:41:21.1054481	DateTo	DatePicker	2	6	Period		
+10021	50011	CompanyId	Company	string	1		10		0	1	1	2026-08-31T10:41:21.1064524	Company	ReadonlyText	1	12	Scope		
+10022	50011	CompanyOfficeId	Office	string	1		20		0	1	1	2026-08-31T10:41:21.1064524	Office	ReadonlyText	1	12	Scope		
+10023	50011	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-08-31T10:41:21.1064524	DateFrom	DatePicker	2	6	Period		
+10024	50011	DateTo	Valid To	DateTime	1		20		0	1	1	2026-08-31T10:41:21.1064524	DateTo	DatePicker	2	6	Period		
+10025	50012	CompanyId	Company	string	1		10		0	1	1	2026-08-31T10:41:21.1084599	Company	ReadonlyText	1	12	Scope		
+10026	50012	CompanyOfficeId	Office	string	1		20		0	1	1	2026-08-31T10:41:21.1084599	Office	ReadonlyText	1	12	Scope		
+10027	50012	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-08-31T10:41:21.1084599	DateFrom	DatePicker	2	6	Period		
+10028	50012	DateTo	Valid To	DateTime	1		20		0	1	1	2026-08-31T10:41:21.1084599	DateTo	DatePicker	2	6	Period		
+10029	50013	CompanyId	Company	string	1		10		0	1	1	2026-08-31T10:41:21.1094631	Company	ReadonlyText	1	12	Scope		
+10030	50013	CompanyOfficeId	Office	string	1		20		0	1	1	2026-08-31T10:41:21.1094631	Office	ReadonlyText	1	12	Scope		
+10031	50013	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-08-31T10:41:21.1094631	DateFrom	DatePicker	2	6	Period		
+10032	50013	DateTo	Valid To	DateTime	1		20		0	1	1	2026-08-31T10:41:21.1094631	DateTo	DatePicker	2	6	Period		
+10037	50019	CompanyId	Company	string	1		10		0	1	1	2026-09-09T22:43:41.1207547	Company	ReadonlyText	1	12	Scope		
+10038	50019	CompanyOfficeId	Office	string	1		20		0	1	1	2026-09-09T22:43:41.1207547	Office	ReadonlyText	1	12	Scope		
+10039	50019	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-09-09T22:43:41.1207547	DateFrom	DatePicker	2	6	Period		
+10040	50019	DateTo	Valid To	DateTime	1		20		0	1	1	2026-09-09T22:43:41.1207547	DateTo	DatePicker	2	6	Period		
+20033	60014	CompanyId	Company	string	1		10		0	1	1	2026-09-10T11:09:00.1975452	Company	ReadonlyText	1	12	Scope		
+20034	60014	CompanyOfficeId	Office	string	1		20		0	1	1	2026-09-10T11:09:00.1975452	Office	ReadonlyText	1	12	Scope		
+20035	60014	DateFrom	Valid From	DateTime	1		10		0	1	1	2026-09-10T11:09:00.1975452	DateFrom	DatePicker	2	6	Period		
+20036	60014	DateTo	Valid To	DateTime	1		20		0	1	1	2026-09-10T11:09:00.1975452	DateTo	DatePicker	2	6	Period		

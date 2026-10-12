@@ -7,6 +7,8 @@ namespace Service.Contracts.Shell
         Task<TokenDto> LoginAsync(LoginRequestDto loginRequest);
         Task<LoginScopesPreviewDto> GetLoginScopesPreviewAsync(LoginRequestDto loginRequest);
         Task<TokenDto> SwitchScopeAsync(string userName, SwitchScopeRequestDto request);
+        /// <summary>Ubah password user yang sedang login; password lama wajib benar.</summary>
+        Task ChangePasswordAsync(string userName, ChangePasswordDto request);
         /// <summary>Hash password dan generate salt. Returns (hash, salt).</summary>
         (string Hash, string Salt) HashPassword(string password);
         bool VerifyPassword(string password, string hash, string salt);

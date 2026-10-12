@@ -3,9 +3,8 @@
   Export platform seed data from Dev.BamboeHR for SQL Server + PostgreSQL.
 
 .DESCRIPTION
-  Tables = PlatformExportCatalog IncludeData that exist in init-platform.sql,
-  plus Company / CompanyOffice / OrganizationUnit for UserGroupScope FKs.
-  Skips catalog rows whose DDL is not in init-platform (Report*, SharedParameter*, UserOrganizationScope).
+  Tables = SchemaStudio Platform export Include data (live catalog on SchemaStudio_DB).
+  DDL-only catalog rows (Company, Person, …) are not seeded.
 
   Output:
     BamboeUp.Api/Database/SqlServer/seed/   (*.tsv + seed-platform.sql + Load-PlatformSeed.ps1)
@@ -23,7 +22,9 @@ param(
     [string]$Password = "123",
     [string]$ApiDatabaseRoot = "",
     [switch]$AlsoWriteVioletta,
-    [string]$ViolettaRoot = "D:\Project\ViolettaHR"
+    [string]$ViolettaRoot = "D:\Project\ViolettaHR",
+    [switch]$SqlServerOnly,
+    [switch]$TrustedConnection
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,16 +38,15 @@ $PgSeedDir = Join-Path $ApiDatabaseRoot "PostgreSQL\seed"
 New-Item -ItemType Directory -Force -Path $SsSeedDir | Out-Null
 New-Item -ItemType Directory -Force -Path $PgSeedDir | Out-Null
 
-# Users intentionally omitted: admin bootstrap is App_Data/admin.registry.enc (no PasswordHash seed).
+# Include data = Yes on http://localhost:5003/platform-export
 $seedTables = @(
+    "core.Users",
     "core.UserGroup",
     "core.Programs",
     "core.UserGroupProgram",
-    "app.Company",
-    "app.CompanyOffice",
-    "app.OrganizationUnit",
     "core.UserGroupScope",
     "core.UserCompanyScope",
+    "core.UserOrganizationScope",
     "app.Parameter",
     "app.ParameterScope",
     "app.StandardReference",
@@ -59,7 +59,13 @@ $seedTables = @(
     "core.District",
     "core.SubDistrict",
     "core.PostalCode",
-    "core.Bank"
+    "core.Bank",
+    "core.ReportDefinition",
+    "core.ReportParameter",
+    "core.ReportParameterCatalog",
+    "core.SharedParameterCatalog",
+    "core.SharedParameterProfile",
+    "core.SharedParameterProfileField"
 )
 
 function Escape-PgCopy([object]$v) {
@@ -86,7 +92,11 @@ function Escape-SsTsv([object]$v) {
 }
 
 Write-Host "Connecting $Server / $Database ..."
-$cs = "Server=$Server;Database=$Database;User Id=$User;Password=$Password;TrustServerCertificate=True;Encrypt=False;"
+$cs = if ($TrustedConnection) {
+    "Server=$Server;Database=$Database;Trusted_Connection=True;TrustServerCertificate=True;Encrypt=False;"
+} else {
+    "Server=$Server;Database=$Database;User Id=$User;Password=$Password;TrustServerCertificate=True;Encrypt=False;"
+}
 
 # Prefer Microsoft.Data.SqlClient if available; else System.Data.SqlClient
 $conn = $null
@@ -174,7 +184,10 @@ foreach ($key in $seedTables) {
     $reader = $cmd.ExecuteReader()
 
     $ssSw = New-Object System.IO.StreamWriter($ssPath, $false, [System.Text.UTF8Encoding]::new($false))
-    $pgSw = New-Object System.IO.StreamWriter($pgPath, $false, [System.Text.UTF8Encoding]::new($false))
+    $pgSw = $null
+    if (-not $SqlServerOnly) {
+        $pgSw = New-Object System.IO.StreamWriter($pgPath, $false, [System.Text.UTF8Encoding]::new($false))
+    }
     $rowCount = 0
     try {
         while ($reader.Read()) {
@@ -186,14 +199,14 @@ foreach ($key in $seedTables) {
                 $pgVals[$i] = Escape-PgCopy $v
             }
             $ssSw.WriteLine(($ssVals -join "`t"))
-            $pgSw.WriteLine(($pgVals -join "`t"))
+            if ($pgSw) { $pgSw.WriteLine(($pgVals -join "`t")) }
             $rowCount++
         }
     }
     finally {
         $reader.Close()
         $ssSw.Close()
-        $pgSw.Close()
+        if ($pgSw) { $pgSw.Close() }
     }
     Write-Host "  -> $rowCount rows"
 
@@ -286,7 +299,9 @@ $manifestPath = Join-Path $SsSeedDir "seed-manifest.json"
 $loadPs1 = Join-Path $SsSeedDir "Load-PlatformSeed.ps1"
 
 [System.IO.File]::WriteAllText($ssSqlPath, $ssSql.ToString(), [System.Text.UTF8Encoding]::new($false))
-[System.IO.File]::WriteAllText($pgSqlPath, $pgSql.ToString(), [System.Text.UTF8Encoding]::new($false))
+if (-not $SqlServerOnly) {
+    [System.IO.File]::WriteAllText($pgSqlPath, $pgSql.ToString(), [System.Text.UTF8Encoding]::new($false))
+}
 ($manifest | ConvertTo-Json -Depth 5) | Set-Content -Path $manifestPath -Encoding UTF8
 
 if (-not (Test-Path $loadPs1)) {
@@ -294,7 +309,7 @@ if (-not (Test-Path $loadPs1)) {
 }
 
 Write-Host "Wrote $ssSqlPath"
-Write-Host "Wrote $pgSqlPath"
+if (-not $SqlServerOnly) { Write-Host "Wrote $pgSqlPath" }
 Write-Host "Wrote $manifestPath"
 
 if ($AlsoWriteVioletta -and (Test-Path $ViolettaRoot)) {

@@ -1,5 +1,6 @@
 using System;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -84,6 +85,13 @@ builder.Services.ConfigureVersioning();
 builder.Services.AddAuthentication();
 builder.Services.ConfigureJWT(builder.Configuration, builder.Environment);
 builder.Services.AddJwtConfiguration(builder.Configuration);
+// Endpoints that must stay public (login, login-scopes, dev-login) opt out with [AllowAnonymous].
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -128,25 +136,31 @@ if (!app.Environment.IsDevelopment())
 app.UseResponseCompression();
 app.UseApiSecurityHeaders();
 app.UseStaticFiles();
+
+// The authorization fallback policy also rejects requests without an endpoint, so public Swagger must run before it.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(s =>
+    {
+        s.SwaggerEndpoint("/swagger/v1/swagger.json", "BamboeUP.API v1");
+        s.SwaggerEndpoint("/swagger/v2/swagger.json", "Custom API v2");
+    });
+}
+
 app.UseCors("CorsPolicy");
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<Presentation.Shell.ActionFilters.ParameterContextMiddleware>();
 
-app.UseSwagger();
+if (!app.Environment.IsDevelopment())
+    app.UseSwagger();
+
 app.MapControllers();
 app.MapHub<ProcessExecutionHub>("/hubs/process-execution");
 
 if (app.Environment.IsDevelopment())
-{
-    app.UseSwaggerUI(s =>
-    {
-        s.SwaggerEndpoint("/swagger/v1/swagger.json", "BamboeUP.API v1");
-        s.SwaggerEndpoint("/swagger/v2/swagger.json", "Custom API v2");
-    });
-
     SwaggerDiagnostics.RunDiagnostics(app);
-}
 
 app.Run();

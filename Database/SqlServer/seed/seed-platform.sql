@@ -8,7 +8,7 @@ GO
 -- core.Users (7 rows)
 DELETE FROM [core].[Users];
 GO
-BULK INSERT [core].[Users] ([UserId], [UserGuid], [UserName], [PasswordHash], [PasswordSalt], [FullName], [Email], [IsAdmin], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
+BULK INSERT [core].[Users] ([UserId], [UserGuid], [UserName], [PasswordHash], [PasswordSalt], [FullName], [Email], [IsAdmin], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime], [PersonId])
 FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.Users.tsv'
 WITH (
     DATAFILETYPE = 'char',
@@ -37,7 +37,7 @@ WITH (
 );
 GO
 
--- core.Programs (184 rows)
+-- core.Programs (185 rows)
 DELETE FROM [core].[Programs];
 GO
 BULK INSERT [core].[Programs] ([ProgramId], [ProgramGuid], [ProgramCode], [ParentId], [IconCode], [ProgramName], [TopLevelProgramId], [RootLevel], [RowIndex], [Note], [IsParentProgram], [IsProgram], [IsBeginGroup], [ProgramType], [IsProgramAddAble], [IsProgramEditAble], [IsProgramDeleteAble], [IsProgramViewAble], [IsProgramApprovalAble], [IsProgramUnApprovalAble], [IsProgramVoidAble], [IsProgramUnVoidAble], [IsProgramDirectVoid], [IsProgramPrintAble], [IsMenuAddVisible], [IsMenuHomeVisible], [IsVisible], [NavigateUrl], [HelpLinkId], [AssemblyName], [AssemblyClassName], [StoreProcedureName], [AccessKey], [IsActive], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
@@ -53,7 +53,7 @@ WITH (
 );
 GO
 
--- core.UserGroupProgram (142 rows)
+-- core.UserGroupProgram (144 rows)
 DELETE FROM [core].[UserGroupProgram];
 GO
 BULK INSERT [core].[UserGroupProgram] ([UserGroupProgramId], [UserGroupProgramGuid], [UserGroupId], [ProgramsId], [IsUserGroupAddAble], [IsUserGroupEditAble], [IsUserGroupDeleteAble], [IsUserGroupApprovalAble], [IsUserGroupUnApprovalAble], [IsUserGroupVoidAble], [IsUserGroupUnVoidAble], [IsUserGroupExportAble], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime], [IsUserGroupViewAble])
@@ -69,58 +69,10 @@ WITH (
 );
 GO
 
--- app.Company (32 rows)
-DELETE FROM [app].[Company];
-GO
-BULK INSERT [app].[Company] ([CompanyId], [CompanyGuid], [CompanyName], [InitialName], [TaxCompulsionNo], [RegistrationNo], [ParentCompanyId], [DefaultCurrency], [CompanyLogo], [LeaderId], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
-FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\app.Company.tsv'
-WITH (
-    DATAFILETYPE = 'char',
-    FIELDTERMINATOR = '\t',
-    ROWTERMINATOR = '0x0a',
-    KEEPNULLS,
-    KEEPIDENTITY,
-    TABLOCK,
-    CODEPAGE = '65001'
-);
-GO
-
--- app.CompanyOffice (33 rows)
-DELETE FROM [app].[CompanyOffice];
-GO
-BULK INSERT [app].[CompanyOffice] ([CompanyOfficeId], [CompanyOfficeGuid], [CompanyId], [CompanyGuid], [CompanyOfficeName], [SrAddressType], [CountryId], [StateId], [CityId], [PostalCodeId], [Address], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime], [StatusId])
-FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\app.CompanyOffice.tsv'
-WITH (
-    DATAFILETYPE = 'char',
-    FIELDTERMINATOR = '\t',
-    ROWTERMINATOR = '0x0a',
-    KEEPNULLS,
-    KEEPIDENTITY,
-    TABLOCK,
-    CODEPAGE = '65001'
-);
-GO
-
--- app.OrganizationUnit (7 rows)
-DELETE FROM [app].[OrganizationUnit];
-GO
-BULK INSERT [app].[OrganizationUnit] ([OrganizationUnitId], [OrganizationUnitGuid], [OrganizationUnitCode], [OrganizationUnitName], [ParentOrganizationUnitId], [SrOrganizationLevel], [LevelDepth], [HierarchyPath], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
-FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\app.OrganizationUnit.tsv'
-WITH (
-    DATAFILETYPE = 'char',
-    FIELDTERMINATOR = '\t',
-    ROWTERMINATOR = '0x0a',
-    KEEPNULLS,
-    KEEPIDENTITY,
-    TABLOCK,
-    CODEPAGE = '65001'
-);
-GO
-
 -- core.UserGroupScope (8 rows)
 DELETE FROM [core].[UserGroupScope];
 GO
-BULK INSERT [core].[UserGroupScope] ([UserGroupScopeId], [UserGroupScopeGuid], [UserId], [UserGuid], [UserGroupId], [UserGroupGuid], [CompanyId], [CompanyGuid], [CompanyOfficeId], [CompanyOfficeGuid], [IsDefault], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
+BULK INSERT [core].[UserGroupScope] ([UserGroupScopeId], [UserGroupScopeGuid], [UserId], [UserGuid], [UserGroupId], [UserGroupGuid], [CompanyId], [CompanyGuid], [CompanyOfficeId], [CompanyOfficeGuid], [IsDefault], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime], [PersonId])
 FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.UserGroupScope.tsv'
 WITH (
     DATAFILETYPE = 'char',
@@ -138,6 +90,22 @@ DELETE FROM [core].[UserCompanyScope];
 GO
 BULK INSERT [core].[UserCompanyScope] ([UserCompanyScopeId], [UserCompanyScopeGuid], [UserId], [CompanyId], [CompanyOfficeId], [IsDefaultCompany], [IsDefaultOffice], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
 FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.UserCompanyScope.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.UserOrganizationScope (0 rows)
+DELETE FROM [core].[UserOrganizationScope];
+GO
+BULK INSERT [core].[UserOrganizationScope] ([UserOrganizationScopeId], [UserOrganizationScopeGuid], [UserId], [OrganizationUnitId], [CompanyId], [CompanyOfficeId], [AccessType], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.UserOrganizationScope.tsv'
 WITH (
     DATAFILETYPE = 'char',
     FIELDTERMINATOR = '\t',
@@ -346,6 +314,102 @@ DELETE FROM [core].[Bank];
 GO
 BULK INSERT [core].[Bank] ([BankId], [BankGuid], [BankName], [BankInitial], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
 FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.Bank.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.ReportDefinition (29 rows)
+DELETE FROM [core].[ReportDefinition];
+GO
+BULK INSERT [core].[ReportDefinition] ([ReportDefinitionId], [ReportDefinitionGuid], [ProgramId], [ReportScope], [CompanyId], [ReportKind], [DefinitionKey], [FilePath], [StoreProcedureName], [RequiresPrintId], [PrintIdPolicy], [PrintIdPrefix], [Version], [IsActive], [EffectiveFrom], [EffectiveTo], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [IsTracked], [RendererType], [LayoutJson])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.ReportDefinition.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.ReportParameter (36 rows)
+DELETE FROM [core].[ReportParameter];
+GO
+BULK INSERT [core].[ReportParameter] ([ReportParameterId], [ReportDefinitionId], [ParameterName], [DisplayLabel], [DataType], [IsRequired], [DefaultValue], [SortOrder], [LookupType], [IsSensitive], [StatusId], [CreatedById], [CreatedTime], [FieldKey], [ControlType], [ColumnGroup], [ColumnSpan], [RowGroup], [VisibleWhen], [CatalogFieldId])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.ReportParameter.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.ReportParameterCatalog (0 rows)
+DELETE FROM [core].[ReportParameterCatalog];
+GO
+BULK INSERT [core].[ReportParameterCatalog] ([CatalogFieldId], [FieldKey], [DefaultLabel], [ControlType], [DataType], [LookupType], [DefaultColumnGroup], [IsSystemField], [StatusId])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.ReportParameterCatalog.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.SharedParameterCatalog (10 rows)
+DELETE FROM [core].[SharedParameterCatalog];
+GO
+BULK INSERT [core].[SharedParameterCatalog] ([SharedParameterCatalogId], [SharedParameterCatalogGuid], [Code], [Label], [DataType], [CanonicalControlType], [ProcessControlType], [ReportControlType], [IsRequired], [DefaultValue], [LookupSource], [GroupName], [SortOrder], [IsSystemField], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.SharedParameterCatalog.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.SharedParameterProfile (5 rows)
+DELETE FROM [core].[SharedParameterProfile];
+GO
+BULK INSERT [core].[SharedParameterProfile] ([SharedParameterProfileId], [SharedParameterProfileGuid], [ProfileToken], [ProfileLabel], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.SharedParameterProfile.tsv'
+WITH (
+    DATAFILETYPE = 'char',
+    FIELDTERMINATOR = '\t',
+    ROWTERMINATOR = '0x0a',
+    KEEPNULLS,
+    KEEPIDENTITY,
+    TABLOCK,
+    CODEPAGE = '65001'
+);
+GO
+
+-- core.SharedParameterProfileField (34 rows)
+DELETE FROM [core].[SharedParameterProfileField];
+GO
+BULK INSERT [core].[SharedParameterProfileField] ([SharedParameterProfileFieldId], [SharedParameterProfileFieldGuid], [SharedParameterProfileId], [SharedParameterCatalogId], [Audience], [SortOrder], [OverrideLabel], [OverrideDataType], [OverrideControlType], [OverrideIsRequired], [OverrideLookupSource], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
+FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.SharedParameterProfileField.tsv'
 WITH (
     DATAFILETYPE = 'char',
     FIELDTERMINATOR = '\t',

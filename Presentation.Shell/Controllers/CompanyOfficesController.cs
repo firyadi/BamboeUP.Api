@@ -93,6 +93,7 @@ namespace Presentation.Shell.Controllers
 
         /// <summary>Hard delete CompanyOffice (Admin)</summary>
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         [SwaggerOperation(Summary = "Hard Delete (Admin)", Description = "Menghapus data secara permanen.")]
         public async Task<IActionResult> HardDelete(Guid companyGuid, Guid guid)
         {

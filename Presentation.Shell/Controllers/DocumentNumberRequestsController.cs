@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts.Shell;
 using Shared.DataTransferObjects;
@@ -72,6 +73,7 @@ namespace Presentation.Shell.Controllers
 
         /// <summary>Hard delete DocumentNumberRequest (Admin)</summary>
         [HttpDelete("admin/{guid:guid}")]
+        [Authorize(Roles = "Admin")]
         [SwaggerOperation(Summary = "Hard Delete (Admin)", Description = "Permanently delete a record.")]
         [SwaggerResponse(204, "No Content")]
         public async Task<IActionResult> HardDelete(Guid guid)

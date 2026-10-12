@@ -1,0 +1,10 @@
+1	86922c38-cc18-47ab-a45e-9b662777e263	CompanyId	Company	bigint	ReadonlyText	ReadonlyText	ReadonlyText	1			Scope	10	1	1	1	2026-08-26T17:18:24.6618664				
+2	72558e19-838b-49e7-8731-220601832854	CompanyOfficeId	Office	bigint	ReadonlyText	ReadonlyText	ReadonlyText	0			Scope	20	1	1	1	2026-08-26T17:18:24.6618664				
+3	cdd1d2ab-d266-4ecc-ac0d-47f82be2aa24	EmployeeId	Employee	bigint	ComboBox	Lookup	ComboBox	0		Employee	Scope	25	1	1	1	2026-08-26T17:18:24.6618664				
+4	febc7419-89c0-4582-ac2b-a41a6bf107c6	PeriodYear	Period Year	int	NumberBox	Number	NumberBox	1			Period	30	1	1	1	2026-08-26T17:18:24.6618664				
+5	407ac495-2e23-49ef-895b-b7e487a2d986	PeriodMonth	Period Month	int	NumberBox	Number	NumberBox	1			Period	40	1	1	1	2026-08-26T17:18:24.6618664				
+6	8e5926b3-6d81-4b76-bf1f-7fef54da9c18	DateFrom	Valid From	datetime	DatePicker	Date	DatePicker	1			Period	30	1	1	1	2026-08-26T17:18:24.6618664				
+7	fc975fb9-1a01-456f-aa60-f73f2a308124	DateTo	Valid To	datetime	DatePicker	Date	DatePicker	1			Period	40	1	1	1	2026-08-26T17:18:24.6618664				
+8	733b0e83-8d89-430d-9267-69f4b284616d	ImportType	Import Type	string	ComboBox	Dropdown	ComboBox	1		ImportType	Input	45	1	1	1	2026-08-26T17:18:24.6618664				
+9	1be2175a-868e-4cdd-ad45-11d4c0f5b43d	SourceFile	Source File	string	FileUpload	FileUpload	FileUpload	1			Input	50	1	1	1	2026-08-26T17:18:24.6618664				
+10	ac28e407-8182-425d-bc90-3a80996a04f3	ValidateOnly	Validate Only	boolean	CheckBox	Boolean	CheckBox	0	false		Options	90	1	1	1	2026-08-26T17:18:24.6618664				

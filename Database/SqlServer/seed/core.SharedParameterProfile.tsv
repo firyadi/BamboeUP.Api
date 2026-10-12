@@ -1,0 +1,5 @@
+1	c01d508f-ea9c-4d03-89f7-e864f6d16528	none	None — no parameters	1	1	2026-08-26T17:18:24.6638746				
+2	1cce53ea-7b7c-40c0-8e98-d3bd3057213d	scope	Scope — Company + Office	1	1	2026-08-26T17:18:24.6638746				
+3	e5a373b9-b068-40f0-a853-b85328d4d17b	period	Period — Scope + Year/Month (Process) / Date range (Report)	1	1	2026-08-26T17:18:24.6638746				
+4	8ba1948c-3f05-4747-9a10-e3422d77708e	standard	Standard — same as Period	1	1	2026-08-26T17:18:24.6638746				
+5	81e1f384-96b3-41ca-85a1-8a205f61694b	process	Process — Period + ValidateOnly	1	1	2026-08-26T17:18:24.6638746				
