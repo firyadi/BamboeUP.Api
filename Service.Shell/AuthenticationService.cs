@@ -523,6 +523,9 @@ namespace Service.Shell
             if (userGroupScopeId.HasValue)
                 claims.Add(new Claim("UserGroupScopeId", userGroupScopeId.Value.ToString()));
 
+            if (user.PersonId is > 0)
+                claims.Add(new Claim("PersonId", user.PersonId.Value.ToString()));
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

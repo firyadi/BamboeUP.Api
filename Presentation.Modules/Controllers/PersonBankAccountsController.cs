@@ -87,6 +87,7 @@ namespace Presentation.Modules.Controllers
                 input.AccountName, input.AccountNameSearchType.ToString(),
                 input.SwiftCode, input.SwiftCodeSearchType.ToString(),
                 input.IBAN, input.IBANSearchType.ToString(),
+                input.CurrencyId, input.CurrencyIdSearchType.ToString(),
                 input.IsPrimary, input.IsPrimarySearchType.ToString(),
                 input.IsPayrollAccount, input.IsPayrollAccountSearchType.ToString(),
                 input.IsActive, input.IsActiveSearchType.ToString(),

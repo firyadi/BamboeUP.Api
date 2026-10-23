@@ -28,6 +28,7 @@
     <ProjectReference Include="..\Service.Modules\Service.Modules.csproj" />
     <ProjectReference Include="..\Service.Contracts.Modules\Service.Contracts.Modules.csproj" />
     <ProjectReference Include="..\Presentation.Modules\Presentation.Modules.csproj" />
+    <ProjectReference Include="..\Presentation.Shell\Presentation.Shell.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <ProjectReference Include="..\Entities\Entities.csproj" />

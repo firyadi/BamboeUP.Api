@@ -195,6 +195,42 @@ namespace Repository
                 entity.CreatedById.ToString(), null, entity);
         }
 
+        public async Task UpdateAsync(UserGroupScope entity, IDbTransaction? transaction = null)
+        {
+            AuditTimestampHelper.StampUpdate(entity);
+            var conn = transaction?.Connection ?? _context.CreateConnection();
+            var ownsConnection = transaction == null;
+            try
+            {
+                var oldData = await GetAsync(entity.UserGroupScopeGuid, false);
+
+                var sql = $@"
+                    UPDATE {_dialect.Qualify("core", "UserGroupScope")}
+                    SET    UserGroupId        = @UserGroupId,
+                           UserGroupGuid      = @UserGroupGuid,
+                           CompanyId          = @CompanyId,
+                           CompanyGuid        = @CompanyGuid,
+                           CompanyOfficeId    = @CompanyOfficeId,
+                           CompanyOfficeGuid  = @CompanyOfficeGuid,
+                           PersonId           = @PersonId,
+                           UpdatedById        = @UpdatedById,
+                           UpdatedTime        = @UpdatedTime
+                    WHERE  UserGroupScopeGuid = @UserGroupScopeGuid
+                      AND  StatusId > 0
+                      AND  DeletedTime IS NULL";
+                await conn.ExecuteAsync(sql, entity, transaction);
+
+                await _audit.LogAsync("UPDATE", "UserGroupScope",
+                    entity.UserGroupScopeGuid.ToString(),
+                    entity.UpdatedById?.ToString() ?? "system", oldData, entity);
+            }
+            finally
+            {
+                if (ownsConnection)
+                    conn.Dispose();
+            }
+        }
+
         public async Task UpdatePersonAsync(Guid userGroupScopeGuid, long? personId, long updatedBy, IDbTransaction? transaction = null)
         {
             var conn = transaction?.Connection ?? _context.CreateConnection();

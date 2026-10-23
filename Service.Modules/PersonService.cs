@@ -52,9 +52,6 @@ namespace Service.Modules
             try
             {
                 var model = input.Adapt<Person>();
-            model.SrSalutation = input.SrSalutation is null or 0 ? null : input.SrSalutation;
-            model.SrBloodType = input.SrBloodType is null or 0 ? null : input.SrBloodType;
-            model.SrMaritalStatus = input.SrMaritalStatus is null or 0 ? null : input.SrMaritalStatus;
             model.FileStorageId = input.FileStorageId is null or 0 ? null : input.FileStorageId;
 
                 model.StatusId = 1;
@@ -312,9 +309,6 @@ namespace Service.Modules
             {
                 // 2. Update Header
                 var model = input.Adapt<Person>();
-            model.SrSalutation = input.SrSalutation is null or 0 ? null : input.SrSalutation;
-            model.SrBloodType = input.SrBloodType is null or 0 ? null : input.SrBloodType;
-            model.SrMaritalStatus = input.SrMaritalStatus is null or 0 ? null : input.SrMaritalStatus;
             model.FileStorageId = input.FileStorageId is null or 0 ? null : input.FileStorageId;
                 model.PersonGuid = personGuid;
                 model.PersonId = oldPerson.PersonId;

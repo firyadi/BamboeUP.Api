@@ -154,15 +154,27 @@ foreach ($m in $manifest) {
 
     Write-Host "Loading $schema.$table ..."
     $sqlTypes = Get-SqlColumnTypes $conn $schema $table
+    $loadColumns = @()
+    $skipped = @()
+    foreach ($c in $m.columns) {
+        if ($sqlTypes.ContainsKey([string]$c)) { $loadColumns += [string]$c }
+        else { $skipped += [string]$c }
+    }
+    if ($skipped.Count -gt 0) {
+        Write-Warning ("Skipping columns not on {0}.{1}: {2}" -f $schema, $table, ($skipped -join ", "))
+    }
+    if ($loadColumns.Count -eq 0) {
+        throw "No seed columns match $schema.$table."
+    }
+
     $del = $conn.CreateCommand()
     $del.CommandText = "DELETE FROM [$schema].[$table];"
     $del.CommandTimeout = 600
     [void]$del.ExecuteNonQuery()
 
     $dt = New-Object System.Data.DataTable
-    foreach ($c in $m.columns) {
-        $sqlType = if ($sqlTypes[$c]) { $sqlTypes[$c].Type } else { "nvarchar" }
-        [void]$dt.Columns.Add($c, (Get-NetColumnType $sqlType))
+    foreach ($c in $loadColumns) {
+        [void]$dt.Columns.Add($c, (Get-NetColumnType $sqlTypes[$c].Type))
     }
 
     $sr = New-Object System.IO.StreamReader($tsv, (New-Object System.Text.UTF8Encoding $false))
@@ -172,8 +184,9 @@ foreach ($m in $manifest) {
             $row = $dt.NewRow()
             for ($i = 0; $i -lt $m.columns.Count; $i++) {
                 $colName = [string]$m.columns[$i]
+                if (-not $sqlTypes.ContainsKey($colName)) { continue }
                 $val = if ($i -lt $parts.Length) { $parts[$i] } else { "" }
-                $row[$i] = Convert-SeedValue $sqlTypes[$colName] $val
+                $row[$colName] = Convert-SeedValue $sqlTypes[$colName] $val
             }
             $dt.Rows.Add($row)
         }
@@ -192,7 +205,7 @@ foreach ($m in $manifest) {
     }
     $bulk.DestinationTableName = "[$schema].[$table]"
     $bulk.BulkCopyTimeout = 0
-    foreach ($c in $m.columns) {
+    foreach ($c in $loadColumns) {
         [void]$bulk.ColumnMappings.Add($c, $c)
     }
     $bulk.WriteToServer($dt)

@@ -8,6 +8,7 @@ namespace Contracts
         string Role { get; }
         long? CompanyId { get; }
         long? OfficeId { get; }
+        long? PersonId { get; }
         long? UserGroupScopeId { get; }
         bool IsAdmin { get; }
         bool IsAuthenticated { get; }

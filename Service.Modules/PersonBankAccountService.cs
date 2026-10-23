@@ -164,11 +164,11 @@ namespace Service.Modules
         }
 
         public async Task<IEnumerable<PersonBankAccountDto>> SearchPersonBankAccountAsync(
-            string? bankBranch, string? bankBranchSearchType, string? accountNumber, string? accountNumberSearchType, string? accountName, string? accountNameSearchType, string? swiftCode, string? swiftCodeSearchType, string? iBAN, string? iBANSearchType, string? isPrimary, string? isPrimarySearchType, string? isPayrollAccount, string? isPayrollAccountSearchType, string? isActive, string? isActiveSearchType, string? remarks, string? remarksSearchType,
+            string? bankBranch, string? bankBranchSearchType, string? accountNumber, string? accountNumberSearchType, string? accountName, string? accountNameSearchType, string? swiftCode, string? swiftCodeSearchType, string? iBAN, string? iBANSearchType, string? currencyId, string? currencyIdSearchType, string? isPrimary, string? isPrimarySearchType, string? isPayrollAccount, string? isPayrollAccountSearchType, string? isActive, string? isActiveSearchType, string? remarks, string? remarksSearchType,
             Guid personGuid, Guid personBankAccountGuid)
         {
             var data = await _repository.PersonBankAccount.SearchPersonBankAccountAsync(
-                bankBranch, bankBranchSearchType, accountNumber, accountNumberSearchType, accountName, accountNameSearchType, swiftCode, swiftCodeSearchType, iBAN, iBANSearchType, isPrimary, isPrimarySearchType, isPayrollAccount, isPayrollAccountSearchType, isActive, isActiveSearchType, remarks, remarksSearchType, 
+                bankBranch, bankBranchSearchType, accountNumber, accountNumberSearchType, accountName, accountNameSearchType, swiftCode, swiftCodeSearchType, iBAN, iBANSearchType, currencyId, currencyIdSearchType, isPrimary, isPrimarySearchType, isPayrollAccount, isPayrollAccountSearchType, isActive, isActiveSearchType, remarks, remarksSearchType, 
                 personGuid, personBankAccountGuid);
             return data.Adapt<IEnumerable<PersonBankAccountDto>>();
         }

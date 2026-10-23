@@ -21,8 +21,6 @@ namespace Service.Shell
         private readonly IAdminRegistryService _adminRegistry;
 
         // ##ServiceManagerFields##
-        private readonly Lazy<IApprovalNotificationService> _approvalNotificationService;
-        private readonly Lazy<IApprovalService> _approvalService;
         private readonly Lazy<IApprovalDelegationService> _approvalDelegationService;
         private readonly Lazy<IApprovalTemplateService> _approvalTemplateService;
         private readonly Lazy<IAutoNumberService> _autoNumberService;
@@ -57,6 +55,8 @@ namespace Service.Shell
         private readonly Lazy<IUserGroupScopeService> _userGroupScopeService;
         private readonly Lazy<IUserScopeService> _userScopeService;
         private readonly Lazy<IVwStandardReferenceItemService> _vwStandardReferenceItemService;
+        private readonly Lazy<IApprovalNotificationService> _approvalNotificationService;
+        private readonly Lazy<IApprovalService> _approvalService;
         private readonly Lazy<IAppParameterManager> _appParameterManager;
 
         public ServiceShellManager(
@@ -79,8 +79,6 @@ namespace Service.Shell
             _adminRegistry = adminRegistry;
 
             // ##ServiceManagerConstructor##
-            _approvalNotificationService = new Lazy<IApprovalNotificationService>(() => new ApprovalNotificationService(_logger));
-            _approvalService = new Lazy<IApprovalService>(() => new ApprovalService(_repositoryManager, _logger, _transactionManager, _approvalNotificationService.Value));
             _approvalDelegationService = new Lazy<IApprovalDelegationService>(() => new ApprovalDelegationService(_repositoryManager, _logger));
             _approvalTemplateService = new Lazy<IApprovalTemplateService>(() => new ApprovalTemplateService(_repositoryManager, _logger, _transactionManager));
             _autoNumberService = new Lazy<IAutoNumberService>(() => new AutoNumberService(_repositoryManager, _logger, _transactionManager));
@@ -122,11 +120,12 @@ namespace Service.Shell
             _userGroupScopeService = new Lazy<IUserGroupScopeService>(() => new UserGroupScopeService(_repositoryManager, _logger, _transactionManager));
             _userScopeService = new Lazy<IUserScopeService>(() => new UserScopeService(_repositoryManager, _userContext, _memoryCache, _configuration));
             _vwStandardReferenceItemService = new Lazy<IVwStandardReferenceItemService>(() => new VwStandardReferenceItemService(_repositoryManager));
+            _approvalNotificationService = new Lazy<IApprovalNotificationService>(() => new ApprovalNotificationService(_logger));
+            _approvalService = new Lazy<IApprovalService>(() => new ApprovalService(_repositoryManager, _logger, _transactionManager, _approvalNotificationService.Value));
             _appParameterManager = new Lazy<IAppParameterManager>(() => new AppParameterManager(this, _userContext, _memoryCache));
         }
 
         // ##ServiceManagerAccessors##
-        public IApprovalService ApprovalService => _approvalService.Value;
         public IApprovalDelegationService ApprovalDelegationService => _approvalDelegationService.Value;
         public IApprovalTemplateService ApprovalTemplateService => _approvalTemplateService.Value;
         public IAutoNumberService AutoNumberService => _autoNumberService.Value;
@@ -162,6 +161,7 @@ namespace Service.Shell
         public IUserGroupScopeService UserGroupScopeService => _userGroupScopeService.Value;
         public IUserScopeService UserScopeService => _userScopeService.Value;
         public IVwStandardReferenceItemService VwStandardReferenceItemService => _vwStandardReferenceItemService.Value;
+        public IApprovalService ApprovalService => _approvalService.Value;
         public IAppParameterManager AppParameterManager => _appParameterManager.Value;
     }
 }

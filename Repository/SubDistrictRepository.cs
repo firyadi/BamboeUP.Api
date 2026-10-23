@@ -31,9 +31,9 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} 
-                FROM {_table} s
-                INNER JOIN [core].[District] d ON s.DistrictId = d.DistrictId
-                WHERE s.SubDistrictGuid = @subDistrictGuid AND d.DistrictGuid = @districtGuid AND s.StatusId > 0";
+                FROM {_table} a
+                INNER JOIN [core].[District] d ON a.DistrictId = d.DistrictId
+                WHERE a.SubDistrictGuid = @subDistrictGuid AND d.DistrictGuid = @districtGuid AND a.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<SubDistrict>(sql, new { subDistrictGuid, districtGuid });
         }
 
@@ -42,10 +42,10 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
-                FROM {_table} s
-                INNER JOIN [core].[District] d ON s.DistrictId = d.DistrictId
-                WHERE d.DistrictGuid = @districtGuid AND s.StatusId > 0 AND s.DeletedTime IS NULL
-                ORDER BY s.SubDistrictId DESC";
+                FROM {_table} a
+                INNER JOIN [core].[District] d ON a.DistrictId = d.DistrictId
+                WHERE d.DistrictGuid = @districtGuid AND a.StatusId > 0 AND a.DeletedTime IS NULL
+                ORDER BY a.SubDistrictId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<SubDistrict>(sql, new { districtGuid });
         }

@@ -29,6 +29,8 @@ namespace Contracts
             string? swiftCodeSearchType,
             string? iBAN,
             string? iBANSearchType,
+            string? currencyId,
+            string? currencyIdSearchType,
             string? isPrimary,
             string? isPrimarySearchType,
             string? isPayrollAccount,

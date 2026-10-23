@@ -13,6 +13,40 @@ public sealed class ServiceModulesManager : IServiceModulesManager
 
         private readonly IProcessExecutionService _processExecutionService;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         private readonly Lazy<IAdministrativeAreaDisplayService> _administrativeAreaDisplayService;
         private readonly Lazy<IAssetService> _assetService;
         private readonly Lazy<IAttendanceService> _attendanceService;
@@ -132,6 +166,7 @@ public ServiceModulesManager(
             _processExecutionService = processExecutionService;
         }
 
+        public IProcessExecutionService ProcessExecutionService => _processExecutionService;
         public IAdministrativeAreaDisplayService AdministrativeAreaDisplayService => _administrativeAreaDisplayService.Value;
         public IAssetService AssetService => _assetService.Value;
         public IAttendanceService AttendanceService => _attendanceService.Value;
@@ -185,5 +220,4 @@ public ServiceModulesManager(
         public IWorkNoticeService WorkNoticeService => _workNoticeService.Value;
         public IWorkTeamService WorkTeamService => _workTeamService.Value;
         public IWorkTeamCapabilityService WorkTeamCapabilityService => _workTeamCapabilityService.Value;
-        public IProcessExecutionService ProcessExecutionService => _processExecutionService;
 }

@@ -73,6 +73,33 @@ namespace Service.Shell
             return entity.Adapt<UserGroupScopeDto>();
         }
 
+        public async Task UpdateByUserAsync(Guid userGuid, Guid userGroupScopeGuid, UserGroupScopeForUpdateDto input)
+        {
+            var user = await _repository.User.GetUserAsync(userGuid, false)
+                ?? throw new KeyNotFoundException($"User '{userGuid}' not found.");
+            var entity = await _repository.UserGroupScope.GetAsync(userGroupScopeGuid, false)
+                ?? throw new KeyNotFoundException($"UserGroupScope '{userGroupScopeGuid}' not found.");
+            if (entity.UserId != user.UserId)
+                throw new InvalidOperationException("Scope ini bukan milik user tersebut.");
+
+            var userGroup = await _repository.UserGroup.GetUserGroupAsync(input.UserGroupGuid, false)
+                ?? throw new KeyNotFoundException($"UserGroup '{input.UserGroupGuid}' not found.");
+
+            var personId = input.PersonId is > 0 ? input.PersonId : null;
+            await EnsurePersonIsFreeAsync(input.CompanyId, personId, user.UserId);
+
+            entity.UserGroupId = userGroup.UserGroupId;
+            entity.UserGroupGuid = input.UserGroupGuid;
+            entity.CompanyId = input.CompanyId;
+            entity.CompanyGuid = input.CompanyGuid;
+            entity.CompanyOfficeId = input.CompanyOfficeId is > 0 ? input.CompanyOfficeId : null;
+            entity.CompanyOfficeGuid = input.CompanyOfficeId is > 0 ? input.CompanyOfficeGuid : null;
+            entity.PersonId = personId;
+            entity.UpdatedById = input.UpdatedById;
+
+            await _repository.UserGroupScope.UpdateAsync(entity);
+        }
+
         public async Task UpdatePersonByUserAsync(Guid userGuid, Guid userGroupScopeGuid, UserGroupScopePersonDto input)
         {
             var user = await _repository.User.GetUserAsync(userGuid, false)

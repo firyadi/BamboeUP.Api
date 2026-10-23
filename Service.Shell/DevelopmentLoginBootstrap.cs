@@ -65,10 +65,9 @@ public sealed class DevelopmentLoginBootstrap : IDevelopmentLoginBootstrap
             throw new InvalidOperationException("Failed to create the development admin user.");
 
         _logger.LogWarning(
-            "Created development admin user {UserName} (UserId {UserId}). Password is {Password}.",
+            "Created development admin user {UserName} (UserId {UserId}).",
             created.UserName,
-            created.UserId,
-            IDevelopmentLoginBootstrap.Password);
+            created.UserId);
 
         return created;
     }

@@ -234,6 +234,7 @@ namespace BamboeUp.Api
             TypeAdapterConfig<UserGroupProgramForUpdateDto, UserGroupProgram>.NewConfig();
             TypeAdapterConfig<UserGroupScope, UserGroupScopeDto>.NewConfig();
             TypeAdapterConfig<UserGroupScopeForCreationDto, UserGroupScope>.NewConfig();
+            TypeAdapterConfig<UserGroupScopeForUpdateDto, UserGroupScope>.NewConfig();
             TypeAdapterConfig<VwStandardReferenceItem, VwStandardReferenceItemDto>.NewConfig();
             TypeAdapterConfig<WorkItem, WorkItemDto>.NewConfig();
             TypeAdapterConfig<WorkItemForCreationDto, WorkItem>.NewConfig();

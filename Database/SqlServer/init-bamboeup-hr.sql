@@ -37,6 +37,7 @@ CREATE TABLE [core].[Users]
     [PasswordSalt] NVARCHAR(MAX) NOT NULL,
     [FullName] NVARCHAR(200),
     [Email] NVARCHAR(200),
+    [PersonId] BIGINT,
     [IsAdmin] BIT NOT NULL DEFAULT 0,
     [StatusId] INT NOT NULL DEFAULT 1,
     [RowVersion] ROWVERSION NOT NULL,
@@ -53,6 +54,8 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UQ_User_Guid' AND object
     CREATE UNIQUE INDEX [UQ_User_Guid] ON [core].[Users] ([UserGuid]) WHERE ([DeletedTime] IS NULL AND [StatusId] > 0);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UQ_User_UserName' AND object_id IS NOT NULL)
     CREATE UNIQUE INDEX [UQ_User_UserName] ON [core].[Users] ([UserName]) WHERE ([DeletedTime] IS NULL AND [StatusId] > 0);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UQ_Users_PersonId_Active' AND object_id IS NOT NULL)
+    CREATE UNIQUE INDEX [UQ_Users_PersonId_Active] ON [core].[Users] ([PersonId]) WHERE ([PersonId] IS NOT NULL AND [DeletedTime] IS NULL AND [StatusId] > 0);
 
 -- ---------------------------------------------------------------------------
 -- core.UserGroup
@@ -1157,6 +1160,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_SharedParameterProfil
 -- ---------------------------------------------------------------------------
 -- Lookup / geo views
 -- ---------------------------------------------------------------------------
+GO
 CREATE OR ALTER VIEW [app].[FromCompany] AS
 SELECT [CompanyId] AS [FromCompanyId], [CompanyName] AS [FromCompanyName], [StatusId] FROM [app].[Company];
 GO

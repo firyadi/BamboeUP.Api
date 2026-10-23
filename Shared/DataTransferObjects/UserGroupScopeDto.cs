@@ -53,6 +53,20 @@ namespace Shared.DataTransferObjects
         public long UpdatedById { get; set; }
     }
 
+    /// <summary>Full update for an existing user role assignment (company / office / role / person).</summary>
+    public record UserGroupScopeForUpdateDto
+    {
+        public long UserGroupId { get; set; }
+        public Guid UserGroupGuid { get; set; }
+        public long CompanyId { get; set; }
+        public Guid CompanyGuid { get; set; }
+        /// <summary>NULL = role berlaku semua office. NOT NULL = office spesifik.</summary>
+        public long? CompanyOfficeId { get; set; }
+        public Guid? CompanyOfficeGuid { get; set; }
+        public long? PersonId { get; set; }
+        public long UpdatedById { get; set; }
+    }
+
     public record UserGroupScopeForDeleteDto
     {
         public long? DeletedById { get; set; }

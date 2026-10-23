@@ -8,7 +8,7 @@ GO
 -- core.Users (7 rows)
 DELETE FROM [core].[Users];
 GO
-BULK INSERT [core].[Users] ([UserId], [UserGuid], [UserName], [PasswordHash], [PasswordSalt], [FullName], [Email], [IsAdmin], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime], [PersonId])
+BULK INSERT [core].[Users] ([UserId], [UserGuid], [UserName], [PasswordHash], [PasswordSalt], [FullName], [Email], [PersonId], [IsAdmin], [StatusId], [CreatedById], [CreatedTime], [UpdatedById], [UpdatedTime], [DeletedById], [DeletedTime])
 FROM 'D:\Project\BamboeUp\BamboeUp.Api\Database\SqlServer\seed\core.Users.tsv'
 WITH (
     DATAFILETYPE = 'char',

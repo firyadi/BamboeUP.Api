@@ -13,6 +13,7 @@
                         "PasswordSalt",
                         "FullName",
                         "Email",
+                        "PersonId",
                         "IsAdmin",
                         "StatusId",
                         "CreatedById",
@@ -20,8 +21,7 @@
                         "UpdatedById",
                         "UpdatedTime",
                         "DeletedById",
-                        "DeletedTime",
-                        "PersonId"
+                        "DeletedTime"
                     ]
     },
     {

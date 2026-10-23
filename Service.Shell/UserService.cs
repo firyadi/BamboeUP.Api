@@ -141,14 +141,15 @@ namespace Service.Shell
             if (user == null)
                 throw new KeyNotFoundException($"User dengan Guid '{userGuid}' tidak ditemukan.");
 
-            if (_adminRegistry.IsAdministrator(user.UserId))
-            {
-                var allPrograms = await _repository.Program.GetAllProgramsAsync(trackChanges: false);
-                return allPrograms.Adapt<IEnumerable<ProgramDto>>();
-            }
+            var programs = _adminRegistry.IsAdministrator(user.UserId)
+                ? await _repository.Program.GetAllProgramsAsync(trackChanges: false)
+                : await _repository.Program.GetAllowedProgramsAsync(userGuid, companyId, officeId);
 
-            var allowedPrograms = await _repository.Program.GetAllowedProgramsAsync(userGuid, companyId, officeId);
-            return allowedPrograms.Adapt<IEnumerable<ProgramDto>>();
+            // Administrator privileges bypass group grants, not the program's active state.
+            // Keep the master program listing unchanged so inactive programs can still be managed.
+            return programs
+                .Where(program => program.IsActive == true && program.StatusId > 0 && program.DeletedTime is null)
+                .Adapt<List<ProgramDto>>();
         }
 
         private async Task EnsurePersonIsFreeAsync(long? personId, Guid? exceptUserGuid)

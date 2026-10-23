@@ -47,7 +47,7 @@ public string? EducationLevelName { get; set; }
 public string? FamilyRelationName { get; set; }
 public string? GenderName { get; set; }
 public string? MaritalStatusName { get; set; }
-public string? StateName { get; set; }
+public string? CountryName { get; set; }
 
 
         [Column("StatusId")]

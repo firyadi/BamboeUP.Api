@@ -38,7 +38,7 @@ public string? SalutationName { get; set; }
                 public IEnumerable<PersonFamilyDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonIdentificationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicDto>? PersonPhysicalCharacteristics { get; set; }
-        // ##HeaderDetailCollections##
+        // ##UiHeaderDetailDtoCollections##
         public IEnumerable<PersonAddressDto>? PersonAddresses { get; set; }
         public int StatusId { get; set; }
         public byte[]? RowVersion { get; set; }
@@ -74,7 +74,7 @@ public string? SalutationName { get; set; }
                 public IEnumerable<PersonFamilyForCreationDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonIdentificationForCreationDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicForCreationDto>? PersonPhysicalCharacteristics { get; set; }
-        // ##HeaderDetailCreateCollections##
+        // ##UiHeaderDetailCreateCollections##
         public IEnumerable<PersonAddressForCreationDto>? PersonAddresses { get; set; }
         public long CreatedById { get; set; } = 0;
     }
@@ -103,7 +103,7 @@ public string? SalutationName { get; set; }
                 public IEnumerable<PersonFamilyForUpdateDto>? PersonFamilies { get; set; }
                 public IEnumerable<PersonIdentificationForUpdateDto>? PersonIdentifications { get; set; }
                 public IEnumerable<PersonPhysicalCharacteristicForUpdateDto>? PersonPhysicalCharacteristics { get; set; }
-        // ##HeaderDetailUpdateCollections##
+        // ##UiHeaderDetailUpdateCollections##
         public IEnumerable<PersonAddressForUpdateDto>? PersonAddresses { get; set; }
         public long UpdatedById { get; set; }
     }

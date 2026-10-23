@@ -6,7 +6,6 @@ namespace Service.Contracts.Shell
     public interface IServiceShellManager
     {
         // ##IServiceManager##
-        IApprovalService ApprovalService { get; }
         IApprovalDelegationService ApprovalDelegationService { get; }
         IApprovalTemplateService ApprovalTemplateService { get; }
         IAutoNumberService AutoNumberService { get; }
@@ -42,6 +41,7 @@ namespace Service.Contracts.Shell
         IUserGroupScopeService UserGroupScopeService { get; }
         IUserScopeService UserScopeService { get; }
         IVwStandardReferenceItemService VwStandardReferenceItemService { get; }
+        IApprovalService ApprovalService { get; }
         IAppParameterManager AppParameterManager { get; }
         // ##IServiceManager End##
     }

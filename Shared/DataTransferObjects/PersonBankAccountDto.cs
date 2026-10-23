@@ -21,7 +21,6 @@ namespace Shared.DataTransferObjects
         public string? Remarks { get; set; }
 public string? PersonName { get; set; }
 public string? BankName { get; set; }
-public string? CurrencyName { get; set; }
 public string? BankAccountTypeName { get; set; }
 
         public int StatusId { get; set; }
@@ -90,6 +89,9 @@ public string? BankAccountTypeName { get; set; }
 
         public string? IBAN { get; set; }
         public SearchType IBANSearchType { get; set; } = SearchType.Contains;
+
+        public string? CurrencyId { get; set; }
+        public SearchType CurrencyIdSearchType { get; set; } = SearchType.Contains;
 
         public string? IsPrimary { get; set; }
         public SearchType IsPrimarySearchType { get; set; } = SearchType.Contains;

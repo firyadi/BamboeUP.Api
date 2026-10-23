@@ -1,4 +1,3 @@
-using BamboeUp.Audit.Contracts;
 using Contracts;
 using Dapper;
 using Entities.Models;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public partial class PersonEmergencyContactRepository(RepositoryContext context, IAuditService audit, ISqlDialect dialect) : IPersonEmergencyContactRepository
+    public partial class PersonEmergencyContactRepository(RepositoryContext context, ISqlDialect dialect) : IPersonEmergencyContactRepository
     {
         private readonly string _table = dialect.Qualify("app", "PersonEmergencyContact");
         private readonly int _maxRows = ParameterContext.MaxResultRecord;

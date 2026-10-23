@@ -53,24 +53,7 @@ namespace Service.Modules
                     NewEntity = address
                 });
 
-                // 3. Insert PersonContact
-                var contact = input.Contact.Adapt<PersonContact>();
-                contact.PersonId = model.PersonId;
-                contact.StatusId = 1;
-                contact.CreatedTime = DateTime.UtcNow;
-                await repository.PersonContact.CreatePersonContactAsync(contact, transaction);
-                entries.Add(new AuditLogEntry
-                {
-                    TableName = "PersonContact",
-                    EntityKey = contact.PersonContactGuid.ToString(),
-                    EntityDisplayName = contact.ContactValue,
-                    ParentTableName = "Person",
-                    ParentEntityKey = model.PersonGuid.ToString(),
-                    ActionType = "CREATE", OldEntity = null,
-                    NewEntity = contact
-                });
-
-                // 4. Insert PersonEducation
+                // 3. Insert PersonEducation
                 var education = input.Education.Adapt<PersonEducation>();
                 education.PersonId = model.PersonId;
                 education.StatusId = 1;
@@ -87,7 +70,7 @@ namespace Service.Modules
                     NewEntity = education
                 });
 
-                // 5. Insert PersonEmergencyContact
+                // 4. Insert PersonEmergencyContact
                 var emergencyContact = input.EmergencyContact.Adapt<PersonEmergencyContact>();
                 emergencyContact.PersonId = model.PersonId;
                 emergencyContact.StatusId = 1;
@@ -104,7 +87,7 @@ namespace Service.Modules
                     NewEntity = emergencyContact
                 });
 
-                // 6. Insert PersonIdentification
+                // 5. Insert PersonIdentification
                 var identification = input.Identification.Adapt<PersonIdentification>();
                 identification.PersonId = model.PersonId;
                 identification.StatusId = 1;
@@ -137,7 +120,6 @@ namespace Service.Modules
 
                 var resultDto = model.Adapt<PersonDto>();
                 resultDto.PersonAddresses = new List<PersonAddressDto> { address.Adapt<PersonAddressDto>() };
-                resultDto.PersonContacts = new List<PersonContactDto> { contact.Adapt<PersonContactDto>() };
                 resultDto.PersonEducations = new List<PersonEducationDto> { education.Adapt<PersonEducationDto>() };
                 resultDto.PersonEmergencyContacts = new List<PersonEmergencyContactDto> { emergencyContact.Adapt<PersonEmergencyContactDto>() };
                 resultDto.PersonIdentifications = new List<PersonIdentificationDto> { identification.Adapt<PersonIdentificationDto>() };

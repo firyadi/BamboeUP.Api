@@ -31,9 +31,9 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")} 
-                FROM {_table} d
-                INNER JOIN [core].[City] c ON d.CityId = c.CityId
-                WHERE d.DistrictGuid = @districtGuid AND c.CityGuid = @cityGuid AND d.StatusId > 0";
+                FROM {_table} a
+                INNER JOIN [core].[City] c ON a.CityId = c.CityId
+                WHERE a.DistrictGuid = @districtGuid AND c.CityGuid = @cityGuid AND a.StatusId > 0";
             return await connection.QuerySingleOrDefaultAsync<District>(sql, new { districtGuid, cityGuid });
         }
 
@@ -42,10 +42,10 @@ namespace Repository
             using var connection = _context.CreateConnection();
             var sql = $@"
                 {SqlDialectQueryHelper.SelectLimited(_dialect, _maxRows, "a.*")}
-                FROM {_table} d
-                INNER JOIN [core].[City] c ON d.CityId = c.CityId
-                WHERE c.CityGuid = @cityGuid AND d.StatusId > 0 AND d.DeletedTime IS NULL
-                ORDER BY d.DistrictId DESC";
+                FROM {_table} a
+                INNER JOIN [core].[City] c ON a.CityId = c.CityId
+                WHERE c.CityGuid = @cityGuid AND a.StatusId > 0 AND a.DeletedTime IS NULL
+                ORDER BY a.DistrictId DESC{_dialect.AppendLimit(_maxRows)}";
 
             return await connection.QueryAsync<District>(sql, new { cityGuid });
         }

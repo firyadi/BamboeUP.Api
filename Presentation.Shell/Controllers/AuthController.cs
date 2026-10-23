@@ -108,6 +108,14 @@ public class AuthController : ControllerBase
         }
     }
 
+    // The host checks administrator access against the API-validated token before writing appearance.
+    [HttpGet("login-appearance-permission")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult LoginAppearancePermission() =>
+        string.IsNullOrWhiteSpace(User.Identity?.Name)
+            ? Unauthorized()
+            : Ok(new { Actor = User.Identity.Name });
+
     [HttpPost("change-password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
